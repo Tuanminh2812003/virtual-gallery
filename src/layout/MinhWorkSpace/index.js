@@ -1,74 +1,105 @@
-import React, { Suspense, useRef, useEffect } from 'react';
-import { Canvas, useLoader, useThree } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
-import { TextureLoader } from 'three';
-import * as THREE from 'three';
-import RectAreaLight from '../../components/RectAreaLight';
+// src/components/MinhWorkSpace/MinhWorkSpace.js
+import React, { useState } from 'react';
+import { Canvas } from '@react-three/fiber';
+import MinhTestPicture from '../../components/MinhTestPicture';
+import CameraControler from './CameraControler'; //di chuyển test
+//QUAN TRỌNG
+import ResizeElement from '../../action/ResizeElement'; //respondsive, chuyền vào scaleFactor mặc định
+import { Vector3, Euler } from 'three'; //click vào tranh
+import CameraClick from '../../action/CameraClick'; //component click vào tranh
+//QUAN TRỌNG
 
-function LightsWithHelpers() {
-    const spotLightRef = useRef();
-    const pointLightRef = useRef();
-    const { scene } = useThree();
+function MinhWorkSpace() {
+    const [clicked, setClicked] = useState(false); //click vào tranh
+    const [targetPosition, setTargetPosition] = useState([0, 0, 0]); //click vào tranh
+    const [targetRotation, setTargetRotation] = useState([0, 0, 0]); //click vào tranh
+    const [scaleFactor, setScaleFactor] = useState(2); //respondsive
 
-    useEffect(() => {
-        if (spotLightRef.current) {
-            const spotLightHelper = new THREE.SpotLightHelper(spotLightRef.current);
-            scene.add(spotLightHelper);
-        }
-        if (pointLightRef.current) {
-            const pointLightHelper = new THREE.PointLightHelper(pointLightRef.current);
-            scene.add(pointLightHelper);
-        }
-    }, [scene]);
+    //CLICK VÀO TRANH
+    const handlePictureClick = (position, rotation) => {
+        // Tạo vector định hướng cho camera (hướng về phía trước bức tranh)
+        const direction = new Vector3(0, 0, 5); // Cách bức tranh 5 đơn vị theo hướng z âm
+        const eulerRotation = new Euler(
+          rotation[0] * (Math.PI / 180),
+          rotation[1] * (Math.PI / 180),
+          rotation[2] * (Math.PI / 180)
+        );
+
+        // Tính toán vị trí mới của camera
+        direction.applyEuler(eulerRotation); // Áp dụng góc quay để tính toán hướng di chuyển
+        const newCameraPosition = [
+            position[0] + direction.x,
+            position[1] + direction.y,
+            position[2] + direction.z
+        ];
+
+        // Tính toán góc nhìn mới của camera để nhìn chính diện vào bức tranh
+        const newCameraRotation = [
+            rotation[0], // Xoay quanh trục X
+            rotation[1], // Xoay quanh trục Y theo góc của bức tranh
+            rotation[2]  // Xoay quanh trục Z
+        ];
+
+        setTargetPosition(newCameraPosition);
+        setTargetRotation(newCameraRotation);
+        setClicked(true);
+    };
+    //CLICK VÀO TRANH
 
     return (
-        <>
-            <spotLight ref={spotLightRef} position={[10, 5, 5]} intensity={200} color="yellow" angle={Math.PI / 4} penumbra={1} castShadow/>
-            <pointLight ref={pointLightRef} position={[0, 5, 0]} intensity={1000} color="purple" decay={2} castShadow/>
-        </>
+        <div style={{ width: '100vw', height: '100vh' }}>
+            <Canvas shadows>
+                {/* đèn */}
+                <ambientLight intensity={1} />
+                {/* đèn */}
+
+                {/* môi trường */}
+                <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]}>
+                    <planeGeometry args={[20, 20]} />
+                    <meshStandardMaterial color="yellow" roughness={0.1} metalness={0} />
+                </mesh>
+                {/* môi trường */}
+
+                {/* tranh */}
+                <MinhTestPicture
+                    position={[0, 1, 0]}
+                    rotation={[0, 0, 0]}
+                    scale={[scaleFactor, scaleFactor, scaleFactor]} //respondsive
+                    onClick={handlePictureClick} //click vào tranh
+                />
+                <MinhTestPicture
+                    position={[5, 1, 0]}
+                    rotation={[0, 45, 0]}
+                    scale={[scaleFactor, scaleFactor, scaleFactor]}
+                    onClick={handlePictureClick}
+                />
+                <MinhTestPicture
+                    position={[-5, 1, 0]}
+                    rotation={[0, -45, 0]}
+                    scale={[scaleFactor, scaleFactor, scaleFactor]}
+                    onClick={handlePictureClick}
+                />
+                {/* tranh */}
+
+                {/* click vào tranh, COPY Y NGUYÊN */}
+                <CameraClick
+                    targetPosition={targetPosition}
+                    targetRotation={targetRotation}
+                    clicked={clicked}
+                    setClicked={setClicked}
+                />
+                {/* click vào tranh, COPY Y NGUYÊN */}
+
+                {/* component di chuyển */}
+                <CameraControler />
+                {/* component di chuyển */}
+            </Canvas>
+
+            {/* respondsive, COPY Y NGUYÊN */}
+            <ResizeElement setScaleFactor={setScaleFactor} />
+            {/* respondsive, COPY Y NGUYÊN */}
+        </div>
     );
-}
-
-function MinhWorkSpace (){
-
-    return(
-        <>
-            <div style={{ width: '100vw', height: '100vh' }}>
-                <Canvas shadows>
-
-                    <color attach="background" args={['#000']} />
-                    {/* Reflective floor */}
-                    <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]}>
-                        <planeGeometry args={[20, 20]} />
-                        <meshStandardMaterial
-                            color="#808080" roughness={0.1} metalness={0}
-                        />
-                    </mesh>
-                    <mesh castShadow position={[0,1,0]}>
-                        <boxGeometry />
-                        <meshStandardMaterial color={"green"}/>
-                    </mesh>
-
-                    {/* đèn môi trường */}
-                    {/* <ambientLight intensity={10} /> */}
-                    {/* <directionalLight position={[10,5,0]} intensity={80} color={"red"}/> */}
-                    {/* <hemisphereLight skyColor={"white"} groundColor={"red"} intensity={10} position={[0, 10, 0]} /> */}
-                    {/* đèn môi trường */}
-
-                    {/* nguồn sáng */}
-                    <LightsWithHelpers />
-                    <RectAreaLight position={[0, 0, 8]} color="red" />
-                    <RectAreaLight position={[5, 0, 8]} color="blue" />
-                    <RectAreaLight position={[-5, 0, 8]} color="green" />
-                    {/* nguồn sáng */}
-
-                    {/* <fog attach="fog" args={['white', 10, 100]} /> */}
-                    <OrbitControls />
-                </Canvas>
-            </div>
-        </>
-    )
 }
 
 export default MinhWorkSpace;

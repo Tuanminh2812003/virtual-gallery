@@ -1,20 +1,31 @@
-import React, { useRef, useEffect } from 'react';
-import { Canvas,useThree, extend, useFrame } from '@react-three/fiber';
+import React, { useEffect, useRef } from 'react';
+import { useThree } from '@react-three/fiber';
 import { RectAreaLightHelper } from "three/examples/jsm/helpers/RectAreaLightHelper";
 import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLightUniformsLib.js";
 import * as THREE from "three";
 
-function RectAreaLightComponent({ position, color }) {
-  const { scene } = useThree();
 
-  RectAreaLightUniformsLib.init();
+//vị trí, màu sắc, độ sáng, điểm được nhìn vào
+function RectAreaLight({ position, color, intensity, lookAt }) {
+    const { scene } = useThree();
+    const lightRef = useRef();
 
-  const rectLight = new THREE.RectAreaLight(color, 20, 4, 8);
-  rectLight.position.set(position[0], position[1], position[2]);
-  scene.add(rectLight);
-  scene.add(new RectAreaLightHelper(rectLight));
+    useEffect(() => {
+        RectAreaLightUniformsLib.init();
 
-  return null;
+        const rectLight = new THREE.RectAreaLight(color, intensity, 4, 8);
+        rectLight.position.set(...position);
+        rectLight.lookAt(...lookAt);
+        scene.add(rectLight);
+        scene.add(new RectAreaLightHelper(rectLight));
+        lightRef.current = rectLight;
+
+        return () => {
+        scene.remove(rectLight);
+        };
+    }, [color, intensity, position, lookAt, scene]);
+
+    return null;
 }
 
-export default RectAreaLightComponent;
+export default RectAreaLight;
