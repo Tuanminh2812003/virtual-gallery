@@ -20,18 +20,18 @@ function MinhTestPicture({ position, rotation, scale, onClick }) {
         }
     }, [rotation]);
 
+    // Nhân bản đối tượng
+    const clonedScene = clone(gltf.scene);
+
     const handleClick = () => {
         if (onClick) {
-        onClick(position, rotation);
+        onClick(position, rotation, clonedScene);
         }
     };
 
-    //nhân bản đối tượng
-    const clonedScene = clone(gltf.scene);
-
     return (
         <group ref={ref} position={position} scale={scale} onClick={handleClick}>
-        <primitive object={clonedScene} />
+            <primitive object={clonedScene} />
         </group>
     );
 }
