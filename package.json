@@ -3,8 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "@mediapipe/tasks-vision": "^0.10.14",
+<<<<<<< HEAD
     "@react-three/cannon": "^6.6.0",
+=======
+    "@mui/material": "^5.15.20",
+>>>>>>> cb0af564e1ea54e8d9668dbf37f80bbc1622374b
     "@react-three/drei": "^9.106.0",
     "@react-three/fiber": "^8.16.8",
     "@testing-library/jest-dom": "^5.17.0",
