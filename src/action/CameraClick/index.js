@@ -1,10 +1,11 @@
-// src/action/CameraClick.js
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useContext } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import { Vector3, Euler } from 'three';
+import CameraContext from '../../helpers/CameraContext';
 
 const CameraClick = ({ targetPosition, targetRotation, clicked, setClicked }) => {
     const { camera } = useThree();
+    const { setYaw } = useContext(CameraContext);
     const startPos = useRef(new Vector3());
     const endPos = new Vector3(...targetPosition);
     const startRot = useRef(new Euler());
@@ -21,7 +22,7 @@ const CameraClick = ({ targetPosition, targetRotation, clicked, setClicked }) =>
         startRot.current.copy(camera.rotation);
         progress.current = 0;
         }
-    }, [clicked]);
+    }, [clicked, camera.position, camera.rotation]);
 
     useFrame(() => {
         if (clicked && progress.current < 1) {
@@ -33,6 +34,9 @@ const CameraClick = ({ targetPosition, targetRotation, clicked, setClicked }) =>
             startRot.current.z + (endRot.z - startRot.current.z) * progress.current
         );
         if (progress.current >= 1) {
+            startPos.current.copy(endPos);
+            startRot.current.copy(endRot);
+            setYaw(camera.rotation.y);
             setClicked(false); // Reset trạng thái clicked
         }
         }
