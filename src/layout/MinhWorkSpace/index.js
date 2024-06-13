@@ -9,7 +9,7 @@ import ModelPopup from '../../components/ModelPopup'; //Pop up thông tin model
 import DetailSnackbar from '../../components/DetailSnackbar'; //Thông báo chi tiết
 import { Vector3, Euler } from 'three'; //click vào tranh
 import CameraClick from '../../action/CameraClick'; //component click vào tranh
-
+import { CameraProvider } from '../../helpers/CameraContext';
 function MinhWorkSpace() {
     const [clicked, setClicked] = useState(false); //click vào tranh
     const [targetPosition, setTargetPosition] = useState([0, 0, 0]); //click vào tranh
@@ -69,6 +69,7 @@ function MinhWorkSpace() {
     //Pop up thông tin model
 
     return (
+        <CameraProvider>
         <div style={{ width: '100vw', height: '100vh' }}>
         <Canvas shadows>
             <ambientLight intensity={1} />
@@ -131,6 +132,7 @@ function MinhWorkSpace() {
         <ModelPopup open={popupOpen} onClose={handleClosePopup} model={selectedModel} />
         {/* Pop up thông tin model */}
         </div>
+        </CameraProvider>
     );
 }
 
