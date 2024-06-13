@@ -10,9 +10,9 @@ const ResizeHandler = ({ setScaleFactor }) => {
 
         //if else respondsive các màn hình
         if (width < 600) {
-            setScaleFactor(1);
+            setScaleFactor(3);
         } else {
-            setScaleFactor(2);
+            setScaleFactor(5);
         }
         };
 

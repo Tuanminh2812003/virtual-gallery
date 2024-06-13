@@ -1,0 +1,35 @@
+.main .controler{
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 30px;
+    bottom: 30px;
+    align-items: center;
+    justify-content: center;
+}
+.main .controler .controler__button{
+    margin: 10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    cursor: pointer;
+    opacity: 0.8;
+}
+.main .controler .controler__button:hover{
+    opacity: 1;
+}
+.fullscreen_button{
+    margin: 10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    cursor: pointer;
+    font-size: 30px;
+    opacity: 0.5;
+}
+.fullscreen_button:hover{
+    opacity: 1;
+}

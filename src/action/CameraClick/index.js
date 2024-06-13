@@ -18,27 +18,33 @@ const CameraClick = ({ targetPosition, targetRotation, clicked, setClicked }) =>
 
     useEffect(() => {
         if (clicked) {
-        startPos.current.copy(camera.position);
-        startRot.current.copy(camera.rotation);
-        progress.current = 0;
+            startPos.current.copy(camera.position);
+            startRot.current.copy(camera.rotation);
+            progress.current = 0;
         }
     }, [clicked, camera.position, camera.rotation]);
 
+    const lerpAngle = (start, end, t) => {
+        const delta = end - start;
+        const shortestAngle = ((delta + Math.PI) % (2 * Math.PI)) - Math.PI;
+        return start + shortestAngle * t;
+    };
+
     useFrame(() => {
         if (clicked && progress.current < 1) {
-        progress.current += 0.02; // Điều chỉnh giá trị này để chuyển động mượt hơn
-        camera.position.lerpVectors(startPos.current, endPos, progress.current);
-        camera.rotation.set(
-            startRot.current.x + (endRot.x - startRot.current.x) * progress.current,
-            startRot.current.y + (endRot.y - startRot.current.y) * progress.current,
-            startRot.current.z + (endRot.z - startRot.current.z) * progress.current
-        );
-        if (progress.current >= 1) {
-            startPos.current.copy(endPos);
-            startRot.current.copy(endRot);
-            setYaw(camera.rotation.y);
-            setClicked(false); // Reset trạng thái clicked
-        }
+            progress.current += 0.02; // Điều chỉnh giá trị này để chuyển động mượt hơn
+            camera.position.lerpVectors(startPos.current, endPos, progress.current);
+            camera.rotation.set(
+                lerpAngle(startRot.current.x, endRot.x, progress.current),
+                lerpAngle(startRot.current.y, endRot.y, progress.current),
+                lerpAngle(startRot.current.z, endRot.z, progress.current)
+            );
+            if (progress.current >= 1) {
+                startPos.current.copy(endPos);
+                startRot.current.copy(endRot);
+                setYaw(camera.rotation.y);
+                setClicked(false); // Reset trạng thái clicked
+            }
         }
     });
 
