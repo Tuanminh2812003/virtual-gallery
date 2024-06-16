@@ -1,10 +1,14 @@
 import React, { useRef, useEffect, useState, useContext } from 'react';
-import { useThree, useFrame } from '@react-three/fiber';
+import { useThree, useFrame, extend } from '@react-three/fiber';
 import * as THREE from 'three';
 import CameraContext from '../../helpers/CameraContext';
+import { EffectComposer, FXAA, Bloom } from '@react-three/postprocessing';
+import MotionBlurEffect from '../../helpers/MotionBlurShader';
+
+extend({ MotionBlurEffect });
 
 const CameraControls = ({ targetPosition }) => {
-    const { camera, gl } = useThree();
+    const { camera, gl, scene } = useThree();
     const { setYaw } = useContext(CameraContext);
     const moveForward = useRef(false);
     const moveBackward = useRef(false);
@@ -12,7 +16,7 @@ const CameraControls = ({ targetPosition }) => {
     const moveRight = useRef(false);
     const rotateLeft = useRef(false);
     const rotateRight = useRef(false);
-    const moveSpeed = 8;
+    const moveSpeed = 18;
     const [isMouseDown, setIsMouseDown] = useState(false);
     const yaw = useRef(camera.rotation.y);
     const pitch = useRef(0);
@@ -20,13 +24,23 @@ const CameraControls = ({ targetPosition }) => {
     const camHeight = 5;
     const initialMousePosition = useRef({ x: 0, y: 0 });
     const isTouchDevice = useRef(false);
-
-    const [isMovingTowardsPicture, setIsMovingTowardsPicture] = useState(false); // Track whether moving towards a picture
+    const aspect = useRef(window.innerWidth / window.innerHeight);
 
     useEffect(() => {
         camera.position.set(5, camHeight, -10);
         yaw.current = camera.rotation.y;
     }, [camera, camHeight]);
+
+    useEffect(() => {
+        const handleResize = () => {
+            aspect.current = window.innerWidth / window.innerHeight;
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -74,30 +88,25 @@ const CameraControls = ({ targetPosition }) => {
 
         const handleMouseUp = () => {
             setIsMouseDown(false);
-            moveForward.current = false;
-            moveBackward.current = false;
         };
 
         const handleMouseMove = (event) => {
             if (isMouseDown) {
                 const deltaY = event.clientY - initialMousePosition.current.y;
 
-                if (deltaY < -20) {
-                    moveForward.current = true;
-                    moveBackward.current = false;
-                } else if (deltaY > 20) {
-                    moveForward.current = false;
-                    moveBackward.current = true;
-                } else {
-                    moveForward.current = false;
-                    moveBackward.current = false;
-                }
+                // Move the camera proportionally to the mouse movement
+                const direction = new THREE.Vector3();
+                direction.setFromMatrixColumn(camera.matrix, 0);
+                direction.crossVectors(camera.up, direction);
+                camera.position.addScaledVector(direction, -deltaY * 0.01);
 
                 yaw.current -= event.movementX * 0.005;
                 pitch.current -= event.movementY * 0.002;
                 pitch.current = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch.current));
                 camera.rotation.set(0, yaw.current, 0);
                 setYaw(camera.rotation.y);
+
+                initialMousePosition.current = { x: event.clientX, y: event.clientY };
             }
         };
 
@@ -111,8 +120,6 @@ const CameraControls = ({ targetPosition }) => {
 
         const handleTouchEnd = () => {
             setIsMouseDown(false);
-            moveForward.current = false;
-            moveBackward.current = false;
         };
 
         const handleTouchMove = (event) => {
@@ -120,16 +127,11 @@ const CameraControls = ({ targetPosition }) => {
                 const deltaX = event.touches[0].clientX - initialMousePosition.current.x;
                 const deltaY = event.touches[0].clientY - initialMousePosition.current.y;
 
-                if (deltaY < -20) {
-                    moveForward.current = true;
-                    moveBackward.current = false;
-                } else if (deltaY > 20) {
-                    moveForward.current = false;
-                    moveBackward.current = true;
-                } else {
-                    moveForward.current = false;
-                    moveBackward.current = false;
-                }
+                // Move the camera proportionally to the touch movement
+                const direction = new THREE.Vector3();
+                direction.setFromMatrixColumn(camera.matrix, 0);
+                direction.crossVectors(camera.up, direction);
+                camera.position.addScaledVector(direction, -deltaY * 0.01);
 
                 yaw.current -= deltaX * 0.005;
                 pitch.current -= deltaY * 0.002;
@@ -238,10 +240,18 @@ const CameraControls = ({ targetPosition }) => {
         camera.position.z = THREE.MathUtils.clamp(camera.position.z, zMin, zMax);
 
         // Log vị trí của camera
-        console.log(`Camera position: x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`, `rot: ${yaw.current}`);
+        // console.log(`Camera position: x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`, `rot: ${yaw.current}`);
     });
 
-    return null;
+    return (
+        <>
+            <EffectComposer>
+                <FXAA />
+                <Bloom luminanceThreshold={0} luminanceSmoothing={1.5} height={300} />
+                {/* <motionBlurEffect aspect={aspect.current} /> */}
+            </EffectComposer>
+        </>
+    );
 };
 
 export default CameraControls;

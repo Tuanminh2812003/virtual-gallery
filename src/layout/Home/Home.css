@@ -42,3 +42,22 @@ body, html {
 .fullscreen_button:hover{
     opacity: 1;
 }
+
+.instructions_button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+.instructions_button:hover {
+    background-color: #115293;
+}
