@@ -1,0 +1,26 @@
+.slick-dots li button::before{
+    font-size: 15px!important;
+    color: #fff !important;
+}
+.bannerSlider__item{
+    max-width: 40vw;
+    align-self: center;
+}
+.bannerSlider{
+    padding-top: 30px;
+}
+@media screen and (min-width: 768px){
+    .bannerSlider .section-t{
+        text-align: center;
+        color: black;
+    }
+    .bannerSlider .section-t::before{
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+.price .slick-slide{
+    padding: 20px;
+    height: 300px;
+}
