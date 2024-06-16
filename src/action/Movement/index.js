@@ -228,6 +228,15 @@ const CameraControls = ({ targetPosition }) => {
             camera.rotation.set(0, yaw.current, 0);
         }
 
+        // Set boundaries for x and z axes
+        const xMin = -45;
+        const xMax = 22;
+        const zMin = -45;
+        const zMax = -2;
+        // Clamp the camera position within the defined boundaries
+        camera.position.x = THREE.MathUtils.clamp(camera.position.x, xMin, xMax);
+        camera.position.z = THREE.MathUtils.clamp(camera.position.z, zMin, zMax);
+
         // Log vị trí của camera
         console.log(`Camera position: x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`, `rot: ${yaw.current}`);
     });
