@@ -15,14 +15,15 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path='/' element={<Home/>}/>
-        <Route path='/huyen' element={<HuyenWorkSpace/>}/>
+        <Route path='/' element={<HuyenWorkSpace/>}/>
         <Route path='/about' element={<About/>}/>
         <Route path='/features' element={<Features/>}/>
         <Route path='/pricing' element={<Pricing/>}/>
         <Route path='/contact' element={<Contact/>}/>
         <Route path='/hieu' element={<HieuWorkSpace/>}/>
         <Route path='/minh' element={<MinhWorkSpace/>}/>
+
+        <Route path='/home' element={<Home/>}/>
       </Routes>
     </>
   );

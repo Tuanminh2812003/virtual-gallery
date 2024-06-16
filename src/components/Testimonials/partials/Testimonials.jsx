@@ -32,7 +32,7 @@ const Testimonials = () => {
                                         </div>
                                         <h4 className='item-name'>{testimonial.name}</h4>
                                         <p className='item-text text'>{testimonial.text}</p>
-                                        <a href="/" className='item-link text-grey'>
+                                        <a href="/home" className='item-link text-grey'>
                                             <BsArrowRightCircle size={40} />
                                         </a>
                                     </div>
