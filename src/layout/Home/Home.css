@@ -1,3 +1,10 @@
+body, html {
+    user-select: none; /* Ngăn chặn việc chọn văn bản */
+    -webkit-user-select: none; /* Ngăn chặn việc chọn văn bản trên WebKit (Chrome, Safari) */
+    -ms-user-select: none; /* Ngăn chặn việc chọn văn bản trên Internet Explorer/Edge */
+    -moz-user-select: none; /* Ngăn chặn việc chọn văn bản trên Firefox */
+}
+
 .main .controler{
     display: flex;
     flex-direction: column;
@@ -14,6 +21,7 @@
     border-radius: 5px;
     cursor: pointer;
     opacity: 0.8;
+    user-select: none; /* Ngăn chặn việc chọn văn bản */
 }
 .main .controler .controler__button:hover{
     opacity: 1;
@@ -29,6 +37,7 @@
     cursor: pointer;
     font-size: 30px;
     opacity: 0.5;
+    user-select: none; /* Ngăn chặn việc chọn văn bản */
 }
 .fullscreen_button:hover{
     opacity: 1;

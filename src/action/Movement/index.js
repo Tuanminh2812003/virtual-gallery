@@ -19,6 +19,7 @@ const CameraControls = ({ targetPosition }) => {
     const rotateSpeed = 0.03;
     const camHeight = 5;
     const initialMousePosition = useRef({ x: 0, y: 0 });
+    const isTouchDevice = useRef(false);
 
     const [isMovingTowardsPicture, setIsMovingTowardsPicture] = useState(false); // Track whether moving towards a picture
 
@@ -101,6 +102,7 @@ const CameraControls = ({ targetPosition }) => {
         };
 
         const handleTouchStart = (event) => {
+            isTouchDevice.current = true;
             if (event.touches.length === 1) {
                 setIsMouseDown(true);
                 initialMousePosition.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
@@ -242,4 +244,3 @@ const CameraControls = ({ targetPosition }) => {
 };
 
 export default CameraControls;
-
