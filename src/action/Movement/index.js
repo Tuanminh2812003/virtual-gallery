@@ -98,7 +98,7 @@ const CameraControls = ({ targetPosition }) => {
                 const direction = new THREE.Vector3();
                 direction.setFromMatrixColumn(camera.matrix, 0);
                 direction.crossVectors(camera.up, direction);
-                camera.position.addScaledVector(direction, -deltaY * 0.01);
+                camera.position.addScaledVector(direction, -deltaY * rotateSpeed);
 
                 yaw.current -= event.movementX * 0.005;
                 pitch.current -= event.movementY * 0.002;
@@ -131,7 +131,7 @@ const CameraControls = ({ targetPosition }) => {
                 const direction = new THREE.Vector3();
                 direction.setFromMatrixColumn(camera.matrix, 0);
                 direction.crossVectors(camera.up, direction);
-                camera.position.addScaledVector(direction, -deltaY * 0.01);
+                camera.position.addScaledVector(direction, -deltaY * rotateSpeed);
 
                 yaw.current -= deltaX * 0.005;
                 pitch.current -= deltaY * 0.002;
