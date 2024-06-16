@@ -18,6 +18,8 @@ const CameraControls = ({ targetPosition }) => {
     const pitch = useRef(0);
     const rotateSpeed = 0.03;
     const camHeight = 5;
+    const initialMousePosition = useRef({ x: 0, y: 0 });
+    const isTouchDevice = useRef(false);
 
     const [isMovingTowardsPicture, setIsMovingTowardsPicture] = useState(false); // Track whether moving towards a picture
 
@@ -65,21 +67,78 @@ const CameraControls = ({ targetPosition }) => {
             }
         };
 
-        const handleMouseDown = () => {
+        const handleMouseDown = (event) => {
             setIsMouseDown(true);
+            initialMousePosition.current = { x: event.clientX, y: event.clientY };
         };
 
         const handleMouseUp = () => {
             setIsMouseDown(false);
+            moveForward.current = false;
+            moveBackward.current = false;
         };
 
         const handleMouseMove = (event) => {
             if (isMouseDown) {
+                const deltaY = event.clientY - initialMousePosition.current.y;
+
+                if (deltaY < -20) {
+                    moveForward.current = true;
+                    moveBackward.current = false;
+                } else if (deltaY > 20) {
+                    moveForward.current = false;
+                    moveBackward.current = true;
+                } else {
+                    moveForward.current = false;
+                    moveBackward.current = false;
+                }
+
                 yaw.current -= event.movementX * 0.005;
                 pitch.current -= event.movementY * 0.002;
                 pitch.current = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch.current));
                 camera.rotation.set(0, yaw.current, 0);
                 setYaw(camera.rotation.y);
+            }
+        };
+
+        const handleTouchStart = (event) => {
+            isTouchDevice.current = true;
+            if (event.touches.length === 1) {
+                setIsMouseDown(true);
+                initialMousePosition.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+            }
+        };
+
+        const handleTouchEnd = () => {
+            setIsMouseDown(false);
+            moveForward.current = false;
+            moveBackward.current = false;
+        };
+
+        const handleTouchMove = (event) => {
+            if (isMouseDown && event.touches.length === 1) {
+                const deltaX = event.touches[0].clientX - initialMousePosition.current.x;
+                const deltaY = event.touches[0].clientY - initialMousePosition.current.y;
+
+                if (deltaY < -20) {
+                    moveForward.current = true;
+                    moveBackward.current = false;
+                } else if (deltaY > 20) {
+                    moveForward.current = false;
+                    moveBackward.current = true;
+                } else {
+                    moveForward.current = false;
+                    moveBackward.current = false;
+                }
+
+                yaw.current -= deltaX * 0.005;
+                pitch.current -= deltaY * 0.002;
+                pitch.current = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch.current));
+
+                camera.rotation.set(0, yaw.current, 0);
+                setYaw(camera.rotation.y);
+
+                initialMousePosition.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
             }
         };
 
@@ -114,6 +173,9 @@ const CameraControls = ({ targetPosition }) => {
         gl.domElement.addEventListener('mousedown', handleMouseDown);
         gl.domElement.addEventListener('mouseup', handleMouseUp);
         gl.domElement.addEventListener('mousemove', handleMouseMove);
+        gl.domElement.addEventListener('touchstart', handleTouchStart);
+        gl.domElement.addEventListener('touchend', handleTouchEnd);
+        gl.domElement.addEventListener('touchmove', handleTouchMove);
         document.addEventListener('control', handleControl);
 
         return () => {
@@ -122,6 +184,9 @@ const CameraControls = ({ targetPosition }) => {
             gl.domElement.removeEventListener('mousedown', handleMouseDown);
             gl.domElement.removeEventListener('mouseup', handleMouseUp);
             gl.domElement.removeEventListener('mousemove', handleMouseMove);
+            gl.domElement.removeEventListener('touchstart', handleTouchStart);
+            gl.domElement.removeEventListener('touchend', handleTouchEnd);
+            gl.domElement.removeEventListener('touchmove', handleTouchMove);
             document.removeEventListener('control', handleControl);
         };
     }, [camera, gl.domElement, isMouseDown]);
@@ -163,13 +228,14 @@ const CameraControls = ({ targetPosition }) => {
             camera.rotation.set(0, yaw.current, 0);
         }
 
-        // Nếu camera đang di chuyển về phía bức tranh, giữ y không đổi
-        if (isMovingTowardsPicture) {
-            camera.position.y = targetPosition[1];
-        } else {
-            // Nếu không, đặt y về chiều cao camHeight
-            camera.position.y = camHeight;
-        }
+        // Set boundaries for x and z axes
+        const xMin = -45;
+        const xMax = 22;
+        const zMin = -45;
+        const zMax = -2;
+        // Clamp the camera position within the defined boundaries
+        camera.position.x = THREE.MathUtils.clamp(camera.position.x, xMin, xMax);
+        camera.position.z = THREE.MathUtils.clamp(camera.position.z, zMin, zMax);
 
         // Log vị trí của camera
         console.log(`Camera position: x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`, `rot: ${yaw.current}`);

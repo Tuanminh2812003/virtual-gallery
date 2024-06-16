@@ -177,12 +177,44 @@ function Home(){
                     <button className="fullscreen_button" onClick={handleFullscreenToggle}>⛶</button>
                     <div className="controler">
                         <div className='top'>
-                            <button onMouseDown={() => handleControl('forward', true)} onMouseUp={() => handleControl('forward', false)} className='controler__button'>▲</button>
+                            <button
+                                onMouseDown={() => handleControl('forward', true)}
+                                onMouseUp={() => handleControl('forward', false)}
+                                onTouchStart={() => handleControl('forward', true)}
+                                onTouchEnd={() => handleControl('forward', false)}
+                                className='controler__button'
+                            >
+                                ▲
+                            </button>
                         </div>
                         <div className='bottom'>
-                            <button onMouseDown={() => handleControl('rotateLeft', true)} onMouseUp={() => handleControl('rotateLeft', false)} className='controler__button'>◄</button>
-                            <button onMouseDown={() => handleControl('backward', true)} onMouseUp={() => handleControl('backward', false)} className='controler__button'>▼</button>
-                            <button onMouseDown={() => handleControl('rotateRight', true)} onMouseUp={() => handleControl('rotateRight', false)} className='controler__button'>►</button>
+                            <button
+                                onMouseDown={() => handleControl('rotateLeft', true)}
+                                onMouseUp={() => handleControl('rotateLeft', false)}
+                                onTouchStart={() => handleControl('rotateLeft', true)}
+                                onTouchEnd={() => handleControl('rotateLeft', false)}
+                                className='controler__button'
+                            >
+                                ◄
+                            </button>
+                            <button
+                                onMouseDown={() => handleControl('backward', true)}
+                                onMouseUp={() => handleControl('backward', false)}
+                                onTouchStart={() => handleControl('backward', true)}
+                                onTouchEnd={() => handleControl('backward', false)}
+                                className='controler__button'
+                            >
+                                ▼
+                            </button>
+                            <button
+                                onMouseDown={() => handleControl('rotateRight', true)}
+                                onMouseUp={() => handleControl('rotateRight', false)}
+                                onTouchStart={() => handleControl('rotateRight', true)}
+                                onTouchEnd={() => handleControl('rotateRight', false)}
+                                className='controler__button'
+                            >
+                                ►
+                            </button>
                         </div>
                     </div>
                     {/* CONTROL-HIEU */}
