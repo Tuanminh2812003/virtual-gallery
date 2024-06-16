@@ -15,6 +15,7 @@ const CameraClick = ({ targetPosition, targetRotation, clicked, setClicked }) =>
         targetRotation[2] * (Math.PI / 180)
     );
     const progress = useRef(0);
+    const fixedY = 5; // Fixed y-coordinate value
 
     useEffect(() => {
         if (clicked) {
@@ -32,18 +33,21 @@ const CameraClick = ({ targetPosition, targetRotation, clicked, setClicked }) =>
 
     useFrame(() => {
         if (clicked && progress.current < 1) {
-            progress.current += 0.02; // Điều chỉnh giá trị này để chuyển động mượt hơn
+            progress.current += 0.02; // Adjust this value for smoother motion
             camera.position.lerpVectors(startPos.current, endPos, progress.current);
+            camera.position.y = fixedY; // Keep y-coordinate fixed
+
             camera.rotation.set(
                 lerpAngle(startRot.current.x, endRot.x, progress.current),
                 lerpAngle(startRot.current.y, endRot.y, progress.current),
                 lerpAngle(startRot.current.z, endRot.z, progress.current)
             );
+
             if (progress.current >= 1) {
                 startPos.current.copy(endPos);
                 startRot.current.copy(endRot);
                 setYaw(camera.rotation.y);
-                setClicked(false); // Reset trạng thái clicked
+                setClicked(false); // Reset clicked state
             }
         }
     });

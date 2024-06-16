@@ -228,14 +228,6 @@ const CameraControls = ({ targetPosition }) => {
             camera.rotation.set(0, yaw.current, 0);
         }
 
-        // Nếu camera đang di chuyển về phía bức tranh, giữ y không đổi
-        if (isMovingTowardsPicture) {
-            camera.position.y = targetPosition[1];
-        } else {
-            // Nếu không, đặt y về chiều cao camHeight
-            camera.position.y = camHeight;
-        }
-
         // Log vị trí của camera
         console.log(`Camera position: x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`, `rot: ${yaw.current}`);
     });
