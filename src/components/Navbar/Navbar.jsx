@@ -16,7 +16,7 @@ const Navbar = () => {
         <div className='container w-100'>
             <div className='navbar-content flex fw-7'>
                 <div className='brand-and-toggler flex flex-between w-100'>
-                    <Link to = "/huyen" className='navbar-brand fs-26'>Virtual Gallery</Link>
+                    <Link to = "/" className='navbar-brand fs-26'>Virtual Gallery</Link>
                     <div type = "button" className={`hamburger-menu ${navToggle ? 'hamburger-menu-change' : ""}`} onClick={navHandler}>
                         <div className='bar-top'></div>
                         <div className='bar-middle'></div>

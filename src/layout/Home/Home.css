@@ -1,10 +1,3 @@
-body, html {
-    user-select: none; /* Ngăn chặn việc chọn văn bản */
-    -webkit-user-select: none; /* Ngăn chặn việc chọn văn bản trên WebKit (Chrome, Safari) */
-    -ms-user-select: none; /* Ngăn chặn việc chọn văn bản trên Internet Explorer/Edge */
-    -moz-user-select: none; /* Ngăn chặn việc chọn văn bản trên Firefox */
-}
-
 .main .controler{
     display: flex;
     flex-direction: column;
@@ -22,24 +15,9 @@ body, html {
     cursor: pointer;
     opacity: 0.8;
     user-select: none; /* Ngăn chặn việc chọn văn bản */
+    font-size: 30px;
 }
 .main .controler .controler__button:hover{
-    opacity: 1;
-}
-.fullscreen_button{
-    margin: 10px;
-    width: 50px;
-    height: 50px;
-    border-radius: 5px;
-    position: absolute;
-    top: 30px;
-    right: 30px;
-    cursor: pointer;
-    font-size: 30px;
-    opacity: 0.5;
-    user-select: none; /* Ngăn chặn việc chọn văn bản */
-}
-.fullscreen_button:hover{
     opacity: 1;
 }
 
@@ -60,4 +38,150 @@ body, html {
 
 .instructions_button:hover {
     background-color: #115293;
+}
+
+.sidebarMain{
+    display: flex;
+    position: absolute;
+    right: 35px;
+    top: 35px;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.sidebar{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 26px;
+    width: 34px;
+    cursor: pointer;
+    margin-left: 15px;
+}
+.sidebar-top, .sidebar-middle, .sidebar-bottom{
+    height: 3px;
+    background-color: var(--clr-white);
+    transform-origin: left;
+    transition: var(--transition);
+}
+.sidebar-change .sidebar-top{
+    transform: rotate(42deg);
+}
+.sidebar-change .sidebar-middle{
+    transform: translateX(1rem);
+    opacity: 0;
+}
+.sidebar-change .sidebar-bottom{
+    transform: rotate(-42deg);
+}
+
+.fullscreen_button{
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 35px;
+    user-select: none; /* Ngăn chặn việc chọn văn bản */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-left: 10px;
+}
+.fullscreen_button:hover{
+    color: #5CB2D4;
+}
+.fullscreen_button-change{
+    opacity: 0;
+}
+
+.sidebarDisc{
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 0px;
+    background-color: #191919;
+    border-bottom-left-radius: 15px;
+    padding-top: 80px;
+    padding-right: 38px;
+    padding-left: 38px;
+    padding-bottom: 38px;
+    animation: slideIn 0.4s ease-in-out forwards;
+    color: white;
+}
+@keyframes slideIn {
+    from {
+        top: -50px; /* Modal ẩn bên trên màn hình */
+        opacity: 0; /* Modal ban đầu không hiển thị */
+    }
+    to {
+        top: 0px; /* Hiển thị modal ở giữa màn hình */
+        opacity: 0.8; /* Hiển thị modal với opacity đầy đủ */
+    }
+}
+@keyframes slideOut {
+    from {
+        top: 0px; /* Hiển thị modal ở giữa màn hình */
+        opacity: 0.8; /* Hiển thị modal với opacity đầy đủ */
+    }
+    to {
+        top: -50px; /* Modal ẩn bên trên màn hình */
+        opacity: 0; /* Modal ban đầu không hiển thị */
+    }
+}
+.sidebarDisc__button{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: all ease-in 0.05s;
+}
+.sidebarDisc__button:hover{
+    color: #5CB2D4;
+}
+.sidebarDisc__button:hover > .fullscreen_button{
+    color: #5CB2D4;
+}
+.sidebarDisc__button__text{
+    width: 100%;
+    margin-right: 10px;
+    text-align: end;
+}
+.sidebarDisc__button__btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 35px;
+}
+
+@keyframes slideDown {
+    0% {
+        top: 30%;
+    }
+    100% {
+        top: 50%;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.tour-countdown {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 9999;
+    text-align: center;
 }

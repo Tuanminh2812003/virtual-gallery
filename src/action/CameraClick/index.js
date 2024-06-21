@@ -3,7 +3,7 @@ import { useThree, useFrame } from '@react-three/fiber';
 import { Vector3, Euler } from 'three';
 import CameraContext from '../../helpers/CameraContext';
 
-const CameraClick = ({ targetPosition, targetRotation, clicked, setClicked }) => {
+const CameraClick = ({ targetPosition, targetRotation, clicked, setClicked, onMoveComplete }) => {
     const { camera } = useThree();
     const { setYaw } = useContext(CameraContext);
     const startPos = useRef(new Vector3());
@@ -48,6 +48,7 @@ const CameraClick = ({ targetPosition, targetRotation, clicked, setClicked }) =>
                 startRot.current.copy(endRot);
                 setYaw(camera.rotation.y);
                 setClicked(false); // Reset clicked state
+                if (onMoveComplete) onMoveComplete(); // Notify move complete
             }
         }
     });

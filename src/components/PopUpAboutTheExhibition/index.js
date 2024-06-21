@@ -2,7 +2,7 @@ import React from 'react';
 import Modal from '@mui/material/Modal';
 import { Box, Button } from '@mui/material';
 
-const InstructionsModal = ({ open, handleClose }) => {
+const PopUpAboutTheExhibition = ({ open, handleClose }) => {
     return (
         <Modal open={open} onClose={handleClose}>
             <Box 
@@ -11,7 +11,13 @@ const InstructionsModal = ({ open, handleClose }) => {
                     top: '40%', // Start higher than center
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
-                    width: 400,
+                    width: {
+                        xs: '90%', // 90% width on extra small screens
+                        sm: '50%', // 80% width on small screens
+                        md: 400,  // 400px width on medium screens and up
+                    },
+                    maxHeight: '80%',
+                    overflow: 'auto',
                     bgcolor: 'white',
                     borderRadius: '10px',
                     boxShadow: 24,
@@ -22,19 +28,9 @@ const InstructionsModal = ({ open, handleClose }) => {
                     color: '#191919'
                 }}
             >
-                <h2 style={{ marginBottom: '16px' }}>Movement Instructions</h2>
-                <p>Use the following controls to navigate:</p>
-                <ul style={{ textAlign: 'left', marginBottom: '16px' }}>
-                    <li><strong>W:</strong> Move Forward</li>
-                    <li><strong>S:</strong> Move Backward</li>
-                    <li><strong>A:</strong> Move Left</li>
-                    <li><strong>D:</strong> Move Right</li>
-                    <li><strong>Mouse Drag:</strong> Rotate View</li>
-                    <li><strong>▲:</strong> Move Forward (Mouse Drag Up)</li>
-                    <li><strong>▼:</strong> Move Backward (Mouse Drag Down)</li>
-                    <li><strong>◄:</strong> Rotate Left</li>
-                    <li><strong>►:</strong> Rotate Right</li>
-                </ul>
+                <img src='/assets/Picture/art_1.jpg' />
+                <h2 style={{ marginBottom: '16px' }}>AZZOLINO GALLERY</h2>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste doloremque dolore quia omnis maxime corporis deserunt neque voluptatum.</p>
                 <Button 
                     variant="contained" 
                     onClick={handleClose} 
@@ -54,4 +50,4 @@ const InstructionsModal = ({ open, handleClose }) => {
     );
 };
 
-export default InstructionsModal;
+export default PopUpAboutTheExhibition;

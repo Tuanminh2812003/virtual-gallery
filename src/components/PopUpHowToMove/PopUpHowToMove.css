@@ -1,0 +1,21 @@
+.popUpMove__content{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 18px;
+}
+.popUpMove__content__content__inner{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.popUpMove__content__content__inner img{
+    width: auto;
+    height: 100px;
+}
+.popUpMove__content__content__inner__text{
+    text-align: start;
+}
