@@ -26,6 +26,9 @@ body, html {
     opacity: 0.8;
     user-select: none; /* Ngăn chặn việc chọn văn bản */
     font-size: 30px;
+    background-color: #eaeff4;
+    text-align: center;
+    border-radius: 9px;
 }
 .main .controler .controler__button:hover{
     opacity: 1;

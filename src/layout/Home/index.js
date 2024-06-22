@@ -44,7 +44,7 @@ function Home(){
     const items = [
         {
             id: 1,
-            position: [10, 12, 26],
+            position: [10, 12, 27],
             rotation: [0, 180, 0],
             scale: 15,
             imageUrl: "/assets/Picture/art_1.jpg",
@@ -61,9 +61,17 @@ function Home(){
         {
             id: 3,
             position: [62,12, 0],
-            rotation: [0, 270, 0],
+            rotation: [0, -90, 0],
             scale: 10,
             imageUrl: "/assets/Picture/art_2.jpg",
+            info: { artist: 'Kobit', title: 'Kobit', year: 2024 }
+        },
+        {
+            id: 3,
+            position: [-10, 12, -27],
+            rotation: [0, 0, 0],
+            scale: 10,
+            imageUrl: "/assets/Picture/art_3.jpg",
             info: { artist: 'Kobit', title: 'Kobit', year: 2024 }
         },
         // Thêm items
@@ -86,6 +94,8 @@ function Home(){
     const [tourIndex, setTourIndex] = useState(0);
     const [countdown, setCountdown] = useState(5);
     const [countdownInterval, setCountdownInterval] = useState(null);
+    const [cameraPosition, setCameraPosition] = useState(new Vector3(5, 5, -10));
+    const [cameraRotation, setCameraRotation] = useState(new Euler(0, yaw, 0));
     //click và các chức năng liên quan
 
     //giao diện và respondsive
@@ -111,7 +121,7 @@ function Home(){
 
     //click và các chức năng liên quan
     const handlePictureClick = (position, rotation, imageUrl, model) => {
-        const direction = new Vector3(0, 0, 22);
+        const direction = new Vector3(0, 0, 15);
         const eulerRotation = new Euler(
             rotation[0] * (Math.PI / 180),
             rotation[1] * (Math.PI / 180),
@@ -138,8 +148,16 @@ function Home(){
         setClicked(true);
     };
 
+    const updateCameraState = (position, rotation) => {
+        setCameraPosition(new Vector3(position.x, position.y, position.z));
+        setCameraRotation(new Euler(rotation.x, rotation.y, rotation.z));
+    };
+
+
+    // hàm xử lý sự kiện hoàn tất di chuyển camera
     const handleCameraMoveComplete = () => {
         setPopupOpen(true);
+        setClicked(false); // Reset clicked state after camera move complete
     };
     const handleListItemClick = (item) => {
         handlePictureClick(item.position, item.rotation, item.imageUrl, null);
@@ -327,14 +345,16 @@ function Home(){
                             {/* item */}
 
                             {/* Hàm bổ trợ */}
-                            <Movement setYaw={setYaw} targetPosition={targetPosition} />
+                            {/* <Movement setYaw={setYaw} targetPosition={targetPosition} /> */}
                             <CameraClick
                                 targetPosition={targetPosition}
                                 targetRotation={targetRotation}
                                 clicked={clicked}
                                 setClicked={setClicked}
                                 onMoveComplete={handleCameraMoveComplete}
+                                updateCameraState={updateCameraState}
                             />
+                            {!clicked && <Movement cameraPosition={cameraPosition} cameraRotation={cameraRotation} clicked={clicked} />}
                             {/* Hàm bổ trợ */}
                         </Suspense>
                     </Canvas>

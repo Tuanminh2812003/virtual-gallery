@@ -1,9 +1,9 @@
-import React, { useRef, useEffect, useState, useContext } from 'react';
+import React, { useRef, useEffect, useContext, useState } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import CameraContext from '../../helpers/CameraContext';
 
-const CameraControls = () => {
+const Movement = ({ cameraPosition, cameraRotation, clicked }) => {
     const { camera, gl } = useThree();
     const { setYaw } = useContext(CameraContext);
     const moveForward = useRef(false);
@@ -15,8 +15,8 @@ const CameraControls = () => {
     const moveSpeed = 19;
     const smoothTime = 0.1;
     const [isMouseDown, setIsMouseDown] = useState(false);
-    const yaw = useRef(camera.rotation.y);
-    const targetYaw = useRef(camera.rotation.y);
+    const yaw = useRef(cameraRotation.y);
+    const targetYaw = useRef(cameraRotation.y);
     const rotateSpeed = 0.03;
     const camHeight = 5;
     const initialMousePosition = useRef({ x: 0, y: 0 });
@@ -25,10 +25,11 @@ const CameraControls = () => {
     const velocity = useRef(new THREE.Vector3());
 
     useEffect(() => {
-        camera.position.set(5, camHeight, -10);
+        camera.position.copy(cameraPosition);
+        camera.rotation.copy(cameraRotation);
         yaw.current = camera.rotation.y;
         targetYaw.current = camera.rotation.y;
-    }, [camera, camHeight]);
+    }, [camera, cameraPosition, cameraRotation]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -185,9 +186,11 @@ const CameraControls = () => {
             gl.domElement.removeEventListener('touchmove', handleTouchMove);
             document.removeEventListener('control', handleControl);
         };
-    }, [camera, gl.domElement, isMouseDown]);
+    }, [camera, gl.domElement, cameraPosition, cameraRotation, isMouseDown]);
 
     useFrame((state, delta) => {
+        if (clicked) return; // Skip manual control if clicked is true
+
         const direction = new THREE.Vector3();
         const right = new THREE.Vector3();
         const moveVector = new THREE.Vector3();
@@ -214,7 +217,6 @@ const CameraControls = () => {
             moveVector.addScaledVector(right, moveSpeed * delta);
         }
 
-        // Apply smoothing to camera movement
         velocity.current.lerp(moveVector, smoothTime);
         camera.position.add(velocity.current);
 
@@ -226,25 +228,18 @@ const CameraControls = () => {
             targetYaw.current -= rotateSpeed;
         }
 
-        // Smoothly interpolate the camera rotation
         yaw.current = THREE.MathUtils.lerp(yaw.current, targetYaw.current, 0.1);
-
         camera.rotation.set(0, yaw.current, 0);
         setYaw(camera.rotation.y);
 
-        // Set boundaries for x and z axes
-        const xMin = -61;
-        const xMax = 61;
-        const zMin = -25;
-        const zMax = 25;
-        // Clamp the camera position within the defined boundaries
-        camera.position.x = THREE.MathUtils.clamp(camera.position.x, xMin, xMax);
-        camera.position.z = THREE.MathUtils.clamp(camera.position.z, zMin, zMax);
+        camera.position.x = THREE.MathUtils.clamp(camera.position.x, -61, 61);
+        camera.position.z = THREE.MathUtils.clamp(camera.position.z, -25, 25);
 
-        // console.log(camera.position.x, camera.position.y, camera.position.z);
+        console.log('Camera position during move:', camera.position);
+        console.log('Camera rotation during move:', camera.rotation);
     });
 
     return null;
 };
 
-export default CameraControls;
+export default Movement;
