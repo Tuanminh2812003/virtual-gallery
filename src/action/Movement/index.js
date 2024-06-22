@@ -1,14 +1,10 @@
 import React, { useRef, useEffect, useState, useContext } from 'react';
-import { useThree, useFrame, extend } from '@react-three/fiber';
+import { useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import CameraContext from '../../helpers/CameraContext';
-import { EffectComposer, FXAA, Bloom } from '@react-three/postprocessing';
-import MotionBlurEffect from '../../helpers/MotionBlurShader';
 
-extend({ MotionBlurEffect });
-
-const CameraControls = ({ targetPosition }) => {
-    const { camera, gl, scene } = useThree();
+const CameraControls = () => {
+    const { camera, gl } = useThree();
     const { setYaw } = useContext(CameraContext);
     const moveForward = useRef(false);
     const moveBackward = useRef(false);
@@ -16,19 +12,22 @@ const CameraControls = ({ targetPosition }) => {
     const moveRight = useRef(false);
     const rotateLeft = useRef(false);
     const rotateRight = useRef(false);
-    const moveSpeed = 18;
+    const moveSpeed = 19;
+    const smoothTime = 0.1;
     const [isMouseDown, setIsMouseDown] = useState(false);
     const yaw = useRef(camera.rotation.y);
-    const pitch = useRef(0);
+    const targetYaw = useRef(camera.rotation.y);
     const rotateSpeed = 0.03;
     const camHeight = 5;
     const initialMousePosition = useRef({ x: 0, y: 0 });
     const isTouchDevice = useRef(false);
     const aspect = useRef(window.innerWidth / window.innerHeight);
+    const velocity = useRef(new THREE.Vector3());
 
     useEffect(() => {
         camera.position.set(5, camHeight, -10);
         yaw.current = camera.rotation.y;
+        targetYaw.current = camera.rotation.y;
     }, [camera, camHeight]);
 
     useEffect(() => {
@@ -46,15 +45,19 @@ const CameraControls = ({ targetPosition }) => {
         const handleKeyDown = (event) => {
             switch (event.code) {
                 case 'KeyW':
+                case 'ArrowUp':
                     moveForward.current = true;
                     break;
                 case 'KeyS':
+                case 'ArrowDown':
                     moveBackward.current = true;
                     break;
                 case 'KeyA':
+                case 'ArrowLeft':
                     moveLeft.current = true;
                     break;
                 case 'KeyD':
+                case 'ArrowRight':
                     moveRight.current = true;
                     break;
                 default:
@@ -65,15 +68,19 @@ const CameraControls = ({ targetPosition }) => {
         const handleKeyUp = (event) => {
             switch (event.code) {
                 case 'KeyW':
+                case 'ArrowUp':
                     moveForward.current = false;
                     break;
                 case 'KeyS':
+                case 'ArrowDown':
                     moveBackward.current = false;
                     break;
                 case 'KeyA':
+                case 'ArrowLeft':
                     moveLeft.current = false;
                     break;
                 case 'KeyD':
+                case 'ArrowRight':
                     moveRight.current = false;
                     break;
                 default:
@@ -92,19 +99,12 @@ const CameraControls = ({ targetPosition }) => {
 
         const handleMouseMove = (event) => {
             if (isMouseDown) {
-                const deltaY = event.clientY - initialMousePosition.current.y;
+                targetYaw.current -= event.movementX * 0.005;
 
-                // Move the camera proportionally to the mouse movement
                 const direction = new THREE.Vector3();
                 direction.setFromMatrixColumn(camera.matrix, 0);
                 direction.crossVectors(camera.up, direction);
-                camera.position.addScaledVector(direction, -deltaY * rotateSpeed);
-
-                yaw.current -= event.movementX * 0.005;
-                pitch.current -= event.movementY * 0.002;
-                pitch.current = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch.current));
-                camera.rotation.set(0, yaw.current, 0);
-                setYaw(camera.rotation.y);
+                camera.position.addScaledVector(direction, -event.movementY * 0.05);
 
                 initialMousePosition.current = { x: event.clientX, y: event.clientY };
             }
@@ -127,18 +127,12 @@ const CameraControls = ({ targetPosition }) => {
                 const deltaX = event.touches[0].clientX - initialMousePosition.current.x;
                 const deltaY = event.touches[0].clientY - initialMousePosition.current.y;
 
-                // Move the camera proportionally to the touch movement
+                targetYaw.current -= deltaX * 0.005;
+
                 const direction = new THREE.Vector3();
                 direction.setFromMatrixColumn(camera.matrix, 0);
                 direction.crossVectors(camera.up, direction);
-                camera.position.addScaledVector(direction, -deltaY * rotateSpeed);
-
-                yaw.current -= deltaX * 0.005;
-                pitch.current -= deltaY * 0.002;
-                pitch.current = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch.current));
-
-                camera.rotation.set(0, yaw.current, 0);
-                setYaw(camera.rotation.y);
+                camera.position.addScaledVector(direction, -deltaY * 0.05);
 
                 initialMousePosition.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
             }
@@ -196,62 +190,61 @@ const CameraControls = ({ targetPosition }) => {
     useFrame((state, delta) => {
         const direction = new THREE.Vector3();
         const right = new THREE.Vector3();
-        yaw.current = camera.rotation.y;
+        const moveVector = new THREE.Vector3();
 
         if (moveForward.current) {
             direction.setFromMatrixColumn(camera.matrix, 0);
             direction.crossVectors(camera.up, direction);
-            camera.position.addScaledVector(direction, moveSpeed * delta);
+            moveVector.addScaledVector(direction, moveSpeed * delta);
         }
 
         if (moveBackward.current) {
             direction.setFromMatrixColumn(camera.matrix, 0);
             direction.crossVectors(camera.up, direction);
-            camera.position.addScaledVector(direction, -moveSpeed * delta);
+            moveVector.addScaledVector(direction, -moveSpeed * delta);
         }
 
         if (moveLeft.current) {
             right.setFromMatrixColumn(camera.matrix, 0);
-            camera.position.addScaledVector(right, -moveSpeed * delta);
+            moveVector.addScaledVector(right, -moveSpeed * delta);
         }
 
         if (moveRight.current) {
             right.setFromMatrixColumn(camera.matrix, 0);
-            camera.position.addScaledVector(right, moveSpeed * delta);
+            moveVector.addScaledVector(right, moveSpeed * delta);
         }
 
+        // Apply smoothing to camera movement
+        velocity.current.lerp(moveVector, smoothTime);
+        camera.position.add(velocity.current);
+
         if (rotateLeft.current) {
-            yaw.current += rotateSpeed;
-            camera.rotation.set(0, yaw.current, 0);
+            targetYaw.current += rotateSpeed;
         }
 
         if (rotateRight.current) {
-            yaw.current -= rotateSpeed;
-            camera.rotation.set(0, yaw.current, 0);
+            targetYaw.current -= rotateSpeed;
         }
 
+        // Smoothly interpolate the camera rotation
+        yaw.current = THREE.MathUtils.lerp(yaw.current, targetYaw.current, 0.1);
+
+        camera.rotation.set(0, yaw.current, 0);
+        setYaw(camera.rotation.y);
+
         // Set boundaries for x and z axes
-        const xMin = -45;
-        const xMax = 22;
-        const zMin = -45;
-        const zMax = -2;
+        const xMin = -61;
+        const xMax = 61;
+        const zMin = -25;
+        const zMax = 25;
         // Clamp the camera position within the defined boundaries
         camera.position.x = THREE.MathUtils.clamp(camera.position.x, xMin, xMax);
         camera.position.z = THREE.MathUtils.clamp(camera.position.z, zMin, zMax);
 
-        // Log vị trí của camera
-        // console.log(`Camera position: x=${camera.position.x}, y=${camera.position.y}, z=${camera.position.z}`, `rot: ${yaw.current}`);
+        // console.log(camera.position.x, camera.position.y, camera.position.z);
     });
 
-    return (
-        <>
-            <EffectComposer>
-                <FXAA />
-                <Bloom luminanceThreshold={0} luminanceSmoothing={1.5} height={300} />
-                {/* <motionBlurEffect aspect={aspect.current} /> */}
-            </EffectComposer>
-        </>
-    );
+    return null;
 };
 
 export default CameraControls;

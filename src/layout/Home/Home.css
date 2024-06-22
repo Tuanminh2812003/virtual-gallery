@@ -1,3 +1,13 @@
+body, html {
+    user-select: none; /* Ngăn chặn việc chọn văn bản */
+    -webkit-user-select: none; /* Ngăn chặn việc chọn văn bản trên WebKit (Chrome, Safari) */
+    -ms-user-select: none; /* Ngăn chặn việc chọn văn bản trên Internet Explorer/Edge */
+    -moz-user-select: none; /* Ngăn chặn việc chọn văn bản trên Firefox */
+}
+.main{
+    width: 100vw;
+    height: 100vh;
+}
 .main .controler{
     display: flex;
     flex-direction: column;
