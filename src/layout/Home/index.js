@@ -1,26 +1,225 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, lazy, Suspense, startTransition, useEffect } from 'react';
 import { Canvas, extend } from '@react-three/fiber';
-import { PlaneGeometry, BoxGeometry } from 'three';
-import Movement from '../../action/Movement/index';
-import ModelLoader from '../../components/ModelLoader/index';
-import { CameraProvider } from '../../helpers/CameraContext';
+import * as THREE from 'three';
 import './Home.css';
-import MinhTestPicture from '../../components/MinhTestPicture'; //tranh test
-import MinhTestPicture2 from '../../components/MinhTestPicture2'; //tranh test
-import CameraClick from '../../action/CameraClick'; //component click vào tranh
-import ResizeElement from '../../action/ResizeElement'; //respondsive, chuyền vào scaleFactor mặc định
-import ModelPopup from '../../components/ModelPopup'; //Pop up thông tin model
-import DetailSnackbar from '../../components/DetailSnackbar'; //Thông báo chi tiết
-import { Vector3, Euler } from 'three'; //click vào tranh
-import InstructionsModal from '../../components/InstructionsModal'; // Instructions Modal
 
-extend({ PlaneGeometry, BoxGeometry });
+//camera và move
+import { CameraProvider } from '../../helpers/CameraContext';
+import Movement from '../../action/Movement/index';
+import CameraClick from '../../action/CameraClick';
+import { Vector3, Euler } from 'three';
 
-function Home() {
-    //CONTROL-HIEU
+//môi trường và model
+import ModelLoader from '../../components/ModelLoader/index'; //model tĩnh
+import PictureFrame from '../../components/PictureFrame'; //hình ảnh
+import MinhTestPicture from '../../components/MinhTestPicture'; //model động
+import ResizeElement from '../../action/ResizeElement'; //respondsive model
+
+//pop up
+import ModelPopup from '../../components/ModelPopup';
+import PopUpHowToMove from '../../components/PopUpHowToMove';
+import PopUpAboutTheExhibition from '../../components/PopUpAboutTheExhibition';
+import PopUpListModel from '../../components/PopUpListModel';
+
+//icon
+import { MdOutlineZoomOutMap } from "react-icons/md";
+import { MdOutlineZoomInMap } from "react-icons/md";
+import { FaCaretLeft } from "react-icons/fa";
+import { FaCaretRight } from "react-icons/fa";
+import { FaCaretUp } from "react-icons/fa";
+import { FaCaretDown } from "react-icons/fa";
+import { RiDragMoveFill } from "react-icons/ri";
+import { SiAwesomelists } from "react-icons/si";
+import { PiListStarFill } from "react-icons/pi";
+import { BsNewspaper } from "react-icons/bs";
+import { MdSkipNext } from "react-icons/md";
+import { MdSkipPrevious } from "react-icons/md";
+
+// Extend THREE with custom geometries
+extend({ PlaneGeometry: THREE.PlaneGeometry, BoxGeometry: THREE.BoxGeometry });
+
+function Home(){
+
+    //mảng items các bức tranh để làm tour
+    const items = [
+        {
+            id: 1,
+            position: [10, 12, 26],
+            rotation: [0, 180, 0],
+            scale: 15,
+            imageUrl: "/assets/Picture/art_1.jpg",
+            info: { artist: 'Van Gogh', title: 'Paintings Collage', year: 2024 }
+        },
+        {
+            id: 2,
+            position: [-62, 12, 0],
+            rotation: [0, 90, 0],
+            scale: 15,
+            imageUrl: "https://res.cloudinary.com/dqlelya6o/image/upload/04._23-2_nu4mya?_a=BAMABmRg0",
+            info: { artist: 'Google Doodle', title: 'Giỗ Tổ Ca Trù', year: 2024 }
+        },
+        {
+            id: 3,
+            position: [62,12, 0],
+            rotation: [0, 270, 0],
+            scale: 10,
+            imageUrl: "/assets/Picture/art_2.jpg",
+            info: { artist: 'Kobit', title: 'Kobit', year: 2024 }
+        },
+        // Thêm items
+    ];
+    //mảng items các bức tranh để làm tour
+
+    //KHAI BÁO
+    //move
+    const [yaw, setYaw] = useState(0);
+    //move
+
+    //click và các chức năng liên quan
+    const [clicked, setClicked] = useState(false);
+    const [targetPosition, setTargetPosition] = useState([0, 0, 0]);
+    const [targetRotation, setTargetRotation] = useState([0, 0, 0]);
+    const [selectedImageUrl, setSelectedImageUrl] = useState(null);
+    const [selectedModel, setSelectedModel] = useState(null);
+    const [currentItemIndex, setCurrentItemIndex] = useState(0);
+    const [tourActive, setTourActive] = useState(false);
+    const [tourIndex, setTourIndex] = useState(0);
+    const [countdown, setCountdown] = useState(5);
+    const [countdownInterval, setCountdownInterval] = useState(null);
+    //click và các chức năng liên quan
+
+    //giao diện và respondsive
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [scaleFactor, setScaleFactor] = useState(1);
+    //giao diện và respondsive
+
+    //pop up
+    const [instructionsOpen, setInstructionsOpen] = useState(true);
+    const [popUpAboutTheExhibition, setPopUpAboutTheExhibition] = useState(false);
+    const [popUpListModel, setPopUpListModel] = useState(false);
+    const [popupOpen, setPopupOpen] = useState(false);
+    //pop up
+    //KHAI BÁO
+
+
+    //HÀM
+    //move
     const handleControl = (action, state) => {
         document.dispatchEvent(new CustomEvent('control', { detail: { action, state } }));
     };
+    //move
+
+    //click và các chức năng liên quan
+    const handlePictureClick = (position, rotation, imageUrl, model) => {
+        const direction = new Vector3(0, 0, 22);
+        const eulerRotation = new Euler(
+            rotation[0] * (Math.PI / 180),
+            rotation[1] * (Math.PI / 180),
+            rotation[2] * (Math.PI / 180)
+        );
+
+        direction.applyEuler(eulerRotation);
+        const newCameraPosition = [
+            position[0] + direction.x,
+            position[1] + direction.y,
+            position[2] + direction.z
+        ];
+
+        const newCameraRotation = [
+            rotation[0],
+            rotation[1],
+            rotation[2]
+        ];
+
+        setTargetPosition(newCameraPosition);
+        setTargetRotation(newCameraRotation);
+        setSelectedImageUrl(imageUrl);
+        setSelectedModel(model);
+        setClicked(true);
+    };
+
+    const handleCameraMoveComplete = () => {
+        setPopupOpen(true);
+    };
+    const handleListItemClick = (item) => {
+        handlePictureClick(item.position, item.rotation, item.imageUrl, null);
+        handleClosePopUpListModel();
+    };
+
+    const handleNextItem = () => {
+        if (currentItemIndex < items.length - 1) {
+            const nextIndex = currentItemIndex + 1;
+            setCurrentItemIndex(nextIndex);
+            const nextItem = items[nextIndex];
+            handlePictureClick(nextItem.position, nextItem.rotation, nextItem.imageUrl, null);
+        }
+    };
+    const handlePreviousItem = () => {
+        if (currentItemIndex > 0) {
+            const prevIndex = currentItemIndex - 1;
+            setCurrentItemIndex(prevIndex);
+            const prevItem = items[prevIndex];
+            handlePictureClick(prevItem.position, prevItem.rotation, prevItem.imageUrl, null);
+        }
+    };
+    const startTour = () => {
+        setTourActive(true);
+        setTourIndex(0);
+        setCountdown(5);
+        moveToItem(0);
+    };
+    const moveToItem = (index) => {
+        if (index < items.length) {
+            const item = items[index];
+            handlePictureClick(item.position, item.rotation, item.imageUrl, null);
+            setTourIndex(index);
+            setCountdown(5);
+        } else {
+            endTour();
+        }
+    };
+    const endTour = () => {
+        setTourActive(false);
+        setTourIndex(0);
+        setCountdown(0);
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+        }
+    };
+
+    useEffect(() => {
+        if (tourActive && tourIndex < items.length) {
+            const interval = setInterval(() => {
+                setCountdown(prevCountdown => {
+                    if (prevCountdown > 1) {
+                        return prevCountdown - 1;
+                    } else {
+                        moveToItem(tourIndex + 1);
+                        return 5;
+                    }
+                });
+            }, 1000);
+            setCountdownInterval(interval);
+    
+            return () => {
+                clearInterval(interval);
+            };
+        }
+    }, [tourActive, tourIndex]);
+    //click và các chức năng liên quan
+
+    //giao diện và respondsive
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+        };
+    }, []);
 
     const handleFullscreenToggle = () => {
         if (!document.fullscreenElement) {
@@ -30,68 +229,16 @@ function Home() {
         }
     };
 
-    const [yaw, setYaw] = useState(0);
-    //CONTROL-HIEU
-
-    //CONTROL-MINH
-    const [clicked, setClicked] = useState(false); //click vào tranh
-    const [targetPosition, setTargetPosition] = useState([0, 0, 0]); //click vào tranh
-    const [targetRotation, setTargetRotation] = useState([0, 0, 0]); //click vào tranh
-    const [scaleFactor, setScaleFactor] = useState(5); //respondsive
-
-    const [snackbarOpen, setSnackbarOpen] = useState(false); //Thông báo chi tiết
-    const [popupOpen, setPopupOpen] = useState(false); //Thông báo chi tiết
-    const [selectedModel, setSelectedModel] = useState(null); //Pop up thông tin model
-
-    const [instructionsOpen, setInstructionsOpen] = useState(true); // Instructions modal state
-
-    const handlePictureClick = (position, rotation, model) => {
-        // Tạo vector định hướng cho camera (hướng về phía trước bức tranh)
-        const direction = new Vector3(0, 0, 12); // Cách bức tranh 5 đơn vị theo hướng z âm
-        const eulerRotation = new Euler(
-            rotation[0] * (Math.PI / 180),
-            rotation[1] * (Math.PI / 180),
-            rotation[2] * (Math.PI / 180)
-        );
-
-        // Tính toán vị trí mới của camera
-        direction.applyEuler(eulerRotation); // Áp dụng góc quay để tính toán hướng di chuyển
-        const newCameraPosition = [
-            position[0] + direction.x,
-            position[1] + direction.y,
-            position[2] + direction.z
-        ];
-
-        // Tính toán góc nhìn mới của camera để nhìn chính diện vào bức tranh
-        const newCameraRotation = [
-            rotation[0], // Xoay quanh trục X
-            rotation[1], // Xoay quanh trục Y theo góc của bức tranh
-            rotation[2]  // Xoay quanh trục Z
-        ];
-
-        setTargetPosition(newCameraPosition);
-        setTargetRotation(newCameraRotation);
-        setClicked(true);
-        setSelectedModel(model);
-        setSnackbarOpen(true); // Hiển thị thông báo nhỏ
+    const [navToggle, setNavToggle] = useState(false);
+    const navHandler = () => {
+        setNavToggle(prevData => !prevData);
     };
+    //giao diện và respondsive
 
-    //Thông báo chi tiết
-    const handleCloseSnackbar = () => {
-        setSnackbarOpen(false);
-    };
-    //Thông báo chi tiết
-
-    //Pop up thông tin model
-    const handleOpenPopup = () => {
-        setSnackbarOpen(false);
-        setPopupOpen(true);
-    };
-
+    //pop up
     const handleClosePopup = () => {
         setPopupOpen(false);
     };
-    //Pop up thông tin model
 
     const handleCloseInstructions = () => {
         setInstructionsOpen(false);
@@ -101,88 +248,149 @@ function Home() {
         setInstructionsOpen(true);
     };
 
-    return (
+    const handleClosePopUpAboutTheExhibition = () => {
+        setPopUpAboutTheExhibition(false);
+    };
+
+    const handleOpenPopUpAboutTheExhibition = () => {
+        setPopUpAboutTheExhibition(true);
+    };
+
+    const handleOpenPopUpListModel = () => {
+        setPopUpListModel(true);
+    };
+
+    const handleClosePopUpListModel = () => {
+        setPopUpListModel(false);
+    };
+    //pop up
+    //HÀM
+    
+    return(
         <>
             <CameraProvider>
                 <div className='main'>
                     <Canvas shadows>
-                        {/* SPACE */}
-                        <ModelLoader 
-                            path={"/assets/abandoned_vr_gallery.glb"} 
-                            rotation={[0, Math.PI/2, 0]}
-                            position={[25, 0, 0]} 
-                            scale={[5, 5, 5]}
-                            clickable={false}
-                        /> 
-                        {/* SPACE */}
+                        <Suspense >
 
-                        {/* LIGHT */}
-                        <ambientLight intensity={1} />
-                        <pointLight 
-                            position={[5, 5, -30]} 
-                            intensity={10} 
-                            distance={15}
-                            decay={1}
-                            castShadow
-                        />
-                        <pointLight 
-                            position={[5, 5, -16]} 
-                            intensity={10} 
-                            distance={15}
-                            decay={1}
-                            castShadow
-                        />
-                        <pointLight 
-                            position={[18, 5, -40]} 
-                            intensity={10} 
-                            distance={15}
-                            decay={1}
-                            castShadow
-                        />
-                        {/* LIGHT */}
+                            {/* Môi trường */}
+                            <ModelLoader 
+                                path={"/assets/vr_modern_gallery_room.glb"} 
+                                rotation={[0, Math.PI / 2, 0]}
+                                position={[0, 0, 0]} 
+                                scale={[5, 5, 5]}
+                                clickable={false}
+                            /> 
+                            <ambientLight intensity={1} />
+                            <pointLight 
+                                position={[5, 5, -30]} 
+                                intensity={10} 
+                                distance={15}
+                                decay={1}
+                                castShadow
+                            />
+                            <pointLight 
+                                position={[5, 5, -16]} 
+                                intensity={10} 
+                                distance={15}
+                                decay={1}
+                                castShadow
+                            />
+                            <pointLight 
+                                position={[18, 5, -40]} 
+                                intensity={10} 
+                                distance={15}
+                                decay={1}
+                                castShadow
+                            />
+                            {/* Môi trường */}
 
-                        {/* MODEL */}
-                        <MinhTestPicture
-                            position={[0, 8, -1]}
-                            rotation={[0, 180, 0]}
-                            scale={[scaleFactor, scaleFactor, scaleFactor]} //respondsive
-                            onClick={handlePictureClick}
-                        />
-                        <MinhTestPicture
-                            position={[24.5, 8, -30]}
-                            rotation={[0, 270, 0]}
-                            scale={[scaleFactor, scaleFactor, scaleFactor]}
-                            onClick={handlePictureClick}
-                        />
+                            {/* item */}
+                            {items.map(item => (
+                                <PictureFrame
+                                    key={item.id}
+                                    position={item.position}
+                                    rotation={item.rotation}
+                                    scale={item.scale}
+                                    imageUrl={item.imageUrl}
+                                    info={item.info}
+                                    onClick={(position, rotation) => handlePictureClick(position, rotation, item.imageUrl, null)}
+                                />
+                            ))}
 
-                        <MinhTestPicture
-                            position={[-49, 8, -20]}
-                            rotation={[0, 90, 0]}
-                            scale={[scaleFactor, scaleFactor, scaleFactor]}
-                            onClick={handlePictureClick}
-                        />
+                            <MinhTestPicture
+                                position={[20, 0, 0]}
+                                rotation={[0, 0, 0]}
+                                scale={[scaleFactor, scaleFactor, scaleFactor]}
+                                onClick={(position, rotation, imageUrl, model) => handlePictureClick(position, rotation, null, model)}
+                            />
+                            {/* item */}
 
-                        <MinhTestPicture2
-                            position={[0, 0, -30]}
-                            rotation={[0, 0, 0]}
-                            scale={[scaleFactor, scaleFactor, scaleFactor]}
-                            onClick={handlePictureClick}
-                        />
-                        {/* MODEL */}
-
-                        {/* CAMERA */}
-                        <Movement setYaw={setYaw} targetPosition={targetPosition} />
-                        <CameraClick
-                            targetPosition={targetPosition}
-                            targetRotation={targetRotation}
-                            clicked={clicked}
-                            setClicked={setClicked}
-                        />
-                        {/* CAMERA */}
+                            {/* Hàm bổ trợ */}
+                            <Movement setYaw={setYaw} targetPosition={targetPosition} />
+                            <CameraClick
+                                targetPosition={targetPosition}
+                                targetRotation={targetRotation}
+                                clicked={clicked}
+                                setClicked={setClicked}
+                                onMoveComplete={handleCameraMoveComplete}
+                            />
+                            {/* Hàm bổ trợ */}
+                        </Suspense>
                     </Canvas>
+                    
+                    {/* Thanh sidebar */}
+                    <div className='sidebarMain'>
+                        <div className={`fullscreen_button ${navToggle ? 'fullscreen_button-change' : ""}`} onClick={handlePreviousItem}>
+                            <MdSkipPrevious />
+                        </div>
+                        <div className={`fullscreen_button ${navToggle ? 'fullscreen_button-change' : ""}`} onClick={handleNextItem}>
+                            <MdSkipNext />
+                        </div>
+                        {!isFullscreen ? (
+                            <button className={`fullscreen_button ${navToggle ? 'fullscreen_button-change' : ""}`} onClick={handleFullscreenToggle}><MdOutlineZoomOutMap /></button>
+                        ) : (
+                            <button className={`fullscreen_button ${navToggle ? 'fullscreen_button-change' : ""}`} onClick={handleFullscreenToggle}><MdOutlineZoomInMap /></button>
+                        )}
+                        <div type = "button" className={`sidebar ${navToggle ? 'sidebar-change' : ""}`} onClick={navHandler}>
+                            <div className='sidebar-top'></div>
+                            <div className='sidebar-middle'></div>
+                            <div className='sidebar-bottom'></div>
+                        </div>
+                    </div>
+                    {navToggle ? (
+                        <div className='sidebarDisc'>
+                            <div className='sidebarDisc__button' onClick={handleFullscreenToggle}>
+                                <div className='sidebarDisc__button__text'>Enter fullscreen</div>
+                                {!isFullscreen ? (
+                                    <button className={`fullscreen_button`}><MdOutlineZoomOutMap /></button>
+                                ) : (
+                                    <button className={`fullscreen_button`}><MdOutlineZoomInMap /></button>
+                                )}
+                            </div>
+                            <div className='sidebarDisc__button' onClick={handleOpenInstructions}>
+                                <div className='sidebarDisc__button__text'>How to move</div>
+                                <div className='sidebarDisc__button__btn'><RiDragMoveFill /></div>
+                            </div>
+                            <div className='sidebarDisc__button' onClick={startTour}>
+                                <div className='sidebarDisc__button__text'>Start tour</div>
+                                <div className='sidebarDisc__button__btn'><SiAwesomelists /></div>
+                            </div>
+                            <div className='sidebarDisc__button' onClick={handleOpenPopUpListModel}>
+                                <div className='sidebarDisc__button__text'>List model</div>
+                                <div className='sidebarDisc__button__btn'><PiListStarFill /></div>
+                            </div>
+                            <div className='sidebarDisc__button' onClick={handleOpenPopUpAboutTheExhibition}>
+                                <div className='sidebarDisc__button__text'>About the Exhibition</div>
+                                <div className='sidebarDisc__button__btn'><BsNewspaper /></div>
+                            </div>
+                        </div>
+                    ) : (
+                        ""
+                    )}
+                    {/* Thanh sidebar */}
 
-                    {/* CONTROL-HIEU */}
-                    <button className="fullscreen_button" onClick={handleFullscreenToggle}>⛶</button>
+                    {/* Nút bấm di chuyển */}
                     <div className="controler">
                         <div className='top'>
                             <button
@@ -192,7 +400,7 @@ function Home() {
                                 onTouchEnd={() => handleControl('forward', false)}
                                 className='controler__button'
                             >
-                                ▲
+                                <FaCaretUp />
                             </button>
                         </div>
                         <div className='bottom'>
@@ -203,7 +411,7 @@ function Home() {
                                 onTouchEnd={() => handleControl('rotateLeft', false)}
                                 className='controler__button'
                             >
-                                ◄
+                                <FaCaretLeft />
                             </button>
                             <button
                                 onMouseDown={() => handleControl('backward', true)}
@@ -212,7 +420,7 @@ function Home() {
                                 onTouchEnd={() => handleControl('backward', false)}
                                 className='controler__button'
                             >
-                                ▼
+                                <FaCaretDown />
                             </button>
                             <button
                                 onMouseDown={() => handleControl('rotateRight', true)}
@@ -221,36 +429,41 @@ function Home() {
                                 onTouchEnd={() => handleControl('rotateRight', false)}
                                 className='controler__button'
                             >
-                                ►
+                                <FaCaretRight />
                             </button>
                         </div>
+                        {/* Nút bấm di chuyển */}
                     </div>
-                    {/* CONTROL-HIEU */}
 
-                    {/* CONTROL-MINH */}
                     {/* Respondsive */}
                     <ResizeElement setScaleFactor={setScaleFactor} />
                     {/* Respondsive */}
-                    {/* Thông báo chi tiết */}
-                    <DetailSnackbar
-                        open={snackbarOpen}
-                        onClose={handleCloseSnackbar}
-                        onClick={handleOpenPopup}
-                    />
-                    {/* Thông báo chi tiết */}
 
-                    {/* Pop up thông tin model */}
-                    <ModelPopup open={popupOpen} onClose={handleClosePopup} model={selectedModel} />
-                    {/* Pop up thông tin model */}
-                    {/* CONTROL-MINH */}
+                    {/* Pop up */}
+                    <ModelPopup open={popupOpen} onClose={handleClosePopup} imageUrl={selectedImageUrl} model={selectedModel} />
+                    <PopUpHowToMove open={instructionsOpen} handleClose={handleCloseInstructions} />
+                    <PopUpAboutTheExhibition open={popUpAboutTheExhibition} handleClose={handleClosePopUpAboutTheExhibition} />
+                    <PopUpListModel open={popUpListModel} onClose={handleClosePopUpListModel} items={items} onItemClick={handleListItemClick} /> {/* List Popup */}
+                    {/* Pop up */}
 
-                    {/* Instructions Modal */}
-                    <InstructionsModal open={instructionsOpen} handleClose={handleCloseInstructions} />
-                    <button className="instructions_button" onClick={handleOpenInstructions}>Show Instructions</button>
+                    {/* Đếm thời gian tour */}
+                    {tourActive && (
+                        <div className="tour-countdown">
+                            {tourIndex < items.length ? (
+                                <div>
+                                    <p>Next item in {countdown} seconds</p>
+                                </div>
+                            ) : (
+                                <div>
+                                    <p>Tour finished!</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    {/* Đếm thời gian tour */}
                 </div>
             </CameraProvider>
         </>
-    );
+    )
 }
-
 export default Home;

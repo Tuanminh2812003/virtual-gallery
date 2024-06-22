@@ -15,7 +15,6 @@ const MinhTestPicture2 = lazy(() => import('../../components/MinhTestPicture2'))
 const CameraClick = lazy(() => import('../../action/CameraClick'));
 const ResizeElement = lazy(() => import('../../action/ResizeElement'));
 const ModelPopup = lazy(() => import('../../components/ModelPopup'));
-const DetailSnackbar = lazy(() => import('../../components/DetailSnackbar'));
 const InstructionsModal = lazy(() => import('../../components/InstructionsModal'));
 
 const Gallery = () => {
@@ -205,11 +204,6 @@ const Gallery = () => {
                         </div>
                     </div>
                     <ResizeElement setScaleFactor={setScaleFactor} />
-                    <DetailSnackbar
-                        open={snackbarOpen}
-                        onClose={handleCloseSnackbar}
-                        onClick={handleOpenPopup}
-                    />
                     <ModelPopup open={popupOpen} onClose={handleClosePopup} model={selectedModel} />
                     <InstructionsModal open={instructionsOpen} handleClose={handleCloseInstructions} />
                     <button className="instructions_button" onClick={handleOpenInstructions}>Show Instructions</button>
