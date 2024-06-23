@@ -45,7 +45,9 @@ const CameraClick = ({ targetPosition, targetRotation, clicked, setClicked, onMo
             const newPosition = new Vector3().lerpVectors(startPos.current, endPos.current, progress.current);
             camera.position.set(newPosition.x, initialY.current, newPosition.z);
 
-            camera.quaternion.slerp(endQuat.current, progress.current);
+            // Interpolate quaternion
+            const newQuat = new Quaternion().slerpQuaternions(startQuat.current, endQuat.current, progress.current);
+            camera.quaternion.copy(newQuat);
 
             if (progress.current >= 1) {
                 // Ensure the camera maintains the final position and orientation
@@ -57,8 +59,8 @@ const CameraClick = ({ targetPosition, targetRotation, clicked, setClicked, onMo
                     camera.rotation.y += Math.PI;
                 }
 
-                // console.log('Camera final position:', camera.position);
-                // console.log('Camera final rotation:', camera.rotation);
+                console.log('Camera final position:', camera.position);
+                console.log('Camera final rotation:', camera.rotation);
                 setYaw(camera.rotation.y);
                 setClicked(false);
                 updateCameraState(camera.position, camera.rotation);
