@@ -198,3 +198,19 @@ body, html {
     z-index: 9999;
     text-align: center;
 }
+.minimap-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 200px;
+    height: 200px;
+    border: 2px solid #ccc;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.minimap-tooltip {
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+}

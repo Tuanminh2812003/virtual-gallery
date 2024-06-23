@@ -1,9 +1,11 @@
-import React, { useState, lazy, Suspense, startTransition, useEffect } from 'react';
-import { Canvas, extend } from '@react-three/fiber';
+import React, { useState, lazy, Suspense, useEffect, useRef } from 'react';
+import { Canvas, extend, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { EffectComposer, Bloom, SSAO, Vignette } from '@react-three/postprocessing';
+import { SpotLight, useHelper } from '@react-three/drei';
 import './Home.css';
-
 //camera và move
+import Minimap from '../../components/Minimap';
 import { CameraProvider } from '../../helpers/CameraContext';
 import Movement from '../../action/Movement/index';
 import CameraClick from '../../action/CameraClick';
@@ -39,7 +41,6 @@ import { MdSkipPrevious } from "react-icons/md";
 extend({ PlaneGeometry: THREE.PlaneGeometry, BoxGeometry: THREE.BoxGeometry });
 
 function Home(){
-
     //mảng items các bức tranh để làm tour
     const items = [
         {
@@ -60,21 +61,26 @@ function Home(){
         },
         {
             id: 3,
-            position: [62,12, 0],
+            position: [62, 12, 0],
             rotation: [0, -90, 0],
             scale: 10,
             imageUrl: "/assets/Picture/art_2.jpg",
             info: { artist: 'Kobit', title: 'Kobit', year: 2024 }
         },
         {
-            id: 3,
+            id: 4,
             position: [-10, 12, -27],
             rotation: [0, 0, 0],
             scale: 10,
             imageUrl: "/assets/Picture/art_3.jpg",
             info: { artist: 'Kobit', title: 'Kobit', year: 2024 }
         },
-        // Thêm items
+    ];
+    const locations = [
+        { name: 'Van Gogh Exhibit', position: [10, 12, 27], rotation: [0, 180, 0] },
+        { name: 'Google Doodle', position: [-62, 12, 0], rotation: [0, 90, 0] },
+        { name: 'Kobit Exhibit', position: [62, 12, 0], rotation: [0, -90, 0] },
+        { name: 'Kobit Exhibit', position: [-10, 12, -27], rotation: [0, 0, 0] },
     ];
     //mảng items các bức tranh để làm tour
 
@@ -84,6 +90,7 @@ function Home(){
     //move
 
     //click và các chức năng liên quan
+    const cameraRef = useRef();
     const [clicked, setClicked] = useState(false);
     const [targetPosition, setTargetPosition] = useState([0, 0, 0]);
     const [targetRotation, setTargetRotation] = useState([0, 0, 0]);
@@ -121,7 +128,7 @@ function Home(){
 
     //click và các chức năng liên quan
     const handlePictureClick = (position, rotation, imageUrl, model) => {
-        const direction = new Vector3(0, 0, 15);
+        const direction = new Vector3(0, 0, 22);
         const eulerRotation = new Euler(
             rotation[0] * (Math.PI / 180),
             rotation[1] * (Math.PI / 180),
@@ -153,12 +160,16 @@ function Home(){
         setCameraRotation(new Euler(rotation.x, rotation.y, rotation.z));
     };
 
+    const handleMinimapClick = (position, rotation) => {
+        handlePictureClick(position, rotation, null, null);
+    };
 
     // hàm xử lý sự kiện hoàn tất di chuyển camera
     const handleCameraMoveComplete = () => {
         setPopupOpen(true);
         setClicked(false); // Reset clicked state after camera move complete
     };
+
     const handleListItemClick = (item) => {
         handlePictureClick(item.position, item.rotation, item.imageUrl, null);
         handleClosePopUpListModel();
@@ -172,6 +183,7 @@ function Home(){
             handlePictureClick(nextItem.position, nextItem.rotation, nextItem.imageUrl, null);
         }
     };
+
     const handlePreviousItem = () => {
         if (currentItemIndex > 0) {
             const prevIndex = currentItemIndex - 1;
@@ -180,12 +192,14 @@ function Home(){
             handlePictureClick(prevItem.position, prevItem.rotation, prevItem.imageUrl, null);
         }
     };
+
     const startTour = () => {
         setTourActive(true);
         setTourIndex(0);
         setCountdown(5);
         moveToItem(0);
     };
+
     const moveToItem = (index) => {
         if (index < items.length) {
             const item = items[index];
@@ -196,6 +210,7 @@ function Home(){
             endTour();
         }
     };
+
     const endTour = () => {
         setTourActive(false);
         setTourIndex(0);
@@ -218,7 +233,7 @@ function Home(){
                 });
             }, 1000);
             setCountdownInterval(interval);
-    
+
             return () => {
                 clearInterval(interval);
             };
@@ -283,13 +298,13 @@ function Home(){
     };
     //pop up
     //HÀM
-    
+
     return(
         <>
             <CameraProvider>
                 <div className='main'>
                     <Canvas shadows>
-                        <Suspense >
+                        <Suspense fallback={null}>
 
                             {/* Môi trường */}
                             <ModelLoader 
@@ -299,29 +314,87 @@ function Home(){
                                 scale={[5, 5, 5]}
                                 clickable={false}
                             /> 
-                            <ambientLight intensity={1} />
-                            <pointLight 
-                                position={[5, 5, -30]} 
-                                intensity={10} 
-                                distance={15}
-                                decay={1}
-                                castShadow
-                            />
-                            <pointLight 
-                                position={[5, 5, -16]} 
-                                intensity={10} 
-                                distance={15}
-                                decay={1}
-                                castShadow
-                            />
-                            <pointLight 
-                                position={[18, 5, -40]} 
-                                intensity={10} 
-                                distance={15}
-                                decay={1}
-                                castShadow
-                            />
-                            {/* Môi trường */}
+                            <ambientLight intensity={1.2} />
+
+                            {/* Chiếu sáng các model cụ thể */}
+                            <group>
+                                <SpotLight
+                                    position={[-10, 25, -5]}
+                                    intensity={80}
+                                    angle={Math.PI / 6}
+                                    penumbra={1}
+                                    distance={0}
+                                    decay={1}
+                                    castShadow
+                                    target={(() => {
+                                        const target = new THREE.Object3D();
+                                        target.position.set(-10, 12, -27);
+                                        return target;
+                                    })()}
+                                />
+                                <SpotLight
+                                    position={[-40, 30, 13]}
+                                    intensity={80}
+                                    angle={Math.PI / 6}
+                                    penumbra={1}
+                                    distance={0}
+                                    decay={1}
+                                    castShadow
+                                    target={(() => {
+                                        const target = new THREE.Object3D();
+                                        target.position.set(-62, 12, 12);
+                                        return target;
+                                    })()}
+                                />
+                                <SpotLight
+                                    position={[-40, 30, -13]}
+                                    intensity={80}
+                                    angle={Math.PI / 6}
+                                    penumbra={1}
+                                    distance={0}
+                                    decay={1}
+                                    castShadow
+                                    target={(() => {
+                                        const target = new THREE.Object3D();
+                                        target.position.set(-62, 12, -12);
+                                        return target;
+                                    })()}
+                                />
+                                <SpotLight
+                                    position={[10, 28, 9]}
+                                    intensity={80}
+                                    angle={Math.PI / 5}
+                                    penumbra={1}
+                                    distance={0}
+                                    decay={1}
+                                    castShadow
+                                    target={(() => {
+                                        const target = new THREE.Object3D();
+                                        target.position.set(10, 12, 27);
+                                        return target;
+                                    })()}
+                                />                            
+                                <SpotLight
+                                    position={[40, 30, 2]}
+                                    intensity={80}
+                                    angle={Math.PI / 6}
+                                    penumbra={1}
+                                    distance={0}
+                                    decay={1}
+                                    castShadow
+                                    target={(() => {
+                                        const target = new THREE.Object3D();
+                                        target.position.set(62, 12, 0);
+                                        return target;
+                                    })()}
+                                />
+                            </group>
+
+                            {/* Hiệu ứng hậu kỳ */}
+                            <EffectComposer>
+                                {/* <Bloom luminanceThreshold={0.3} luminanceSmoothing={0.9} height={300} /> */}
+                                <SSAO />
+                            </EffectComposer>
 
                             {/* item */}
                             {items.map(item => (
@@ -336,16 +409,7 @@ function Home(){
                                 />
                             ))}
 
-                            <MinhTestPicture
-                                position={[20, 0, 0]}
-                                rotation={[0, 0, 0]}
-                                scale={[scaleFactor, scaleFactor, scaleFactor]}
-                                onClick={(position, rotation, imageUrl, model) => handlePictureClick(position, rotation, null, model)}
-                            />
-                            {/* item */}
-
                             {/* Hàm bổ trợ */}
-                            {/* <Movement setYaw={setYaw} targetPosition={targetPosition} /> */}
                             <CameraClick
                                 targetPosition={targetPosition}
                                 targetRotation={targetRotation}
@@ -358,7 +422,10 @@ function Home(){
                             {/* Hàm bổ trợ */}
                         </Suspense>
                     </Canvas>
-                    
+                    {/* Minimap */}
+                    {/* <div className="minimap-container">
+                        <Minimap target={cameraRef} onMinimapClick={handleMinimapClick} locations={locations} />
+                    </div> */}
                     {/* Thanh sidebar */}
                     <div className='sidebarMain'>
                         <div className={`fullscreen_button ${navToggle ? 'fullscreen_button-change' : ""}`} onClick={handlePreviousItem}>
