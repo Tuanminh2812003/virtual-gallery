@@ -314,7 +314,7 @@ function Home(){
                                 scale={[5, 5, 5]}
                                 clickable={false}
                             /> 
-                            <ambientLight intensity={1.2} />
+                            <ambientLight intensity={2.5} />
 
                             {/* Chiếu sáng các model cụ thể */}
                             <group>
