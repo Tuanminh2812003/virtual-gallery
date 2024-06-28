@@ -1,14 +1,15 @@
-body, html {
+body,
+html {
     user-select: none; /* Ngăn chặn việc chọn văn bản */
     -webkit-user-select: none; /* Ngăn chặn việc chọn văn bản trên WebKit (Chrome, Safari) */
     -ms-user-select: none; /* Ngăn chặn việc chọn văn bản trên Internet Explorer/Edge */
     -moz-user-select: none; /* Ngăn chặn việc chọn văn bản trên Firefox */
 }
-.main{
+.main {
     width: 100vw;
     height: 100vh;
 }
-.main .controler{
+.main .controler {
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -17,7 +18,7 @@ body, html {
     align-items: center;
     justify-content: center;
 }
-.main .controler .controler__button{
+.main .controler .controler__button {
     margin: 10px;
     width: 50px;
     height: 50px;
@@ -30,7 +31,7 @@ body, html {
     text-align: center;
     border-radius: 9px;
 }
-.main .controler .controler__button:hover{
+.main .controler .controler__button:hover {
     opacity: 1;
 }
 
@@ -53,7 +54,7 @@ body, html {
     background-color: #115293;
 }
 
-.sidebarMain{
+.sidebarMain {
     display: flex;
     position: absolute;
     right: 35px;
@@ -63,7 +64,7 @@ body, html {
     z-index: 10;
 }
 
-.sidebar{
+.sidebar {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -72,24 +73,26 @@ body, html {
     cursor: pointer;
     margin-left: 15px;
 }
-.sidebar-top, .sidebar-middle, .sidebar-bottom{
+.sidebar-top,
+.sidebar-middle,
+.sidebar-bottom {
     height: 3px;
     background-color: var(--clr-white);
     transform-origin: left;
     transition: var(--transition);
 }
-.sidebar-change .sidebar-top{
+.sidebar-change .sidebar-top {
     transform: rotate(42deg);
 }
-.sidebar-change .sidebar-middle{
+.sidebar-change .sidebar-middle {
     transform: translateX(1rem);
     opacity: 0;
 }
-.sidebar-change .sidebar-bottom{
+.sidebar-change .sidebar-bottom {
     transform: rotate(-42deg);
 }
 
-.fullscreen_button{
+.fullscreen_button {
     border-radius: 5px;
     cursor: pointer;
     font-size: 35px;
@@ -100,14 +103,14 @@ body, html {
     color: white;
     margin-left: 10px;
 }
-.fullscreen_button:hover{
-    color: #5CB2D4;
+.fullscreen_button:hover {
+    color: #5cb2d4;
 }
-.fullscreen_button-change{
+.fullscreen_button-change {
     opacity: 0;
 }
 
-.sidebarDisc{
+.sidebarDisc {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -142,7 +145,7 @@ body, html {
         opacity: 0; /* Modal ban đầu không hiển thị */
     }
 }
-.sidebarDisc__button{
+.sidebarDisc__button {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -150,18 +153,18 @@ body, html {
     cursor: pointer;
     transition: all ease-in 0.05s;
 }
-.sidebarDisc__button:hover{
-    color: #5CB2D4;
+.sidebarDisc__button:hover {
+    color: #5cb2d4;
 }
-.sidebarDisc__button:hover > .fullscreen_button{
-    color: #5CB2D4;
+.sidebarDisc__button:hover > .fullscreen_button {
+    color: #5cb2d4;
 }
-.sidebarDisc__button__text{
+.sidebarDisc__button__text {
     width: 100%;
     margin-right: 10px;
     text-align: end;
 }
-.sidebarDisc__button__btn{
+.sidebarDisc__button__btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -213,4 +216,49 @@ body, html {
     color: white;
     padding: 5px;
     border-radius: 5px;
+}
+#landscape-prompt {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    z-index: 9999;
+    display: none;
+}
+
+#landscape-prompt button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 2em;
+    cursor: pointer;
+}
+@media screen and (orientation: portrait) {
+    #landscape-prompt {
+        display: flex;
+    }
+}
+.landscape-prompt-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+/* .landscape-prompt-content p{
+    font-family: Arial, Helvetica, sans-serif;
+
+} */
+.gif-rotate-phone {
+    border: none;
 }

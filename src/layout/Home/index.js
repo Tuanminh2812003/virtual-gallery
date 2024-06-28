@@ -99,6 +99,7 @@ function Home(){
     // giao diện và respondsive
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [scaleFactor, setScaleFactor] = useState(1);
+    const [landscapePromptVisible, setLandscapePromptVisible] = useState(false);
     // giao diện và respondsive
 
     // pop up
@@ -283,12 +284,51 @@ function Home(){
         setPopUpListModel(false);
     };
     // pop up
+
+        // kiểm tra hướng màn hình
+        useEffect(() => {
+            const handleOrientationChange = () => {
+                if (window.orientation === 90 || window.orientation === -90) {
+                    setLandscapePromptVisible(false);
+                } else if (/Mobi|Android/i.test(navigator.userAgent)) {
+                    setLandscapePromptVisible(true);
+                }
+            };
+    
+            window.addEventListener("orientationchange", handleOrientationChange);
+    
+            // kiểm tra hướng khi trang được tải
+            handleOrientationChange();
+    
+            return () => {
+                window.removeEventListener("orientationchange", handleOrientationChange);
+            };
+        }, []);
+    
+        const closeLandscapePrompt = () => {
+            setLandscapePromptVisible(false);
+        };
+
+        
     // HÀM
 
     return(
         <>
             <CameraProvider>
                 <div className='main'>
+                    {/* Thông báo xoay màn hình */}
+                    {landscapePromptVisible && (
+                        <div id="landscape-prompt">
+                            <div className='landscape-prompt-content'>
+                                <iframe src="https://giphy.com/embed/XXU2vaPVrnhV7ZAGpY" className='gif-rotate-phone'></iframe>
+                                <p>
+                                    Rotate device for better experience
+                                </p>
+                            </div>
+                            <button onClick={closeLandscapePrompt}>✕</button>
+                        </div>
+                    )}
+                    {/* Thông báo xoay màn hình */}
                     <Canvas shadows>
                         <Suspense fallback={null}>
 
@@ -300,7 +340,7 @@ function Home(){
                                 scale={[5, 5, 5]}
                                 clickable={false}
                             /> 
-                            <ambientLight intensity={1.8} />
+                            <ambientLight intensity={2.2} />
 
                             {/* Chiếu sáng các model cụ thể */}
                             <SpotLight
