@@ -320,7 +320,11 @@ function Home(){
                     {landscapePromptVisible && (
                         <div id="landscape-prompt">
                             <div className='landscape-prompt-content'>
-                                <iframe src="https://giphy.com/embed/XXU2vaPVrnhV7ZAGpY" className='gif-rotate-phone'></iframe>
+                                <div class="iframe-container">
+                                    <iframe src="https://giphy.com/embed/XXU2vaPVrnhV7ZAGpY" className='gif-rotate-phone'></iframe>
+                                    <div class="iframe-overlay"></div>
+                                </div>
+                                
                                 <p>
                                     Rotate device for better experience
                                 </p>
