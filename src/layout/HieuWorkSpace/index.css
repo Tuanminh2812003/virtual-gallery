@@ -1,54 +1,322 @@
-.main
-{
+body,
+html {
+    user-select: none; /* Ngăn chặn việc chọn văn bản */
+    -webkit-user-select: none; /* Ngăn chặn việc chọn văn bản trên WebKit (Chrome, Safari) */
+    -ms-user-select: none; /* Ngăn chặn việc chọn văn bản trên Internet Explorer/Edge */
+    -moz-user-select: none; /* Ngăn chặn việc chọn văn bản trên Firefox */
+}
+.main {
     width: 100vw;
     height: 100vh;
 }
-.controls {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
+.main .controler {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    z-index: 10;
-    opacity: 0.65;
-    border: none;
-}
-
-.controls button {
-    width: 40px;
-    height: 40px;
-    background-color: white;
-    border: 2px solid #ccc;
-    border-radius: 5px;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
+    position: absolute;
+    right: 30px;
+    bottom: 30px;
     align-items: center;
+    justify-content: center;
+}
+.main .controler .controler__button {
+    margin: 10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    cursor: pointer;
+    opacity: 0.8;
+    user-select: none; /* Ngăn chặn việc chọn văn bản */
+    font-size: 30px;
+    /* background-color: #eaeff4; */
+    text-align: center;
+    border-radius: 9px;
+}
+.main .controler .controler__button:hover {
+    opacity: 1;
 }
 
-.controls button:active {
-    background-color: #ddd;
-}
-
-.fullscreen-button {
+.instructions_button {
     position: absolute;
     top: 10px;
     right: 10px;
-    width: 40px;
-    height: 40px;
-    background-color: white;
-    border: 2px solid #ccc;
+    background-color: #1976d2;
+    color: white;
+    border: none;
     border-radius: 5px;
-    font-size: 18px;
+    padding: 10px 20px;
     cursor: pointer;
+    font-size: 14px;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+.instructions_button:hover {
+    background-color: #115293;
+}
+
+.sidebarMain {
     display: flex;
-    justify-content: center;
+    position: absolute;
+    right: 35px;
+    top: 35px;
     align-items: center;
+    justify-content: center;
     z-index: 10;
 }
 
-.fullscreen-button:active {
-    background-color: #ddd;
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 26px;
+    width: 34px;
+    cursor: pointer;
+    margin-left: 15px;
 }
+.sidebar-top,
+.sidebar-middle,
+.sidebar-bottom {
+    height: 3px;
+    background-color: var(--clr-white);
+    transform-origin: left;
+    transition: var(--transition);
+}
+.sidebar-change .sidebar-top {
+    transform: rotate(42deg);
+}
+.sidebar-change .sidebar-middle {
+    transform: translateX(1rem);
+    opacity: 0;
+}
+.sidebar-change .sidebar-bottom {
+    transform: rotate(-42deg);
+}
+
+.fullscreen_button {
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 35px;
+    user-select: none; /* Ngăn chặn việc chọn văn bản */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-left: 10px;
+}
+.fullscreen_button:hover {
+    color: #5cb2d4;
+}
+.fullscreen_button-change {
+    opacity: 0;
+}
+
+.sidebarDisc {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 0px;
+    background-color: #191919;
+    border-bottom-left-radius: 15px;
+    padding-top: 80px;
+    padding-right: 38px;
+    padding-left: 38px;
+    padding-bottom: 38px;
+    animation: slideIn 0.4s ease-in-out forwards;
+    color: white;
+}
+@keyframes slideIn {
+    from {
+        top: -50px; /* Modal ẩn bên trên màn hình */
+        opacity: 0; /* Modal ban đầu không hiển thị */
+    }
+    to {
+        top: 0px; /* Hiển thị modal ở giữa màn hình */
+        opacity: 0.8; /* Hiển thị modal với opacity đầy đủ */
+    }
+}
+@keyframes slideOut {
+    from {
+        top: 0px; /* Hiển thị modal ở giữa màn hình */
+        opacity: 0.8; /* Hiển thị modal với opacity đầy đủ */
+    }
+    to {
+        top: -50px; /* Modal ẩn bên trên màn hình */
+        opacity: 0; /* Modal ban đầu không hiển thị */
+    }
+}
+.sidebarDisc__button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: all ease-in 0.05s;
+}
+.sidebarDisc__button:hover {
+    color: #5cb2d4;
+}
+.sidebarDisc__button:hover > .fullscreen_button {
+    color: #5cb2d4;
+}
+.sidebarDisc__button__text {
+    width: 100%;
+    margin-right: 10px;
+    text-align: end;
+}
+.sidebarDisc__button__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 35px;
+}
+
+@keyframes slideDown {
+    0% {
+        top: 30%;
+    }
+    100% {
+        top: 50%;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.minimap-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 200px;
+    height: 200px;
+    border: 2px solid #ccc;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.minimap-tooltip {
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+}
+#landscape-prompt {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    z-index: 9999;
+    display: none;
+}
+
+#landscape-prompt button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 2em;
+    cursor: pointer;
+}
+@media screen and (orientation: portrait) {
+    #landscape-prompt {
+        display: flex;
+    }
+}
+.landscape-prompt-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+/* .landscape-prompt-content p{
+    font-family: Arial, Helvetica, sans-serif;
+
+} */
+.gif-rotate-phone {
+    border: none;
+    z-index: 1;
+}
+.iframe-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 2; /* Đảm bảo overlay nằm trên iframe */
+  }
+  
+  .iframe-container {
+    position: relative;
+    display: inline-block; /* Hoặc bất kỳ cách hiển thị nào bạn muốn */
+  }
+
+  .minimap-label {
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 0.5em; /* Giảm kích thước font để vừa trong minimap */
+    overflow: hidden; /* Ẩn nội dung tràn ra ngoài */
+    text-overflow: ellipsis; /* Thêm dấu ba chấm cho nội dung tràn */
+    white-space: nowrap; /* Không cho phép xuống dòng */
+
+    transition: transform 0.3s ease-in-out;
+}
+.minimap-label:hover {
+    font-size: 0.7em;
+}
+.minimap-zoom-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+}
+
+.minimap-zoom-button {
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    margin: 2px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 3px;
+}
+.minimap-zoom-controls {
+    position: absolute;
+    top: 0px;
+    right: 10px;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+}
+
+.minimap-zoom-button {
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    margin: 2px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 3px;
+}
+

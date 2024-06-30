@@ -5,7 +5,7 @@ import "./PopUpHowToMove.css";
 
 const PopUpHowToMove = ({ open, handleClose }) => {
     return (
-        <Modal open={open} onClose={handleClose}>
+        <Modal open={open} onClose={() => handleClose('free')}>
             <Box 
                 sx={{
                     position: 'absolute',
@@ -58,17 +58,33 @@ const PopUpHowToMove = ({ open, handleClose }) => {
                 </div>
                 <Button 
                     variant="contained" 
-                    onClick={handleClose} 
+                    onClick={() => handleClose('free')} 
                     sx={{ 
-                        mt: 2, 
+                        m: 2, 
                         bgcolor: '#1976d2', 
                         '&:hover': { 
                             bgcolor: '#115293' 
                         } ,
                         fontSize: "14px"
                     }}
+                    className='move_button'
                 >
-                    Got it!
+                    Free Exploration
+                </Button>
+                <Button 
+                    variant="contained" 
+                    onClick={() => handleClose('tour')} 
+                    sx={{ 
+                        m: 2, 
+                        bgcolor: '#1976d2', 
+                        '&:hover': { 
+                            bgcolor: '#115293' 
+                        } ,
+                        fontSize: "14px"
+                    }}
+                    className='move_button'
+                >
+                    Guided Tour
                 </Button>
             </Box>
         </Modal>

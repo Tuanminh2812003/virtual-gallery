@@ -4,7 +4,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import PictureFrame from '../../components/PictureFrame';
 
-const ModelPopup = ({ open, onClose, imageUrl, model }) => {
+const ModelPopup = ({ open, onClose, imageUrl, info, model }) => {
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>Infomation of model</DialogTitle>
@@ -17,6 +17,7 @@ const ModelPopup = ({ open, onClose, imageUrl, model }) => {
                             rotation={[0, 0, 0]}
                             scale={3} // Adjust scale as needed
                             imageUrl={imageUrl}
+                            info={info} // Pass the info to PictureFrame
                             onClick={() => {}}
                         />
                         <OrbitControls />

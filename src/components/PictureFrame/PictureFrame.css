@@ -10,6 +10,20 @@
     display: flex;
     flex-direction: column;
 }
-.picture-info__artist{
+.picture-info .picture-info__artist{
     font-weight: 600;
+}
+.picture-info .details-button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #191919;
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 10px;
+    color: white;
+    transition: all ease-in 0.1s;
+}
+.picture-info .details-button:hover{
+    background-color: #5cb2d4;
 }

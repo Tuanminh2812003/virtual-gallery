@@ -1,29 +1,29 @@
 import React, { useState, lazy, Suspense, useEffect, useRef } from 'react';
-import { Canvas, extend, useThree } from '@react-three/fiber';
+import { Canvas, extend } from '@react-three/fiber';
 import * as THREE from 'three';
-import { EffectComposer, Bloom, SSAO, Vignette } from '@react-three/postprocessing';
-import { SpotLight, useHelper } from '@react-three/drei';
 import './Home.css';
-//camera và move
-import Minimap from '../../components/Minimap';
+
+// camera và move
 import { CameraProvider } from '../../helpers/CameraContext';
 import Movement from '../../action/Movement/index';
 import CameraClick from '../../action/CameraClick';
 import { Vector3, Euler } from 'three';
 
-//môi trường và model
-import ModelLoader from '../../components/ModelLoader/index'; //model tĩnh
-import PictureFrame from '../../components/PictureFrame'; //hình ảnh
-import MinhTestPicture from '../../components/MinhTestPicture'; //model động
-import ResizeElement from '../../action/ResizeElement'; //respondsive model
+// môi trường và model
+import ModelLoader from '../../components/ModelLoader/index'; // model tĩnh
+import PictureFrame from '../../components/PictureFrame'; // hình ảnh
+import MinhTestPicture from '../../components/MinhTestPicture'; // model động
+import ResizeHandler from '../../action/ResizeElement2'; // responsive model
+import { SpotLight } from '@react-three/drei';
+import Minimap from '../../components/Minimap';
 
-//pop up
+// pop up
 import ModelPopup from '../../components/ModelPopup';
 import PopUpHowToMove from '../../components/PopUpHowToMove';
 import PopUpAboutTheExhibition from '../../components/PopUpAboutTheExhibition';
 import PopUpListModel from '../../components/PopUpListModel';
 
-//icon
+// icon
 import { MdOutlineZoomOutMap } from "react-icons/md";
 import { MdOutlineZoomInMap } from "react-icons/md";
 import { FaCaretLeft } from "react-icons/fa";
@@ -36,13 +36,14 @@ import { PiListStarFill } from "react-icons/pi";
 import { BsNewspaper } from "react-icons/bs";
 import { MdSkipNext } from "react-icons/md";
 import { MdSkipPrevious } from "react-icons/md";
+import { FaPause } from "react-icons/fa";
 
 // Extend THREE with custom geometries
 extend({ PlaneGeometry: THREE.PlaneGeometry, BoxGeometry: THREE.BoxGeometry });
 
 function Home(){
-    //mảng items các bức tranh để làm tour
-    const items = [
+    // mảng items các bức tranh để làm tour
+    const [items, setItems] = useState([
         {
             id: 1,
             position: [10, 12, 27],
@@ -61,7 +62,7 @@ function Home(){
         },
         {
             id: 3,
-            position: [62, 12, 0],
+            position: [62,12, 0],
             rotation: [0, -90, 0],
             scale: 10,
             imageUrl: "/assets/Picture/art_2.jpg",
@@ -75,59 +76,57 @@ function Home(){
             imageUrl: "/assets/Picture/art_3.jpg",
             info: { artist: 'Kobit', title: 'Kobit', year: 2024 }
         },
-    ];
-    const locations = [
-        { name: 'Van Gogh Exhibit', position: [10, 12, 27], rotation: [0, 180, 0] },
-        { name: 'Google Doodle', position: [-62, 12, 0], rotation: [0, 90, 0] },
-        { name: 'Kobit Exhibit', position: [62, 12, 0], rotation: [0, -90, 0] },
-        { name: 'Kobit Exhibit', position: [-10, 12, -27], rotation: [0, 0, 0] },
-    ];
-    //mảng items các bức tranh để làm tour
+    ]);
+    // mảng items các bức tranh để làm tour
 
-    //KHAI BÁO
-    //move
+    // KHAI BÁO
+    // move
     const [yaw, setYaw] = useState(0);
-    //move
+    // move
 
-    //click và các chức năng liên quan
-    const cameraRef = useRef();
+    // click và các chức năng liên quan
     const [clicked, setClicked] = useState(false);
     const [targetPosition, setTargetPosition] = useState([0, 0, 0]);
     const [targetRotation, setTargetRotation] = useState([0, 0, 0]);
     const [selectedImageUrl, setSelectedImageUrl] = useState(null);
     const [selectedModel, setSelectedModel] = useState(null);
+    const [selectedInfo, setSelectedInfo] = useState(null); // <-- Added state for selected info
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
     const [tourActive, setTourActive] = useState(false);
     const [tourIndex, setTourIndex] = useState(0);
     const [countdown, setCountdown] = useState(5);
     const [countdownInterval, setCountdownInterval] = useState(null);
-    const [cameraPosition, setCameraPosition] = useState(new Vector3(5, 5, -10));
+    const [cameraPosition, setCameraPosition] = useState(new Vector3(0, 5, 0));
     const [cameraRotation, setCameraRotation] = useState(new Euler(0, yaw, 0));
-    //click và các chức năng liên quan
+    const [showDetailsPrompt, setShowDetailsPrompt] = useState(false); // <-- Added state for details prompt
+    const [promptTimeout, setPromptTimeout] = useState(null); // <-- Added state for prompt timeout
+    const [tourPopupOpen, setTourPopupOpen] = useState(false); // <-- Added state for tour popup
+    const [freeExploration, setFreeExploration] = useState(true); // <-- Added state for free exploration
+    const [showHowToMove, setShowHowToMove] = useState(true); // <-- Added state for how to move popup
+    // click và các chức năng liên quan
 
-    //giao diện và respondsive
+    // giao diện và respondsive
     const [isFullscreen, setIsFullscreen] = useState(false);
-    const [scaleFactor, setScaleFactor] = useState(1);
-    //giao diện và respondsive
+    const [landscapePromptVisible, setLandscapePromptVisible] = useState(false);
+    // giao diện và respondsive
 
-    //pop up
+    // pop up
     const [instructionsOpen, setInstructionsOpen] = useState(true);
     const [popUpAboutTheExhibition, setPopUpAboutTheExhibition] = useState(false);
     const [popUpListModel, setPopUpListModel] = useState(false);
     const [popupOpen, setPopupOpen] = useState(false);
-    //pop up
-    //KHAI BÁO
+    // pop up
+    // KHAI BÁO
 
-
-    //HÀM
-    //move
+    // HÀM
+    // move
     const handleControl = (action, state) => {
         document.dispatchEvent(new CustomEvent('control', { detail: { action, state } }));
     };
-    //move
+    // move
 
-    //click và các chức năng liên quan
-    const handlePictureClick = (position, rotation, imageUrl, model) => {
+    // click và các chức năng liên quan
+    const handlePictureClick = (position, rotation, imageUrl, model, info) => {
         const direction = new Vector3(0, 0, 22);
         const eulerRotation = new Euler(
             rotation[0] * (Math.PI / 180),
@@ -152,7 +151,19 @@ function Home(){
         setTargetRotation(newCameraRotation);
         setSelectedImageUrl(imageUrl);
         setSelectedModel(model);
+        setSelectedInfo(info);
         setClicked(true);
+        setShowDetailsPrompt(true); // Show the details prompt
+        clearTimeout(promptTimeout); // Clear any existing timeout
+        setPromptTimeout(setTimeout(() => setShowDetailsPrompt(false), 5000)); // Hide the prompt after 5 seconds
+    };
+
+    const handleDetailClick = (imageUrl, info) => {
+        setSelectedImageUrl(imageUrl);
+        setSelectedInfo(info); // Set the selected info
+        setPopupOpen(true);
+        setShowDetailsPrompt(false); // Hide the details prompt when popup opens
+        setTourPopupOpen(false); // Hide the tour popup when model popup opens
     };
 
     const updateCameraState = (position, rotation) => {
@@ -160,18 +171,16 @@ function Home(){
         setCameraRotation(new Euler(rotation.x, rotation.y, rotation.z));
     };
 
-    const handleMinimapClick = (position, rotation) => {
-        handlePictureClick(position, rotation, null, null);
-    };
-
     // hàm xử lý sự kiện hoàn tất di chuyển camera
     const handleCameraMoveComplete = () => {
-        setPopupOpen(true);
         setClicked(false); // Reset clicked state after camera move complete
+        if (tourActive) {
+            setTourPopupOpen(true); // Show tour popup when camera move completes during tour
+        }
     };
 
     const handleListItemClick = (item) => {
-        handlePictureClick(item.position, item.rotation, item.imageUrl, null);
+        handlePictureClick(item.position, item.rotation, item.imageUrl, null, item.info);
         handleClosePopUpListModel();
     };
 
@@ -180,7 +189,7 @@ function Home(){
             const nextIndex = currentItemIndex + 1;
             setCurrentItemIndex(nextIndex);
             const nextItem = items[nextIndex];
-            handlePictureClick(nextItem.position, nextItem.rotation, nextItem.imageUrl, null);
+            handlePictureClick(nextItem.position, nextItem.rotation, nextItem.imageUrl, null, nextItem.info);
         }
     };
 
@@ -189,23 +198,30 @@ function Home(){
             const prevIndex = currentItemIndex - 1;
             setCurrentItemIndex(prevIndex);
             const prevItem = items[prevIndex];
-            handlePictureClick(prevItem.position, prevItem.rotation, prevItem.imageUrl, null);
+            handlePictureClick(prevItem.position, prevItem.rotation, prevItem.imageUrl, null, prevItem.info);
         }
     };
 
     const startTour = () => {
         setTourActive(true);
         setTourIndex(0);
-        setCountdown(5);
+        setCountdown(10);
+        setFreeExploration(false);
         moveToItem(0);
+    };
+
+    const startFreeExploration = () => {
+        setTourActive(false);
+        setFreeExploration(true);
     };
 
     const moveToItem = (index) => {
         if (index < items.length) {
             const item = items[index];
-            handlePictureClick(item.position, item.rotation, item.imageUrl, null);
+            handlePictureClick(item.position, item.rotation, item.imageUrl, null, item.info);
             setTourIndex(index);
-            setCountdown(5);
+            setCountdown(10);
+            setTourPopupOpen(true); // Show tour popup
         } else {
             endTour();
         }
@@ -215,6 +231,8 @@ function Home(){
         setTourActive(false);
         setTourIndex(0);
         setCountdown(0);
+        setTourPopupOpen(false); // Hide tour popup
+        setShowHowToMove(true); // Show HowToMove popup
         if (countdownInterval) {
             clearInterval(countdownInterval);
         }
@@ -228,7 +246,7 @@ function Home(){
                         return prevCountdown - 1;
                     } else {
                         moveToItem(tourIndex + 1);
-                        return 5;
+                        return 10;
                     }
                 });
             }, 1000);
@@ -239,9 +257,9 @@ function Home(){
             };
         }
     }, [tourActive, tourIndex]);
-    // hàm xử lý sự kiện hoàn tất di chuyển camera
+    //click và các chức năng liên quan
 
-    //giao diện và respondsive
+    // giao diện và respondsive
     useEffect(() => {
         const handleFullscreenChange = () => {
             setIsFullscreen(!!document.fullscreenElement);
@@ -266,9 +284,13 @@ function Home(){
     const navHandler = () => {
         setNavToggle(prevData => !prevData);
     };
-    //giao diện và respondsive
+    // giao diện và respondsive
 
-    //pop up
+    const updateItemsForScreenSize = (newItems) => {
+        setItems(newItems);
+    };
+
+    // pop up
     const handleClosePopup = () => {
         setPopupOpen(false);
     };
@@ -296,13 +318,65 @@ function Home(){
     const handleClosePopUpListModel = () => {
         setPopUpListModel(false);
     };
-    //pop up
-    //HÀM
+
+    const handleCloseHowToMove = (mode) => {
+        setShowHowToMove(false);
+        if (mode === 'free') {
+            startFreeExploration();
+        } else if (mode === 'tour') {
+            startTour();
+        }
+    };
+    // pop up
+
+    // kiểm tra hướng màn hình
+    useEffect(() => {
+        const handleOrientationChange = () => {
+            if (window.orientation === 90 || window.orientation === -90) {
+                setLandscapePromptVisible(false);
+            } else if (/Mobi|Android/i.test(navigator.userAgent)) {
+                setLandscapePromptVisible(true);
+            }
+        };
+    
+        window.addEventListener("orientationchange", handleOrientationChange);
+    
+        // kiểm tra hướng khi trang được tải
+         handleOrientationChange();
+    
+        return () => {
+            window.removeEventListener("orientationchange", handleOrientationChange);
+        };
+    }, []);
+    
+     const closeLandscapePrompt = () => {
+        setLandscapePromptVisible(false);
+    };
+
+        
+    // HÀM
 
     return(
         <>
             <CameraProvider>
                 <div className='main'>
+                    {/* Thông báo xoay màn hình */}
+                    {landscapePromptVisible && (
+                        <div id="landscape-prompt">
+                            <div className='landscape-prompt-content'>
+                                <div class="iframe-container">
+                                    <iframe src="https://giphy.com/embed/XXU2vaPVrnhV7ZAGpY" className='gif-rotate-phone'></iframe>
+                                    <div class="iframe-overlay"></div>
+                                </div>
+                                
+                                <p>
+                                    Rotate device for better experience
+                                </p>
+                            </div>
+                            <button onClick={closeLandscapePrompt}>✕</button>
+                        </div>
+                    )}
+                    {/* Thông báo xoay màn hình */}
                     <Canvas shadows>
                         <Suspense fallback={null}>
 
@@ -314,87 +388,80 @@ function Home(){
                                 scale={[5, 5, 5]}
                                 clickable={false}
                             /> 
-                            <ambientLight intensity={2.5} />
+                            <ambientLight intensity={2.2} />
 
                             {/* Chiếu sáng các model cụ thể */}
-                            <group>
-                                <SpotLight
-                                    position={[-10, 25, -5]}
-                                    intensity={80}
-                                    angle={Math.PI / 6}
-                                    penumbra={1}
-                                    distance={0}
-                                    decay={1}
-                                    castShadow
-                                    target={(() => {
-                                        const target = new THREE.Object3D();
-                                        target.position.set(-10, 12, -27);
-                                        return target;
-                                    })()}
-                                />
-                                <SpotLight
-                                    position={[-40, 30, 13]}
-                                    intensity={80}
-                                    angle={Math.PI / 6}
-                                    penumbra={1}
-                                    distance={0}
-                                    decay={1}
-                                    castShadow
-                                    target={(() => {
-                                        const target = new THREE.Object3D();
-                                        target.position.set(-62, 12, 12);
-                                        return target;
-                                    })()}
-                                />
-                                <SpotLight
-                                    position={[-40, 30, -13]}
-                                    intensity={80}
-                                    angle={Math.PI / 6}
-                                    penumbra={1}
-                                    distance={0}
-                                    decay={1}
-                                    castShadow
-                                    target={(() => {
-                                        const target = new THREE.Object3D();
-                                        target.position.set(-62, 12, -12);
-                                        return target;
-                                    })()}
-                                />
-                                <SpotLight
-                                    position={[10, 28, 9]}
-                                    intensity={80}
-                                    angle={Math.PI / 5}
-                                    penumbra={1}
-                                    distance={0}
-                                    decay={1}
-                                    castShadow
-                                    target={(() => {
-                                        const target = new THREE.Object3D();
-                                        target.position.set(10, 12, 27);
-                                        return target;
-                                    })()}
-                                />                            
-                                <SpotLight
-                                    position={[40, 30, 2]}
-                                    intensity={80}
-                                    angle={Math.PI / 6}
-                                    penumbra={1}
-                                    distance={0}
-                                    decay={1}
-                                    castShadow
-                                    target={(() => {
-                                        const target = new THREE.Object3D();
-                                        target.position.set(62, 12, 0);
-                                        return target;
-                                    })()}
-                                />
-                            </group>
-
-                            {/* Hiệu ứng hậu kỳ */}
-                            <EffectComposer>
-                                {/* <Bloom luminanceThreshold={0.3} luminanceSmoothing={0.9} height={300} /> */}
-                                <SSAO />
-                            </EffectComposer>
+                            <SpotLight
+                                position={[-10, 25, -5]}
+                                intensity={80}
+                                angle={Math.PI / 6}
+                                penumbra={1}
+                                distance={0}
+                                decay={1}
+                                castShadow
+                                target={(() => {
+                                    const target = new THREE.Object3D();
+                                    target.position.set(-10, 12, -27);
+                                    return target;
+                                })()}
+                            />
+                            <SpotLight
+                                position={[-40, 30, 13]}
+                                intensity={80}
+                                angle={Math.PI / 6}
+                                penumbra={1}
+                                distance={0}
+                                decay={1}
+                                castShadow
+                                target={(() => {
+                                    const target = new THREE.Object3D();
+                                    target.position.set(-62, 12, 12);
+                                    return target;
+                                })()}
+                            />
+                            <SpotLight
+                                position={[-40, 30, -13]}
+                                intensity={80}
+                                angle={Math.PI / 6}
+                                penumbra={1}
+                                distance={0}
+                                decay={1}
+                                castShadow
+                                target={(() => {
+                                    const target = new THREE.Object3D();
+                                    target.position.set(-62, 12, -12);
+                                    return target;
+                                })()}
+                            />
+                            <SpotLight
+                                position={[10, 28, 9]}
+                                intensity={80}
+                                angle={Math.PI / 5}
+                                penumbra={1}
+                                distance={0}
+                                decay={1}
+                                castShadow
+                                target={(() => {
+                                    const target = new THREE.Object3D();
+                                    target.position.set(10, 12, 27);
+                                    return target;
+                                })()}
+                            />                            
+                            <SpotLight
+                                position={[40, 30, 2]}
+                                intensity={80}
+                                angle={Math.PI / 6}
+                                penumbra={1}
+                                distance={0}
+                                decay={1}
+                                castShadow
+                                target={(() => {
+                                    const target = new THREE.Object3D();
+                                    target.position.set(62,12, 0);
+                                    return target;
+                                })()}
+                            />
+                            {/* Môi trường */}
 
                             {/* item */}
                             {items.map(item => (
@@ -405,9 +472,23 @@ function Home(){
                                     scale={item.scale}
                                     imageUrl={item.imageUrl}
                                     info={item.info}
-                                    onClick={(position, rotation) => handlePictureClick(position, rotation, item.imageUrl, null)}
+                                    onClick={(position, rotation) => handlePictureClick(position, rotation, item.imageUrl, null, item.info)}
+                                    onDetailClick={handleDetailClick}
+                                    showDetailsPrompt={showDetailsPrompt} // Pass showDetailsPrompt state
+                                    setShowDetailsPrompt={setShowDetailsPrompt} // Pass setShowDetailsPrompt function
+                                    tourPopupOpen={tourPopupOpen && tourIndex === items.indexOf(item)} // Show tour popup when in tour and at the current item
                                 />
                             ))}
+                            
+                            {/* <Minimap items={items} handlePictureClick={handlePictureClick} /> */}
+
+                            {/* <MinhTestPicture
+                                position={[20, 0, 0]}
+                                rotation={[0, 0, 0]}
+                                scale={[scaleFactor, scaleFactor, scaleFactor]}
+                                onClick={(position, rotation, imageUrl, model) => handlePictureClick(position, rotation, null, model)}
+                            /> */}
+                            {/* item */}
 
                             {/* Hàm bổ trợ */}
                             <CameraClick
@@ -418,14 +499,11 @@ function Home(){
                                 onMoveComplete={handleCameraMoveComplete}
                                 updateCameraState={updateCameraState}
                             />
-                            {!clicked && <Movement cameraPosition={cameraPosition} cameraRotation={cameraRotation} clicked={clicked} />}
+                            {!clicked && <Movement cameraPosition={cameraPosition} cameraRotation={cameraRotation} clicked={clicked} freeExploration={freeExploration} />}
                             {/* Hàm bổ trợ */}
                         </Suspense>
                     </Canvas>
-                    {/* Minimap */}
-                    {/* <div className="minimap-container">
-                        <Minimap target={cameraRef} onMinimapClick={handleMinimapClick} locations={locations} />
-                    </div> */}
+
                     {/* Thanh sidebar */}
                     <div className='sidebarMain'>
                         <div className={`fullscreen_button ${navToggle ? 'fullscreen_button-change' : ""}`} onClick={handlePreviousItem}>
@@ -478,57 +556,55 @@ function Home(){
                     {/* Thanh sidebar */}
 
                     {/* Nút bấm di chuyển */}
-                    <div className="controler">
-                        <div className='top'>
-                            <button
-                                onMouseDown={() => handleControl('forward', true)}
-                                onMouseUp={() => handleControl('forward', false)}
-                                onTouchStart={() => handleControl('forward', true)}
-                                onTouchEnd={() => handleControl('forward', false)}
-                                className='controler__button'
-                            >
-                                <FaCaretUp />
-                            </button>
+                    {freeExploration && (
+                        <div className="controler">
+                            <div className='top'>
+                                <button
+                                    onMouseDown={() => handleControl('forward', true)}
+                                    onMouseUp={() => handleControl('forward', false)}
+                                    onTouchStart={() => handleControl('forward', true)}
+                                    onTouchEnd={() => handleControl('forward', false)}
+                                    className='controler__button'
+                                >
+                                    <FaCaretUp />
+                                </button>
+                            </div>
+                            <div className='bottom'>
+                                <button
+                                    onMouseDown={() => handleControl('rotateLeft', true)}
+                                    onMouseUp={() => handleControl('rotateLeft', false)}
+                                    onTouchStart={() => handleControl('rotateLeft', true)}
+                                    onTouchEnd={() => handleControl('rotateLeft', false)}
+                                    className='controler__button'
+                                >
+                                    <FaCaretLeft />
+                                </button>
+                                <button
+                                    onMouseDown={() => handleControl('backward', true)}
+                                    onMouseUp={() => handleControl('backward', false)}
+                                    onTouchStart={() => handleControl('backward', true)}
+                                    onTouchEnd={() => handleControl('backward', false)}
+                                    className='controler__button'
+                                >
+                                    <FaCaretDown />
+                                </button>
+                                <button
+                                    onMouseDown={() => handleControl('rotateRight', true)}
+                                    onMouseUp={() => handleControl('rotateRight', false)}
+                                    onTouchStart={() => handleControl('rotateRight', true)}
+                                    onTouchEnd={() => handleControl('rotateRight', false)}
+                                    className='controler__button'
+                                >
+                                    <FaCaretRight />
+                                </button>
+                            </div>
                         </div>
-                        <div className='bottom'>
-                            <button
-                                onMouseDown={() => handleControl('rotateLeft', true)}
-                                onMouseUp={() => handleControl('rotateLeft', false)}
-                                onTouchStart={() => handleControl('rotateLeft', true)}
-                                onTouchEnd={() => handleControl('rotateLeft', false)}
-                                className='controler__button'
-                            >
-                                <FaCaretLeft />
-                            </button>
-                            <button
-                                onMouseDown={() => handleControl('backward', true)}
-                                onMouseUp={() => handleControl('backward', false)}
-                                onTouchStart={() => handleControl('backward', true)}
-                                onTouchEnd={() => handleControl('backward', false)}
-                                className='controler__button'
-                            >
-                                <FaCaretDown />
-                            </button>
-                            <button
-                                onMouseDown={() => handleControl('rotateRight', true)}
-                                onMouseUp={() => handleControl('rotateRight', false)}
-                                onTouchStart={() => handleControl('rotateRight', true)}
-                                onTouchEnd={() => handleControl('rotateRight', false)}
-                                className='controler__button'
-                            >
-                                <FaCaretRight />
-                            </button>
-                        </div>
-                        {/* Nút bấm di chuyển */}
-                    </div>
-
-                    {/* Respondsive */}
-                    <ResizeElement setScaleFactor={setScaleFactor} />
-                    {/* Respondsive */}
+                    )}
+                    {/* Nút bấm di chuyển */}
 
                     {/* Pop up */}
-                    <ModelPopup open={popupOpen} onClose={handleClosePopup} imageUrl={selectedImageUrl} model={selectedModel} />
-                    <PopUpHowToMove open={instructionsOpen} handleClose={handleCloseInstructions} />
+                    <ModelPopup open={popupOpen} onClose={handleClosePopup} imageUrl={selectedImageUrl} info={selectedInfo} model={selectedModel} />
+                    <PopUpHowToMove open={showHowToMove} handleClose={handleCloseHowToMove} />
                     <PopUpAboutTheExhibition open={popUpAboutTheExhibition} handleClose={handleClosePopUpAboutTheExhibition} />
                     <PopUpListModel open={popUpListModel} onClose={handleClosePopUpListModel} items={items} onItemClick={handleListItemClick} /> {/* List Popup */}
                     {/* Pop up */}
@@ -545,12 +621,19 @@ function Home(){
                                     <p>Tour finished!</p>
                                 </div>
                             )}
+                            <div className='endtour' onClick={endTour}>
+                                <FaPause />
+                            </div>
                         </div>
                     )}
                     {/* Đếm thời gian tour */}
                 </div>
             </CameraProvider>
+            {/* Respondsive */}
+            <ResizeHandler updateItemsForScreenSize={updateItemsForScreenSize} />
+            {/* Respondsive */}
         </>
     )
 }
+
 export default Home;

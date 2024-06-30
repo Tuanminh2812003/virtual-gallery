@@ -3,7 +3,7 @@ import { useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import CameraContext from '../../helpers/CameraContext';
 
-const Movement = ({ cameraPosition, cameraRotation, clicked }) => {
+const Movement = ({ cameraPosition, cameraRotation, clicked, freeExploration }) => {
     const { camera, gl } = useThree();
     const { setYaw } = useContext(CameraContext);
     const moveForward = useRef(false);
@@ -44,6 +44,7 @@ const Movement = ({ cameraPosition, cameraRotation, clicked }) => {
 
     useEffect(() => {
         const handleKeyDown = (event) => {
+            if (!freeExploration) return; // Disable movement in guided tour mode
             switch (event.code) {
                 case 'KeyW':
                 case 'ArrowUp':
@@ -67,6 +68,7 @@ const Movement = ({ cameraPosition, cameraRotation, clicked }) => {
         };
 
         const handleKeyUp = (event) => {
+            if (!freeExploration) return; // Disable movement in guided tour mode
             switch (event.code) {
                 case 'KeyW':
                 case 'ArrowUp':
@@ -90,6 +92,7 @@ const Movement = ({ cameraPosition, cameraRotation, clicked }) => {
         };
 
         const handleMouseDown = (event) => {
+            if (!freeExploration) return; // Disable rotation in guided tour mode
             setIsMouseDown(true);
             initialMousePosition.current = { x: event.clientX, y: event.clientY };
         };
@@ -99,21 +102,21 @@ const Movement = ({ cameraPosition, cameraRotation, clicked }) => {
         };
 
         const handleMouseMove = (event) => {
-            if (isMouseDown) {
-                targetYaw.current -= event.movementX * 0.005;
+            if (!freeExploration || !isMouseDown) return; // Disable rotation in guided tour mode
+            targetYaw.current -= event.movementX * 0.005;
 
-                const direction = new THREE.Vector3();
-                direction.setFromMatrixColumn(camera.matrix, 0);
-                direction.crossVectors(camera.up, direction);
-                camera.position.addScaledVector(direction, -event.movementY * 0.05);
+            const direction = new THREE.Vector3();
+            direction.setFromMatrixColumn(camera.matrix, 0);
+            direction.crossVectors(camera.up, direction);
+            camera.position.addScaledVector(direction, -event.movementY * 0.05);
 
-                initialMousePosition.current = { x: event.clientX, y: event.clientY };
-            }
+            initialMousePosition.current = { x: event.clientX, y: event.clientY };
         };
 
         const handleTouchStart = (event) => {
             isTouchDevice.current = true;
             if (event.touches.length === 1) {
+                if (!freeExploration) return; // Disable rotation in guided tour mode
                 setIsMouseDown(true);
                 initialMousePosition.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
             }
@@ -124,22 +127,22 @@ const Movement = ({ cameraPosition, cameraRotation, clicked }) => {
         };
 
         const handleTouchMove = (event) => {
-            if (isMouseDown && event.touches.length === 1) {
-                const deltaX = event.touches[0].clientX - initialMousePosition.current.x;
-                const deltaY = event.touches[0].clientY - initialMousePosition.current.y;
+            if (!freeExploration || !isMouseDown || event.touches.length !== 1) return; // Disable rotation in guided tour mode
+            const deltaX = event.touches[0].clientX - initialMousePosition.current.x;
+            const deltaY = event.touches[0].clientY - initialMousePosition.current.y;
 
-                targetYaw.current -= deltaX * 0.005;
+            targetYaw.current -= deltaX * 0.005;
 
-                const direction = new THREE.Vector3();
-                direction.setFromMatrixColumn(camera.matrix, 0);
-                direction.crossVectors(camera.up, direction);
-                camera.position.addScaledVector(direction, -deltaY * 0.05);
+            const direction = new THREE.Vector3();
+            direction.setFromMatrixColumn(camera.matrix, 0);
+            direction.crossVectors(camera.up, direction);
+            camera.position.addScaledVector(direction, -deltaY * 0.05);
 
-                initialMousePosition.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-            }
+            initialMousePosition.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
         };
 
         const handleControl = (event) => {
+            if (!freeExploration) return; // Disable movement in guided tour mode
             const { action, state } = event.detail;
             switch (action) {
                 case 'forward':
@@ -186,7 +189,7 @@ const Movement = ({ cameraPosition, cameraRotation, clicked }) => {
             gl.domElement.removeEventListener('touchmove', handleTouchMove);
             document.removeEventListener('control', handleControl);
         };
-    }, [camera, gl.domElement, cameraPosition, cameraRotation, isMouseDown]);
+    }, [camera, gl.domElement, cameraPosition, cameraRotation, isMouseDown, freeExploration]);
 
     useFrame((state, delta) => {
         if (clicked) return; // Skip manual control if clicked is true

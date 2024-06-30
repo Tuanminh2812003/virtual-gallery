@@ -19,3 +19,6 @@
 .popUpMove__content__content__inner__text{
     text-align: start;
 }
+.move_button{
+    width: 30%;
+}
