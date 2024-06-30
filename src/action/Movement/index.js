@@ -237,9 +237,6 @@ const Movement = ({ cameraPosition, cameraRotation, clicked, freeExploration }) 
 
         camera.position.x = THREE.MathUtils.clamp(camera.position.x, -61, 61);
         camera.position.z = THREE.MathUtils.clamp(camera.position.z, -25, 25);
-
-        console.log('Camera position during move:', camera.position);
-        // console.log('Camera rotation during move:', camera.rotation);
     });
 
     return null;

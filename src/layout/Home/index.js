@@ -479,7 +479,7 @@ function Home(){
                                     tourPopupOpen={tourPopupOpen && tourIndex === items.indexOf(item)} // Show tour popup when in tour and at the current item
                                 />
                             ))}
-                            {/* <Minimap items={items} handlePictureClick={handlePictureClick} /> */}
+                            <Minimap items={items} handlePictureClick={handlePictureClick} />
                             
                             {/* <MinhTestPicture
                                 position={[20, 0, 0]}

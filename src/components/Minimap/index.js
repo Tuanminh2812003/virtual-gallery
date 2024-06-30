@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { useThree, useFrame } from '@react-three/fiber';
 import { Tween, Easing, update as TWEENUpdate } from '@tweenjs/tween.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
+import throttle from 'lodash.throttle';
 
 const Minimap = ({ items, handlePictureClick }) => {
     const { scene, camera } = useThree();
@@ -17,41 +18,36 @@ const Minimap = ({ items, handlePictureClick }) => {
     const clickTargets = useRef([]);
 
     useEffect(() => {
-        // Initialize minimap camera
         const aspect = window.innerWidth / window.innerHeight;
         const size = 35;
         minimapCamera.current = new THREE.OrthographicCamera(-size * aspect, size * aspect, size, -size, 0.1, 1000);
         minimapCamera.current.position.set(0, 50, 0);
         minimapCamera.current.lookAt(0, 0, 0);
 
-        // Initialize minimap renderer
         minimapRenderer.current = new THREE.WebGLRenderer({ antialias: true });
         minimapRenderer.current.setSize(window.innerWidth * 0.225, window.innerHeight * 0.225);
         minimapRenderer.current.domElement.style.position = 'absolute';
         minimapRenderer.current.domElement.style.top = '10px';
         minimapRenderer.current.domElement.style.left = '10px';
-        minimapRenderer.current.domElement.style.zIndex = '1000'; // Higher z-index than labels
+        minimapRenderer.current.domElement.style.zIndex = '1000';
         minimapRenderer.current.domElement.style.border = '#56A0D8 solid 3px';
         minimapRenderer.current.domElement.style.borderRadius = '8px';
         document.body.appendChild(minimapRenderer.current.domElement);
 
-        // Initialize label renderer
         minimapLabelRenderer.current = new CSS2DRenderer();
         minimapLabelRenderer.current.setSize(window.innerWidth * 0.225, window.innerHeight * 0.225);
         minimapLabelRenderer.current.domElement.style.position = 'absolute';
         minimapLabelRenderer.current.domElement.style.top = '10px';
         minimapLabelRenderer.current.domElement.style.left = '10px';
-        minimapLabelRenderer.current.domElement.style.zIndex = '1001'; // Lower z-index than minimap renderer
-        minimapLabelRenderer.current.domElement.style.pointerEvents = 'none'; // Ensure it does not block mouse events
+        minimapLabelRenderer.current.domElement.style.zIndex = '1001';
+        minimapLabelRenderer.current.domElement.style.pointerEvents = 'none';
         document.body.appendChild(minimapLabelRenderer.current.domElement);
 
-        // Add user position indicator
         const userGeometry = new THREE.SphereGeometry(2, 32, 32);
         const userMaterial = new THREE.MeshBasicMaterial({ color: '#fff' });
         userPositionRef.current = new THREE.Mesh(userGeometry, userMaterial);
         scene.add(userPositionRef.current);
 
-        // Add items as click targets
         items.forEach((item) => {
             const geometry = new THREE.BoxGeometry(0, 0, 0);
             const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, visible: false });
@@ -61,21 +57,20 @@ const Minimap = ({ items, handlePictureClick }) => {
             clickTargets.current.push(mesh);
             scene.add(mesh);
 
-            // Create info element
             const infoDiv = document.createElement('div');
-            infoDiv.className = 'minimap-label'; // Use a CSS class for styling
+            infoDiv.className = 'minimap-label';
             infoDiv.textContent = `${item.info.artist}: ${item.info.title}`;
-            infoDiv.style.pointerEvents = 'auto'; // Ensure it does not block mouse events
+            infoDiv.style.pointerEvents = 'auto';
             const infoLabel = new CSS2DObject(infoDiv);
             infoLabel.position.set(0, 3, 0);
             infoLabel.element.addEventListener('click', (event) => {
-                event.stopPropagation(); // Stop the event from propagating to the minimap click handler
+                event.stopPropagation();
                 handlePictureClick(item.position, item.rotation, item.imageUrl, mesh);
             });
             mesh.add(infoLabel);
         });
 
-        const handleMouseMove = (event) => {
+        const handleMouseMove = throttle((event) => {
             const rect = minimapRenderer.current.domElement.getBoundingClientRect();
             mouse.current.x = ((event.clientX - rect.left) / minimapRenderer.current.domElement.clientWidth) * 2 - 1;
             mouse.current.y = -((event.clientY - rect.top) / minimapRenderer.current.domElement.clientHeight) * 2 + 1;
@@ -92,8 +87,6 @@ const Minimap = ({ items, handlePictureClick }) => {
                 });
             } else {
                 setHovered(null);
-
-                // Hide all info elements
                 clickTargets.current.forEach(mesh => {
                     mesh.children.forEach((child) => {
                         if (child instanceof CSS2DObject) {
@@ -102,10 +95,9 @@ const Minimap = ({ items, handlePictureClick }) => {
                     });
                 });
             }
-        };
+        }, 100);
 
         const handleClick = (event) => {
-            console.log('Minimap click event triggered'); // Log to check if event is triggered
             const rect = minimapRenderer.current.domElement.getBoundingClientRect();
             mouse.current.x = ((event.clientX - rect.left) / minimapRenderer.current.domElement.clientWidth) * 2 - 1;
             mouse.current.y = -((event.clientY - rect.top) / minimapRenderer.current.domElement.clientHeight) * 2 + 1;
@@ -115,14 +107,12 @@ const Minimap = ({ items, handlePictureClick }) => {
             if (intersects.length > 0) {
                 const intersectedObject = intersects[0].object;
                 if (intersectedObject.userData) {
-                    // Clicked on a model
                     const item = items.find(item => item.position.every((val, index) => val === intersectedObject.position.toArray()[index]));
                     if (item) {
                         handlePictureClick(item.position, item.rotation, item.imageUrl, intersectedObject);
                     }
                 }
             } else {
-                // Clicked on an empty space
                 raycaster.current.setFromCamera(mouse.current, minimapCamera.current);
                 const intersectsScene = raycaster.current.intersectObjects(scene.children, true);
                 if (intersectsScene.length > 0) {
@@ -157,7 +147,6 @@ const Minimap = ({ items, handlePictureClick }) => {
         minimapRenderer.current.domElement.addEventListener('mousemove', handleMouseMove);
         minimapRenderer.current.domElement.addEventListener('click', handleClick);
 
-        // Clean up on unmount
         return () => {
             document.body.removeChild(minimapRenderer.current.domElement);
             document.body.removeChild(minimapLabelRenderer.current.domElement);
@@ -170,8 +159,6 @@ const Minimap = ({ items, handlePictureClick }) => {
 
     useFrame(() => {
         TWEENUpdate();
-
-        // Update user position
         if (userPositionRef.current) {
             userPositionRef.current.position.copy(camera.position);
         }

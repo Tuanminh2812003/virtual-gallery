@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
+import throttle from 'lodash.throttle';
 
 const ResizeHandler = ({ updateItemsForScreenSize }) => {
     useEffect(() => {
-        const handleResize = () => {
+        const handleResize = throttle(() => {
             const width = window.innerWidth;
 
             let newItems = [];
@@ -27,7 +28,7 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                     },
                     {
                         id: 3,
-                        position: [62,12, 0],
+                        position: [62, 12, 0],
                         rotation: [0, -90, 0],
                         scale: 12,
                         imageUrl: "/assets/Picture/art_2.jpg",
@@ -62,7 +63,7 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                     },
                     {
                         id: 3,
-                        position: [62,10, 0],
+                        position: [62, 10, 0],
                         rotation: [0, -90, 0],
                         scale: 13,
                         imageUrl: "/assets/Picture/art_2.jpg",
@@ -97,7 +98,7 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                     },
                     {
                         id: 3,
-                        position: [62,12, 0],
+                        position: [62, 12, 0],
                         rotation: [0, -90, 0],
                         scale: 10,
                         imageUrl: "/assets/Picture/art_2.jpg",
@@ -114,11 +115,17 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                 ];
             }
 
-            updateItemsForScreenSize(newItems);
-        };
+            // Check if newItems is different from current items
+            updateItemsForScreenSize((prevItems) => {
+                if (JSON.stringify(prevItems) !== JSON.stringify(newItems)) {
+                    return newItems;
+                }
+                return prevItems;
+            });
+        }, 200); // Throttle resize events to every 200ms
 
         window.addEventListener('resize', handleResize);
-        handleResize(); // Bắt sự kiện thay đổi màn hình thì chạy vào hàm resize
+        handleResize(); // Initial call to handleResize to set initial items
 
         return () => window.removeEventListener('resize', handleResize);
     }, [updateItemsForScreenSize]);
