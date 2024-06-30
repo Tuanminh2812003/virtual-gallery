@@ -239,7 +239,7 @@ function Home(){
             };
         }
     }, [tourActive, tourIndex]);
-    //click và các chức năng liên quan
+    // hàm xử lý sự kiện hoàn tất di chuyển camera
 
     //giao diện và respondsive
     useEffect(() => {

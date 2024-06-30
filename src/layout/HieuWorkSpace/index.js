@@ -4,6 +4,8 @@ import * as THREE from 'three';
 import { CameraProvider } from '../../helpers/CameraContext';
 import './index.css';
 
+//hehe
+
 // Extend THREE with custom geometries
 extend({ PlaneGeometry: THREE.PlaneGeometry, BoxGeometry: THREE.BoxGeometry });
 
