@@ -300,7 +300,7 @@ function Home(){
     };
 
     const handleOpenInstructions = () => {
-        setInstructionsOpen(true);
+        setShowHowToMove(true);
     };
 
     const handleClosePopUpAboutTheExhibition = () => {
@@ -479,9 +479,8 @@ function Home(){
                                     tourPopupOpen={tourPopupOpen && tourIndex === items.indexOf(item)} // Show tour popup when in tour and at the current item
                                 />
                             ))}
-                            
                             {/* <Minimap items={items} handlePictureClick={handlePictureClick} /> */}
-
+                            
                             {/* <MinhTestPicture
                                 position={[20, 0, 0]}
                                 rotation={[0, 0, 0]}
