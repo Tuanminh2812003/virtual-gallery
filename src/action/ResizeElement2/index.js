@@ -21,7 +21,7 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                         id: 2,
                         position: [-62, 10, 0],
                         rotation: [0, 90, 0],
-                        scale: 10,
+                        scale: 8,
                         imageUrl: "https://res.cloudinary.com/dqlelya6o/image/upload/04._23-2_nu4mya?_a=BAMABmRg0",
                         info: { artist: 'Google Doodle', title: 'Giỗ Tổ Ca Trù', year: 2024 }
                     },

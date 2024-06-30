@@ -12,7 +12,6 @@ import { Vector3, Euler } from 'three';
 import ModelLoader from '../../components/ModelLoader/index'; // model tĩnh
 import PictureFrame from '../../components/PictureFrame'; // hình ảnh
 import MinhTestPicture from '../../components/MinhTestPicture'; // model động
-import ResizeElement from '../../action/ResizeElement'; // responsive model
 import { SpotLight } from '@react-three/drei';
 import Minimap from '../../components/Minimap';
 // pop up
@@ -554,7 +553,7 @@ function Home(){
                     </div>
 
                     {/* Respondsive */}
-                    <ResizeElement setScaleFactor={setScaleFactor} />
+                    {/* <ResizeElement setScaleFactor={setScaleFactor} /> */}
                     {/* Respondsive */}
 
                     {/* Pop up */}

@@ -27,3 +27,25 @@
 .picture-info .details-button:hover{
     background-color: #5cb2d4;
 }
+
+@media (max-width: 600px){
+    .picture-info{
+        font-size: 13px;
+        left: -200px;
+        top: -100px;
+    }
+    .picture-info .details-button{
+        font-size: 13px;
+    }
+}
+@media (max-width: 400px){
+    .picture-info{
+        font-size: 13px;
+        left: -75px;
+        top: 100px;
+        width: 150px;
+    }
+    .picture-info .details-button{
+        font-size: 13px;
+    }
+}
