@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense, useEffect, useRef } from 'react';
+import React, { useState, lazy, Suspense, useEffect, useRef, useCallback } from 'react';
 import { Canvas, extend } from '@react-three/fiber';
 import * as THREE from 'three';
 import './Home.css';
@@ -126,7 +126,13 @@ function Home(){
     // move
 
     // click và các chức năng liên quan
-    const handlePictureClick = (position, rotation, imageUrl, model, info) => {
+    const handlePictureClick = useCallback((position, rotation, imageUrl, model, info) => {
+        console.log("handlePictureClick called with position:", position);
+        console.log("handlePictureClick called with rotation:", rotation);
+        console.log("handlePictureClick called with imageUrl:", imageUrl);
+        console.log("handlePictureClick called with model:", model);
+        console.log("handlePictureClick called with info:", info);
+
         const direction = new Vector3(0, 0, 22);
         const eulerRotation = new Euler(
             rotation[0] * (Math.PI / 180),
@@ -156,8 +162,7 @@ function Home(){
         setShowDetailsPrompt(true); // Show the details prompt
         clearTimeout(promptTimeout); // Clear any existing timeout
         setPromptTimeout(setTimeout(() => setShowDetailsPrompt(false), 5000)); // Hide the prompt after 5 seconds
-    };
-
+    }, []);
     const handleDetailClick = (imageUrl, info) => {
         setSelectedImageUrl(imageUrl);
         setSelectedInfo(info); // Set the selected info

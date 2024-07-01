@@ -5,7 +5,6 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
     useEffect(() => {
         const handleResize = throttle(() => {
             const width = window.innerWidth;
-
             let newItems = [];
 
             if (width < 600) {
