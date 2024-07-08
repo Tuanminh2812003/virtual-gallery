@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import "./PictureFrame.css";
 import { Html } from '@react-three/drei';
 
-function PictureFrame({ position, rotation, scale, imageUrl, onClick, info = { artist: '', title: '', year: '' }, onDetailClick, showDetailsPrompt, setShowDetailsPrompt, tourPopupOpen }) {
+function PictureFrame({ position, rotation, scale, imageUrl, onClick, info = { artist: '', title: '', year: '' }, onDetailClick, showDetailsPrompt, setShowDetailsPrompt, tourPopupOpen, video }) {
     const texture = useLoader(THREE.TextureLoader, imageUrl);
     const ref = useRef();
     const borderRef = useRef();
@@ -52,7 +52,7 @@ function PictureFrame({ position, rotation, scale, imageUrl, onClick, info = { a
         e.stopPropagation();
         setClicked(false);
         if (onDetailClick) {
-            onDetailClick(imageUrl, info);
+            onDetailClick(imageUrl, info, video);
         }
     };
 

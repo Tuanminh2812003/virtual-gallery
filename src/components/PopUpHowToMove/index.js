@@ -15,9 +15,9 @@ const PopUpHowToMove = ({ open, handleClose }) => {
                     width: {
                         xs: '90%', // 90% width on extra small screens
                         sm: '80%', // 80% width on small screens
-                        md: '40%',  // 400px width on medium screens and up
+                        md: '50%',  //
                     },
-                    maxHeight: '80%',
+                    maxHeight: '90%',
                     overflow: 'auto',
                     bgcolor: 'white',
                     borderRadius: '10px',

@@ -15,7 +15,8 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                         rotation: [0, 180, 0],
                         scale: 12,
                         imageUrl: "/assets/Picture/art_4.jpg",
-                        info: { artist: 'Van Gogh', title: 'Paintings Collage', year: 2024 }
+                        info: { artist: 'Van Gogh', title: 'Paintings Collage', year: 2024 },
+                        video: "https://www.youtube.com/embed/ayLxUY9Jsh0?si=9KfHPhR6XZRtK7g4"
                     },
                     {
                         id: 2,
@@ -23,7 +24,8 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                         rotation: [0, 90, 0],
                         scale: 8,
                         imageUrl: "https://res.cloudinary.com/dqlelya6o/image/upload/04._23-2_nu4mya?_a=BAMABmRg0",
-                        info: { artist: 'Google Doodle', title: 'Giỗ Tổ Ca Trù', year: 2024 }
+                        info: { artist: 'Google Doodle', title: 'Giỗ Tổ Ca Trù', year: 2024 },
+                        video: "https://www.youtube.com/embed/2epWRALy_DU?si=QkZLCyfGjknfWs3b"
                     },
                     {
                         id: 3,
@@ -31,7 +33,8 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                         rotation: [0, -90, 0],
                         scale: 12,
                         imageUrl: "/assets/Picture/art_2.jpg",
-                        info: { artist: 'Kobit', title: 'Kobit', year: 2024 }
+                        info: { artist: 'Kobit', title: 'Kobit', year: 2024 },
+                        video: "https://www.youtube.com/embed/NSnkb1IAjbE?si=VR9p-ZKO1jyyV0mb"
                     },
                     {
                         id: 4,
@@ -39,7 +42,8 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                         rotation: [0, 0, 0],
                         scale: 12,
                         imageUrl: "/assets/Picture/art_3.jpg",
-                        info: { artist: 'Kobit', title: 'Kobit', year: 2024 }
+                        info: { artist: 'Kobit', title: 'Kobit', year: 2024 },
+                        video: "https://www.youtube.com/embed/NSnkb1IAjbE?si=VR9p-ZKO1jyyV0mb"
                     },
                 ];
             } else if (width < 1200) {
@@ -50,7 +54,8 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                         rotation: [0, 180, 0],
                         scale: 13,
                         imageUrl: "/assets/Picture/art_4.jpg",
-                        info: { artist: 'Van Gogh', title: 'Paintings Collage', year: 2024 }
+                        info: { artist: 'Van Gogh', title: 'Paintings Collage', year: 2024 },
+                        video: "https://www.youtube.com/embed/ayLxUY9Jsh0?si=9KfHPhR6XZRtK7g4"
                     },
                     {
                         id: 2,
@@ -58,7 +63,8 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                         rotation: [0, 90, 0],
                         scale: 13,
                         imageUrl: "https://res.cloudinary.com/dqlelya6o/image/upload/04._23-2_nu4mya?_a=BAMABmRg0",
-                        info: { artist: 'Google Doodle', title: 'Giỗ Tổ Ca Trù', year: 2024 }
+                        info: { artist: 'Google Doodle', title: 'Giỗ Tổ Ca Trù', year: 2024 },
+                        video: "https://www.youtube.com/embed/2epWRALy_DU?si=QkZLCyfGjknfWs3b"
                     },
                     {
                         id: 3,
@@ -66,7 +72,8 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                         rotation: [0, -90, 0],
                         scale: 13,
                         imageUrl: "/assets/Picture/art_2.jpg",
-                        info: { artist: 'Kobit', title: 'Kobit', year: 2024 }
+                        info: { artist: 'Kobit', title: 'Kobit', year: 2024 },
+                        video: "https://www.youtube.com/embed/NSnkb1IAjbE?si=VR9p-ZKO1jyyV0mb"
                     },
                     {
                         id: 4,
@@ -74,7 +81,8 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                         rotation: [0, 0, 0],
                         scale: 13,
                         imageUrl: "/assets/Picture/art_3.jpg",
-                        info: { artist: 'Kobit', title: 'Kobit', year: 2024 }
+                        info: { artist: 'Kobit', title: 'Kobit', year: 2024 },
+                        video: "https://www.youtube.com/embed/NSnkb1IAjbE?si=VR9p-ZKO1jyyV0mb"
                     },
                 ];
             } else {
@@ -85,7 +93,8 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                         rotation: [0, 180, 0],
                         scale: 15,
                         imageUrl: "/assets/Picture/art_4.jpg",
-                        info: { artist: 'Van Gogh', title: 'Paintings Collage', year: 2024 }
+                        info: { artist: 'Van Gogh', title: 'Paintings Collage', year: 2024 },
+                        video: "https://www.youtube.com/embed/ayLxUY9Jsh0?si=9KfHPhR6XZRtK7g4"
                     },
                     {
                         id: 2,
@@ -93,7 +102,8 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                         rotation: [0, 90, 0],
                         scale: 15,
                         imageUrl: "https://res.cloudinary.com/dqlelya6o/image/upload/04._23-2_nu4mya?_a=BAMABmRg0",
-                        info: { artist: 'Google Doodle', title: 'Giỗ Tổ Ca Trù', year: 2024 }
+                        info: { artist: 'Google Doodle', title: 'Giỗ Tổ Ca Trù', year: 2024 },
+                        video: "https://www.youtube.com/embed/2epWRALy_DU?si=QkZLCyfGjknfWs3b"
                     },
                     {
                         id: 3,
@@ -101,7 +111,8 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                         rotation: [0, -90, 0],
                         scale: 10,
                         imageUrl: "/assets/Picture/art_2.jpg",
-                        info: { artist: 'Kobit', title: 'Kobit', year: 2024 }
+                        info: { artist: 'Kobit', title: 'Kobit', year: 2024 },
+                        video: "https://www.youtube.com/embed/NSnkb1IAjbE?si=VR9p-ZKO1jyyV0mb"
                     },
                     {
                         id: 4,
@@ -109,7 +120,8 @@ const ResizeHandler = ({ updateItemsForScreenSize }) => {
                         rotation: [0, 0, 0],
                         scale: 10,
                         imageUrl: "/assets/Picture/art_3.jpg",
-                        info: { artist: 'Kobit', title: 'Kobit', year: 2024 }
+                        info: { artist: 'Kobit', title: 'Kobit', year: 2024 },
+                        video: "https://www.youtube.com/embed/NSnkb1IAjbE?si=VR9p-ZKO1jyyV0mb"
                     },
                 ];
             }

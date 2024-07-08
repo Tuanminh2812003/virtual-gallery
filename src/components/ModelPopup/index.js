@@ -3,12 +3,14 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import PictureFrame from '../../components/PictureFrame';
+import "./ModelPopUp.css";
 
-const ModelPopup = ({ open, onClose, imageUrl, info, model }) => {
+const ModelPopup = ({ open, onClose, imageUrl, info, model, video }) => {
+    const autoplayVideo = video ? `${video}&autoplay=1` : null;
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>Infomation of model</DialogTitle>
-            <DialogContent>
+            <DialogContent className='dialogContent'>
                 {imageUrl ? (
                     <Canvas style={{ height: '400px' }}>
                         <ambientLight intensity={1} />
@@ -30,6 +32,19 @@ const ModelPopup = ({ open, onClose, imageUrl, info, model }) => {
                     </Canvas>
                 ) : (
                     <div>Không có thông tin để hiển thị</div>
+                )}
+                {autoplayVideo && (
+                    <div className="iframe-container">
+                        <iframe
+                            width="560"
+                            height="315"
+                            src={autoplayVideo}
+                            title="YouTube video player"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
+                        ></iframe>
+                    </div>
                 )}
             </DialogContent>
             <DialogActions>

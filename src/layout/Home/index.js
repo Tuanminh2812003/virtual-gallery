@@ -44,38 +44,7 @@ extend({ PlaneGeometry: THREE.PlaneGeometry, BoxGeometry: THREE.BoxGeometry });
 function Home(){
     // mảng items các bức tranh để làm tour
     const [items, setItems] = useState([
-        {
-            id: 1,
-            position: [10, 12, 27],
-            rotation: [0, 180, 0],
-            scale: 15,
-            imageUrl: "/assets/Picture/art_1.jpg",
-            info: { artist: 'Van Gogh', title: 'Paintings Collage', year: 2024 }
-        },
-        {
-            id: 2,
-            position: [-62, 12, 0],
-            rotation: [0, 90, 0],
-            scale: 15,
-            imageUrl: "https://res.cloudinary.com/dqlelya6o/image/upload/04._23-2_nu4mya?_a=BAMABmRg0",
-            info: { artist: 'Google Doodle', title: 'Giỗ Tổ Ca Trù', year: 2024 }
-        },
-        {
-            id: 3,
-            position: [62,12, 0],
-            rotation: [0, -90, 0],
-            scale: 10,
-            imageUrl: "/assets/Picture/art_2.jpg",
-            info: { artist: 'Kobit', title: 'Kobit', year: 2024 }
-        },
-        {
-            id: 4,
-            position: [-10, 12, -27],
-            rotation: [0, 0, 0],
-            scale: 10,
-            imageUrl: "/assets/Picture/art_3.jpg",
-            info: { artist: 'Kobit', title: 'Kobit', year: 2024 }
-        },
+        // Your items here...
     ]);
     // mảng items các bức tranh để làm tour
 
@@ -90,12 +59,14 @@ function Home(){
     const [targetRotation, setTargetRotation] = useState([0, 0, 0]);
     const [selectedImageUrl, setSelectedImageUrl] = useState(null);
     const [selectedModel, setSelectedModel] = useState(null);
-    const [selectedInfo, setSelectedInfo] = useState(null); // <-- Added state for selected info
+    const [selectedInfo, setSelectedInfo] = useState(null); 
+    const [selectedVideo, setSelectedVideo] = useState(null);
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
     const [tourActive, setTourActive] = useState(false);
     const [tourIndex, setTourIndex] = useState(0);
-    const [countdown, setCountdown] = useState(5);
+    const [countdown, setCountdown] = useState(10); // Đặt mặc định là 10 giây
     const [countdownInterval, setCountdownInterval] = useState(null);
+    const [paused, setPaused] = useState(false); // Thêm trạng thái paused
     const [cameraPosition, setCameraPosition] = useState(new Vector3(0, 5, 0));
     const [cameraRotation, setCameraRotation] = useState(new Euler(0, yaw, 0));
     const [showDetailsPrompt, setShowDetailsPrompt] = useState(false); // <-- Added state for details prompt
@@ -126,12 +97,13 @@ function Home(){
     // move
 
     // click và các chức năng liên quan
-    const handlePictureClick = useCallback((position, rotation, imageUrl, model, info) => {
+    const handlePictureClick = useCallback((position, rotation, imageUrl, model, info, video) => {
         console.log("handlePictureClick called with position:", position);
         console.log("handlePictureClick called with rotation:", rotation);
         console.log("handlePictureClick called with imageUrl:", imageUrl);
         console.log("handlePictureClick called with model:", model);
         console.log("handlePictureClick called with info:", info);
+        console.log("handlePictureClick called with video", video);
 
         const direction = new Vector3(0, 0, 22);
         const eulerRotation = new Euler(
@@ -158,17 +130,26 @@ function Home(){
         setSelectedImageUrl(imageUrl);
         setSelectedModel(model);
         setSelectedInfo(info);
+        setSelectedVideo(video);
         setClicked(true);
         setShowDetailsPrompt(true); // Show the details prompt
         clearTimeout(promptTimeout); // Clear any existing timeout
         setPromptTimeout(setTimeout(() => setShowDetailsPrompt(false), 5000)); // Hide the prompt after 5 seconds
     }, []);
-    const handleDetailClick = (imageUrl, info) => {
+    
+    const handleDetailClick = (imageUrl, info, video) => {
         setSelectedImageUrl(imageUrl);
         setSelectedInfo(info); // Set the selected info
+        setSelectedVideo(video); // Set the selected video link
         setPopupOpen(true);
         setShowDetailsPrompt(false); // Hide the details prompt when popup opens
         setTourPopupOpen(false); // Hide the tour popup when model popup opens
+
+        if (countdownInterval) {
+            clearInterval(countdownInterval); // Dừng bộ đếm thời gian
+            setCountdownInterval(null);
+            setPaused(true); // Đặt trạng thái paused thành true
+        }
     };
 
     const updateCameraState = (position, rotation) => {
@@ -223,7 +204,7 @@ function Home(){
     const moveToItem = (index) => {
         if (index < items.length) {
             const item = items[index];
-            handlePictureClick(item.position, item.rotation, item.imageUrl, null, item.info);
+            handlePictureClick(item.position, item.rotation, item.imageUrl, null, item.info, item.video);
             setTourIndex(index);
             setCountdown(10);
             setTourPopupOpen(true); // Show tour popup
@@ -244,7 +225,7 @@ function Home(){
     };
 
     useEffect(() => {
-        if (tourActive && tourIndex < items.length) {
+        if (tourActive && !paused) {
             const interval = setInterval(() => {
                 setCountdown(prevCountdown => {
                     if (prevCountdown > 1) {
@@ -261,7 +242,7 @@ function Home(){
                 clearInterval(interval);
             };
         }
-    }, [tourActive, tourIndex]);
+    }, [tourActive, tourIndex, paused]); // Thêm paused vào dependency array
     //click và các chức năng liên quan
 
     // giao diện và respondsive
@@ -298,6 +279,12 @@ function Home(){
     // pop up
     const handleClosePopup = () => {
         setPopupOpen(false);
+
+        // Chuyển tới model tiếp theo khi đóng popup
+        if (tourActive) {
+            setPaused(false); // Đặt lại trạng thái paused thành false
+            moveToItem(tourIndex + 1);
+        }
     };
 
     const handleCloseInstructions = () => {
@@ -358,7 +345,6 @@ function Home(){
         setLandscapePromptVisible(false);
     };
 
-        
     // HÀM
 
     return(
@@ -477,7 +463,8 @@ function Home(){
                                     scale={item.scale}
                                     imageUrl={item.imageUrl}
                                     info={item.info}
-                                    onClick={(position, rotation) => handlePictureClick(position, rotation, item.imageUrl, null, item.info)}
+                                    video={item.video}
+                                    onClick={(position, rotation) => handlePictureClick(position, rotation, item.imageUrl, null, item.info, item.video)}
                                     onDetailClick={handleDetailClick}
                                     showDetailsPrompt={showDetailsPrompt} // Pass showDetailsPrompt state
                                     setShowDetailsPrompt={setShowDetailsPrompt} // Pass setShowDetailsPrompt function
@@ -607,7 +594,7 @@ function Home(){
                     {/* Nút bấm di chuyển */}
 
                     {/* Pop up */}
-                    <ModelPopup open={popupOpen} onClose={handleClosePopup} imageUrl={selectedImageUrl} info={selectedInfo} model={selectedModel} />
+                    <ModelPopup open={popupOpen} onClose={handleClosePopup} imageUrl={selectedImageUrl} info={selectedInfo} model={selectedModel} video={selectedVideo}/>
                     <PopUpHowToMove open={showHowToMove} handleClose={handleCloseHowToMove} />
                     <PopUpAboutTheExhibition open={popUpAboutTheExhibition} handleClose={handleClosePopUpAboutTheExhibition} />
                     <PopUpListModel open={popUpListModel} onClose={handleClosePopUpListModel} items={items} onItemClick={handleListItemClick} /> {/* List Popup */}
