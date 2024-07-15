@@ -6,7 +6,7 @@ import PictureFrame from '../../components/PictureFrame';
 import "./ModelPopUp.css";
 
 const ModelPopup = ({ open, onClose, imageUrl, info, model, video }) => {
-    const autoplayVideo = video ? `${video}&autoplay=1` : null;
+    // const autoplayVideo = video ? `${video}&autoplay=1` : null;
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
             <DialogTitle>Infomation of model</DialogTitle>
@@ -33,7 +33,7 @@ const ModelPopup = ({ open, onClose, imageUrl, info, model, video }) => {
                 ) : (
                     <div>Không có thông tin để hiển thị</div>
                 )}
-                {autoplayVideo && (
+                {/* {autoplayVideo && (
                     <div className="iframe-container">
                         <iframe
                             width="560"
@@ -45,7 +45,12 @@ const ModelPopup = ({ open, onClose, imageUrl, info, model, video }) => {
                             allowFullScreen
                         ></iframe>
                     </div>
+                )} */}
+
+                {video && (
+                    <audio controls src={video} autoPlay></audio>
                 )}
+
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} color="primary">Close</Button>

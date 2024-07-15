@@ -1,5 +1,5 @@
 import React, { useState, lazy, Suspense, useEffect, useRef, useCallback } from 'react';
-import { Canvas, extend } from '@react-three/fiber';
+import { Canvas, extend, useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import './Home.css';
 
@@ -63,6 +63,7 @@ function Home(){
     const [selectedVideo, setSelectedVideo] = useState(null);
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
     const [tourActive, setTourActive] = useState(false);
+    const [introActive, setIntroActive] = useState(false); // <-- Added state for intro phase
     const [tourIndex, setTourIndex] = useState(0);
     const [countdown, setCountdown] = useState(10); // Đặt mặc định là 10 giây
     const [countdownInterval, setCountdownInterval] = useState(null);
@@ -87,7 +88,6 @@ function Home(){
     const [popUpListModel, setPopUpListModel] = useState(false);
     const [popupOpen, setPopupOpen] = useState(false);
     // pop up
-    // KHAI BÁO
 
     // HÀM
     // move
@@ -190,10 +190,9 @@ function Home(){
 
     const startTour = () => {
         setTourActive(true);
-        setTourIndex(0);
-        setCountdown(10);
+        setIntroActive(true); // <-- Set introActive to true
         setFreeExploration(false);
-        moveToItem(0);
+        playIntroAudioAndMove();
     };
 
     const startFreeExploration = () => {
@@ -221,11 +220,12 @@ function Home(){
         setShowHowToMove(true); // Show HowToMove popup
         if (countdownInterval) {
             clearInterval(countdownInterval);
+            setCountdownInterval(null);
         }
     };
 
     useEffect(() => {
-        if (tourActive && !paused) {
+        if (tourActive && !introActive && !paused) { // <-- Check introActive state
             const interval = setInterval(() => {
                 setCountdown(prevCountdown => {
                     if (prevCountdown > 1) {
@@ -237,12 +237,14 @@ function Home(){
                 });
             }, 1000);
             setCountdownInterval(interval);
-
+    
             return () => {
                 clearInterval(interval);
+                setCountdownInterval(null);
             };
         }
-    }, [tourActive, tourIndex, paused]); // Thêm paused vào dependency array
+    }, [tourActive, introActive, tourIndex, paused]); // Add introActive to dependency array
+    
     //click và các chức năng liên quan
 
     // giao diện và respondsive
@@ -345,7 +347,53 @@ function Home(){
         setLandscapePromptVisible(false);
     };
 
-    // HÀM
+    // Function to play intro audio and move camera
+    const playIntroAudioAndMove = () => {
+        const audio = new Audio('/assets/Audio/intro.mp3');
+        audio.play();
+
+        let startTime = performance.now();
+        const moveDuration = 22000;
+
+        const moveCameraAround = (time) => {
+            const elapsedTime = time - startTime;
+            const progress = elapsedTime / moveDuration;
+
+            if (progress < 1) {
+                // Calculate the camera position and rotation here to move around
+                const newCameraPosition = new THREE.Vector3(
+                    Math.sin(progress * Math.PI * 2) * 10,
+                    5,
+                    Math.cos(progress * Math.PI * 2) * 10
+                );
+                const newCameraRotation = new THREE.Euler(
+                    0,
+                    progress * Math.PI * 2,
+                    0
+                );
+
+                setCameraPosition(newCameraPosition);
+                setCameraRotation(newCameraRotation);
+
+                requestAnimationFrame(moveCameraAround);
+            } else {
+                // Once the movement is done and the audio ends, start the tour
+                audio.onended = () => {
+                    setIntroActive(false); // <-- Set introActive to false
+                    startTourAfterIntro();
+                };
+            }
+        };
+
+        requestAnimationFrame(moveCameraAround);
+    };
+
+    const startTourAfterIntro = () => {
+        setTourIndex(0);
+        setCountdown(10);
+        setFreeExploration(false);
+        moveToItem(0);
+    };
 
     return(
         <>
@@ -601,7 +649,7 @@ function Home(){
                     {/* Pop up */}
 
                     {/* Đếm thời gian tour */}
-                    {tourActive && (
+                    {tourActive && !introActive && (
                         <div className="tour-countdown">
                             {tourIndex < items.length ? (
                                 <div>

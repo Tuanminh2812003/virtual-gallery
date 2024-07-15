@@ -298,7 +298,7 @@ html {
   
   .iframe-container {
     position: relative;
-    display: inline-block; /* Hoặc bất kỳ cách hiển thị nào bạn muốn */
+    display: inline-block; 
   }
 
   .minimap-label {
@@ -310,7 +310,6 @@ html {
     overflow: hidden; /* Ẩn nội dung tràn ra ngoài */
     text-overflow: ellipsis; /* Thêm dấu ba chấm cho nội dung tràn */
     white-space: nowrap; /* Không cho phép xuống dòng */
-
     transition: transform 0.3s ease-in-out;
 }
 .minimap-label:hover {
