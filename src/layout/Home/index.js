@@ -376,41 +376,11 @@ function Home(){
         const audio = new Audio('/assets/Audio/intro.mp3');
         setIntroAudio(audio); // Lưu intro audio vào state
         audio.play();
-    
-        let startTime = performance.now();
-        const moveDuration = 22000;
-    
-        const moveCameraAround = (time) => {
-            const elapsedTime = time - startTime;
-            const progress = elapsedTime / moveDuration;
-    
-            if (progress < 1) {
-                // Calculate the camera position and rotation here to move around
-                const newCameraPosition = new THREE.Vector3(
-                    Math.sin(progress * Math.PI * 2) * 10,
-                    5,
-                    Math.cos(progress * Math.PI * 2) * 10
-                );
-                const newCameraRotation = new THREE.Euler(
-                    0,
-                    progress * Math.PI * 2,
-                    0
-                );
-    
-                setCameraPosition(newCameraPosition);
-                setCameraRotation(newCameraRotation);
-    
-                requestAnimationFrame(moveCameraAround);
-            } else {
-                // Once the movement is done and the audio ends, start the tour
-                audio.onended = () => {
-                    setIntroActive(false); // <-- Set introActive to false
-                    startTourAfterIntro();
-                };
-            }
+        
+        audio.onended = () => {
+            setIntroActive(false); // <-- Set introActive to false
+            startTourAfterIntro();
         };
-    
-        requestAnimationFrame(moveCameraAround);
     };
 
     const startTourAfterIntro = () => {
