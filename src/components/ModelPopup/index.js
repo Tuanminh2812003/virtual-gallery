@@ -48,7 +48,7 @@ const ModelPopup = ({ open, onClose, imageUrl, info, model, video }) => {
                 )} */}
 
                 {video && (
-                    <audio controls src={video} autoPlay></audio>
+                    <audio controls src={video}></audio>
                 )}
 
             </DialogContent>

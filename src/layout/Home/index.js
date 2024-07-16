@@ -80,6 +80,7 @@ function Home(){
     // giao diện và respondsive
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [landscapePromptVisible, setLandscapePromptVisible] = useState(false);
+    const [navToggle, setNavToggle] = useState(false);
     // giao diện và respondsive
 
     // pop up
@@ -88,6 +89,11 @@ function Home(){
     const [popUpListModel, setPopUpListModel] = useState(false);
     const [popupOpen, setPopupOpen] = useState(false);
     // pop up
+
+    //audio
+    const [currentAudio, setCurrentAudio] = useState(null);
+    const [introAudio, setIntroAudio] = useState(null); 
+    //audio
 
     // HÀM
     // move
@@ -104,27 +110,27 @@ function Home(){
         console.log("handlePictureClick called with model:", model);
         console.log("handlePictureClick called with info:", info);
         console.log("handlePictureClick called with video", video);
-
+        
         const direction = new Vector3(0, 0, 22);
         const eulerRotation = new Euler(
             rotation[0] * (Math.PI / 180),
             rotation[1] * (Math.PI / 180),
             rotation[2] * (Math.PI / 180)
         );
-
+        
         direction.applyEuler(eulerRotation);
         const newCameraPosition = [
             position[0] + direction.x,
             position[1] + direction.y,
             position[2] + direction.z
         ];
-
+        
         const newCameraRotation = [
             rotation[0],
             rotation[1],
             rotation[2]
         ];
-
+        
         setTargetPosition(newCameraPosition);
         setTargetRotation(newCameraRotation);
         setSelectedImageUrl(imageUrl);
@@ -132,10 +138,10 @@ function Home(){
         setSelectedInfo(info);
         setSelectedVideo(video);
         setClicked(true);
-        setShowDetailsPrompt(true); // Show the details prompt
-        clearTimeout(promptTimeout); // Clear any existing timeout
-        setPromptTimeout(setTimeout(() => setShowDetailsPrompt(false), 5000)); // Hide the prompt after 5 seconds
-    }, []);
+        setShowDetailsPrompt(true); // Hiển thị chi tiết prompt
+        clearTimeout(promptTimeout); // Xóa timeout hiện tại nếu có
+        setPromptTimeout(setTimeout(() => setShowDetailsPrompt(false), 5000)); // Ẩn prompt sau 5 giây
+    }, [tourIndex, tourActive]);    
     
     const handleDetailClick = (imageUrl, info, video) => {
         setSelectedImageUrl(imageUrl);
@@ -144,13 +150,14 @@ function Home(){
         setPopupOpen(true);
         setShowDetailsPrompt(false); // Hide the details prompt when popup opens
         setTourPopupOpen(false); // Hide the tour popup when model popup opens
-
+    
         if (countdownInterval) {
             clearInterval(countdownInterval); // Dừng bộ đếm thời gian
             setCountdownInterval(null);
             setPaused(true); // Đặt trạng thái paused thành true
         }
     };
+    
 
     const updateCameraState = (position, rotation) => {
         setCameraPosition(new Vector3(position.x, position.y, position.z));
@@ -160,10 +167,22 @@ function Home(){
     // hàm xử lý sự kiện hoàn tất di chuyển camera
     const handleCameraMoveComplete = () => {
         setClicked(false); // Reset clicked state after camera move complete
-        if (tourActive) {
-            setTourPopupOpen(true); // Show tour popup when camera move completes during tour
+        if (tourActive && selectedVideo) {
+            if (currentAudio) {
+                currentAudio.pause();
+                setCurrentAudio(null);
+            }
+            const audio = new Audio(selectedVideo);
+            setCurrentAudio(audio); // Lưu đối tượng âm thanh hiện tại vào state
+            audio.play();
+    
+            audio.onended = () => {
+                if (tourActive) {
+                    moveToItem(tourIndex + 1);
+                }
+            };
         }
-    };
+    };    
 
     const handleListItemClick = (item) => {
         handlePictureClick(item.position, item.rotation, item.imageUrl, null, item.info);
@@ -192,6 +211,7 @@ function Home(){
         setTourActive(true);
         setIntroActive(true); // <-- Set introActive to true
         setFreeExploration(false);
+        setCountdown(300); // Đặt thời gian đếm ngược cho toàn bộ tour, ví dụ: 300 giây (5 phút)
         playIntroAudioAndMove();
     };
 
@@ -205,8 +225,7 @@ function Home(){
             const item = items[index];
             handlePictureClick(item.position, item.rotation, item.imageUrl, null, item.info, item.video);
             setTourIndex(index);
-            setCountdown(10);
-            setTourPopupOpen(true); // Show tour popup
+            setTourPopupOpen(true); // Hiển thị popup tour
         } else {
             endTour();
         }
@@ -216,34 +235,46 @@ function Home(){
         setTourActive(false);
         setTourIndex(0);
         setCountdown(0);
-        setTourPopupOpen(false); // Hide tour popup
-        setShowHowToMove(true); // Show HowToMove popup
+        setTourPopupOpen(false); // Ẩn popup tour
+        setShowHowToMove(true); // Hiển thị popup HowToMove
+    
         if (countdownInterval) {
             clearInterval(countdownInterval);
             setCountdownInterval(null);
         }
+    
+        if (currentAudio) {
+            currentAudio.pause(); // Dừng âm thanh hiện tại
+            setCurrentAudio(null); // Xóa đối tượng âm thanh hiện tại
+        }
+    
+        if (introAudio) { // Dừng intro audio nếu nó đang phát
+            introAudio.pause();
+            setIntroAudio(null);
+        }
     };
 
-    useEffect(() => {
-        if (tourActive && !introActive && !paused) { // <-- Check introActive state
-            const interval = setInterval(() => {
-                setCountdown(prevCountdown => {
-                    if (prevCountdown > 1) {
-                        return prevCountdown - 1;
-                    } else {
-                        moveToItem(tourIndex + 1);
-                        return 10;
-                    }
-                });
-            }, 1000);
-            setCountdownInterval(interval);
+    // useEffect(() => {
+    //     let interval = null;
+    //     if ((tourActive && introActive) || (tourActive && !introActive && !paused)) {
+    //         interval = setInterval(() => {
+    //             setCountdown(prevCountdown => {
+    //                 if (prevCountdown > 1) {
+    //                     return prevCountdown - 1;
+    //                 } else {
+    //                     endTour(); // Kết thúc tour khi countdown về 0
+    //                     return 0;
+    //                 }
+    //             });
+    //         }, 1000);
+    //     }
     
-            return () => {
-                clearInterval(interval);
-                setCountdownInterval(null);
-            };
-        }
-    }, [tourActive, introActive, tourIndex, paused]); // Add introActive to dependency array
+    //     return () => {
+    //         if (interval) {
+    //             clearInterval(interval);
+    //         }
+    //     };
+    // }, [tourActive, introActive, paused]);
     
     //click và các chức năng liên quan
 
@@ -268,25 +299,18 @@ function Home(){
         }
     };
 
-    const [navToggle, setNavToggle] = useState(false);
     const navHandler = () => {
         setNavToggle(prevData => !prevData);
     };
-    // giao diện và respondsive
 
     const updateItemsForScreenSize = (newItems) => {
         setItems(newItems);
     };
+    // giao diện và respondsive
 
     // pop up
     const handleClosePopup = () => {
         setPopupOpen(false);
-
-        // Chuyển tới model tiếp theo khi đóng popup
-        if (tourActive) {
-            setPaused(false); // Đặt lại trạng thái paused thành false
-            moveToItem(tourIndex + 1);
-        }
     };
 
     const handleCloseInstructions = () => {
@@ -347,18 +371,19 @@ function Home(){
         setLandscapePromptVisible(false);
     };
 
-    // Function to play intro audio and move camera
+    // phát audio
     const playIntroAudioAndMove = () => {
         const audio = new Audio('/assets/Audio/intro.mp3');
+        setIntroAudio(audio); // Lưu intro audio vào state
         audio.play();
-
+    
         let startTime = performance.now();
         const moveDuration = 22000;
-
+    
         const moveCameraAround = (time) => {
             const elapsedTime = time - startTime;
             const progress = elapsedTime / moveDuration;
-
+    
             if (progress < 1) {
                 // Calculate the camera position and rotation here to move around
                 const newCameraPosition = new THREE.Vector3(
@@ -371,10 +396,10 @@ function Home(){
                     progress * Math.PI * 2,
                     0
                 );
-
+    
                 setCameraPosition(newCameraPosition);
                 setCameraRotation(newCameraRotation);
-
+    
                 requestAnimationFrame(moveCameraAround);
             } else {
                 // Once the movement is done and the audio ends, start the tour
@@ -384,16 +409,16 @@ function Home(){
                 };
             }
         };
-
+    
         requestAnimationFrame(moveCameraAround);
     };
 
     const startTourAfterIntro = () => {
         setTourIndex(0);
-        setCountdown(10);
         setFreeExploration(false);
         moveToItem(0);
     };
+    // phát audio
 
     return(
         <>
@@ -649,11 +674,12 @@ function Home(){
                     {/* Pop up */}
 
                     {/* Đếm thời gian tour */}
-                    {tourActive && !introActive && (
+                    {tourActive && (
                         <div className="tour-countdown">
-                            {tourIndex < items.length ? (
+                            {countdown > 0 ? (
                                 <div>
-                                    <p>Next item in {countdown} seconds</p>
+                                    {/* <p>Tour will end in {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')} minutes</p> */}
+                                    <p>End tour</p>
                                 </div>
                             ) : (
                                 <div>
