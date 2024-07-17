@@ -1,3 +1,4 @@
+/* html */
 body,
 html {
     user-select: none; /* Ngăn chặn việc chọn văn bản */
@@ -12,7 +13,9 @@ html {
     position: relative;
     overflow: hidden;
 }
+/* html */
 
+/* dieukhien */
 .main .controler {
     display: flex;
     flex-direction: column;
@@ -38,7 +41,9 @@ html {
 .main .controler .controler__button:hover {
     opacity: 1;
 }
+/* dieukhien */
 
+/* popup */
 .instructions_button {
     position: absolute;
     top: 10px;
@@ -57,7 +62,9 @@ html {
 .instructions_button:hover {
     background-color: #115293;
 }
+/* popup */
 
+/* menu */
 .sidebarMain {
     display: flex;
     position: absolute;
@@ -192,7 +199,9 @@ html {
         opacity: 1;
     }
 }
+/* menu */
 
+/* tour */
 .tour-countdown {
     position: absolute;
     bottom: 10%;
@@ -206,24 +215,29 @@ html {
     text-align: center;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
 }
 
-.tour-countdown .endtour{
+.tour-countdown .end-tour{
     font-size: 20px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 30px;
-    border: 2px white solid;
-    border-radius: 100px;
-    padding: 5px;
     cursor: pointer;
 }
-.tour-countdown .endtour:hover{
+.tour-countdown .end-tour:hover{
     color: #5cb2d4;
-    border: 2px #5cb2d4 solid;
 }
+.tour-countdown .pause-tour{
+    font-size: 20px;
+    display: flex;
+    cursor: pointer;
+    margin-right: 20px;
+}
+.tour-countdown .pause-tour:hover{
+    color: #5cb2d4;
+}
+/* tour */
+
+/* minimap */
 .minimap-container {
     position: absolute;
     top: 10px;
@@ -278,30 +292,7 @@ html {
     align-items: center;
     text-align: center;
 }
-/* .landscape-prompt-content p{
-    font-family: Arial, Helvetica, sans-serif;
-
-} */
-.gif-rotate-phone {
-    border: none;
-    z-index: 1;
-}
-.iframe-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    z-index: 2; /* Đảm bảo overlay nằm trên iframe */
-  }
-  
-  .iframe-container {
-    position: relative;
-    display: inline-block; 
-  }
-
-  .minimap-label {
+.minimap-label {
     background: rgba(0, 0, 0, 0.7);
     color: #fff;
     padding: 5px;
@@ -353,4 +344,29 @@ html {
     font-size: 14px;
     border-radius: 3px;
 }
+/* minimap */
+/* .landscape-prompt-content p{
+    font-family: Arial, Helvetica, sans-serif;
 
+} */
+
+/* rotate */
+.gif-rotate-phone {
+    border: none;
+    z-index: 1;
+}
+.iframe-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 2; /* Đảm bảo overlay nằm trên iframe */
+}
+
+.iframe-container {
+    position: relative;
+    display: inline-block; 
+}
+/* rotate */

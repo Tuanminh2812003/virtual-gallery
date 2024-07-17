@@ -53,6 +53,20 @@ function Home(){
     const [yaw, setYaw] = useState(0);
     // move
 
+    //audio
+    const [introAudio, setIntroAudio] = useState(null); 
+    const [tourActive, setTourActive] = useState(false);
+    const [introActive, setIntroActive] = useState(false); // <-- Added state for intro phase
+    const [tourIndex, setTourIndex] = useState(0);
+    const [countdown, setCountdown] = useState(10); // Đặt mặc định là 10 giây
+    const [countdownInterval, setCountdownInterval] = useState(null);
+    const [paused, setPaused] = useState(false); // Thêm trạng thái paused
+    const [tourPopupOpen, setTourPopupOpen] = useState(false); // <-- Added state for tour popup
+    const [freeExploration, setFreeExploration] = useState(true); // <-- Added state for free exploration
+    const [introPausedTime, setIntroPausedTime] = useState(0); // Thời gian đã phát của intro audio
+    const [currentAudio, setCurrentAudio] = useState(null); // Để lưu lại audio hiện tại khi pause
+    //audio
+
     // click và các chức năng liên quan
     const [clicked, setClicked] = useState(false);
     const [targetPosition, setTargetPosition] = useState([0, 0, 0]);
@@ -62,19 +76,12 @@ function Home(){
     const [selectedInfo, setSelectedInfo] = useState(null); 
     const [selectedVideo, setSelectedVideo] = useState(null);
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
-    const [tourActive, setTourActive] = useState(false);
-    const [introActive, setIntroActive] = useState(false); // <-- Added state for intro phase
-    const [tourIndex, setTourIndex] = useState(0);
-    const [countdown, setCountdown] = useState(10); // Đặt mặc định là 10 giây
-    const [countdownInterval, setCountdownInterval] = useState(null);
-    const [paused, setPaused] = useState(false); // Thêm trạng thái paused
     const [cameraPosition, setCameraPosition] = useState(new Vector3(0, 5, 0));
     const [cameraRotation, setCameraRotation] = useState(new Euler(0, yaw, 0));
     const [showDetailsPrompt, setShowDetailsPrompt] = useState(false); // <-- Added state for details prompt
     const [promptTimeout, setPromptTimeout] = useState(null); // <-- Added state for prompt timeout
-    const [tourPopupOpen, setTourPopupOpen] = useState(false); // <-- Added state for tour popup
-    const [freeExploration, setFreeExploration] = useState(true); // <-- Added state for free exploration
     const [showHowToMove, setShowHowToMove] = useState(true); // <-- Added state for how to move popup
+    const [popupOpen, setPopupOpen] = useState(false); // <-- Added state for model popup
     // click và các chức năng liên quan
 
     // giao diện và respondsive
@@ -87,13 +94,7 @@ function Home(){
     const [instructionsOpen, setInstructionsOpen] = useState(true);
     const [popUpAboutTheExhibition, setPopUpAboutTheExhibition] = useState(false);
     const [popUpListModel, setPopUpListModel] = useState(false);
-    const [popupOpen, setPopupOpen] = useState(false);
     // pop up
-
-    //audio
-    const [currentAudio, setCurrentAudio] = useState(null);
-    const [introAudio, setIntroAudio] = useState(null); 
-    //audio
 
     // HÀM
     // move
@@ -156,8 +157,15 @@ function Home(){
             setCountdownInterval(null);
             setPaused(true); // Đặt trạng thái paused thành true
         }
-    };
     
+        if (currentAudio) {
+            currentAudio.pause(); // Dừng audio hiện tại nếu có
+        }
+        const audio = new Audio(video);
+        setCurrentAudio(audio);
+        audio.play();
+        audio.onended = handleAudioEnded;
+    };    
 
     const updateCameraState = (position, rotation) => {
         setCameraPosition(new Vector3(position.x, position.y, position.z));
@@ -167,22 +175,10 @@ function Home(){
     // hàm xử lý sự kiện hoàn tất di chuyển camera
     const handleCameraMoveComplete = () => {
         setClicked(false); // Reset clicked state after camera move complete
-        if (tourActive && selectedVideo) {
-            if (currentAudio) {
-                currentAudio.pause();
-                setCurrentAudio(null);
-            }
-            const audio = new Audio(selectedVideo);
-            setCurrentAudio(audio); // Lưu đối tượng âm thanh hiện tại vào state
-            audio.play();
-    
-            audio.onended = () => {
-                if (tourActive) {
-                    moveToItem(tourIndex + 1);
-                }
-            };
+        if (tourActive) {
+            setPopupOpen(true); // Tự động mở popup khi di chuyển đến bức tranh
         }
-    };    
+    };
 
     const handleListItemClick = (item) => {
         handlePictureClick(item.position, item.rotation, item.imageUrl, null, item.info);
@@ -208,6 +204,16 @@ function Home(){
     };
 
     const startTour = () => {
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            setCountdownInterval(null);
+        }
+        
+        if (introAudio) {
+            introAudio.pause(); // Dừng intro audio nếu nó đang phát
+            setIntroAudio(null); // Xóa đối tượng intro audio
+        }
+    
         setTourActive(true);
         setIntroActive(true); // <-- Set introActive to true
         setFreeExploration(false);
@@ -225,7 +231,7 @@ function Home(){
             const item = items[index];
             handlePictureClick(item.position, item.rotation, item.imageUrl, null, item.info, item.video);
             setTourIndex(index);
-            setTourPopupOpen(true); // Hiển thị popup tour
+            // setTourPopupOpen(true); 
         } else {
             endTour();
         }
@@ -242,41 +248,57 @@ function Home(){
             clearInterval(countdownInterval);
             setCountdownInterval(null);
         }
-    
-        if (currentAudio) {
-            currentAudio.pause(); // Dừng âm thanh hiện tại
-            setCurrentAudio(null); // Xóa đối tượng âm thanh hiện tại
-        }
-    
-        if (introAudio) { // Dừng intro audio nếu nó đang phát
-            introAudio.pause();
-            setIntroAudio(null);
+        
+        if (introAudio) {
+            introAudio.pause(); // Dừng intro audio nếu nó đang phát
+            setIntroAudio(null); // Xóa đối tượng intro audio
         }
     };
 
-    // useEffect(() => {
-    //     let interval = null;
-    //     if ((tourActive && introActive) || (tourActive && !introActive && !paused)) {
-    //         interval = setInterval(() => {
-    //             setCountdown(prevCountdown => {
-    //                 if (prevCountdown > 1) {
-    //                     return prevCountdown - 1;
-    //                 } else {
-    //                     endTour(); // Kết thúc tour khi countdown về 0
-    //                     return 0;
-    //                 }
-    //             });
-    //         }, 1000);
-    //     }
+    // pauseTour function to pause the tour
+    const pauseTour = () => {
+        setPaused(true);
+        setFreeExploration(true);
     
-    //     return () => {
-    //         if (interval) {
-    //             clearInterval(interval);
-    //         }
-    //     };
-    // }, [tourActive, introActive, paused]);
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            setCountdownInterval(null);
+        }
     
-    //click và các chức năng liên quan
+        if (introActive && introAudio) {
+            introAudio.pause(); // Dừng intro audio
+            setIntroPausedTime(introAudio.currentTime); // Lưu thời gian đã phát
+        } else if (currentAudio) {
+            currentAudio.pause(); // Dừng audio của tranh
+        }
+    };
+
+    // continueTour function to continue the tour
+    const continueTour = () => {
+        setPaused(false);
+        setFreeExploration(false);
+    
+        if (introActive && introAudio) {
+            introAudio.currentTime = introPausedTime; // Tiếp tục từ thời gian đã tạm dừng
+            introAudio.play();
+        } else if (currentAudio) {
+            currentAudio.play(); // Tiếp tục audio của tranh
+        } else {
+            moveToItem(tourIndex); // Di chuyển đến tranh hiện tại trong tour
+        }
+    
+        let interval = setInterval(() => {
+            setCountdown(prevCountdown => {
+                if (prevCountdown > 1) {
+                    return prevCountdown - 1;
+                } else {
+                    endTour();
+                    return 0;
+                }
+            });
+        }, 1000);
+        setCountdownInterval(interval);
+    };    
 
     // giao diện và respondsive
     useEffect(() => {
@@ -311,7 +333,14 @@ function Home(){
     // pop up
     const handleClosePopup = () => {
         setPopupOpen(false);
-    };
+        if (currentAudio) {
+            currentAudio.pause(); // Dừng audio hiện tại
+            setCurrentAudio(null); // Xóa đối tượng audio hiện tại
+        }
+        if (tourActive && !paused) {
+            moveToItem(tourIndex + 1);
+        }
+    };    
 
     const handleCloseInstructions = () => {
         setInstructionsOpen(false);
@@ -388,6 +417,15 @@ function Home(){
         setFreeExploration(false);
         moveToItem(0);
     };
+
+    const handleAudioEnded = () => {
+        setCurrentAudio(null); // Xóa đối tượng audio hiện tại sau khi phát xong
+        setPopupOpen(false);
+        if (tourActive && !paused) {
+            moveToItem(tourIndex + 1);
+        }
+    };    
+    
     // phát audio
 
     return(
@@ -637,7 +675,7 @@ function Home(){
                     {/* Nút bấm di chuyển */}
 
                     {/* Pop up */}
-                    <ModelPopup open={popupOpen} onClose={handleClosePopup} imageUrl={selectedImageUrl} info={selectedInfo} model={selectedModel} video={selectedVideo}/>
+                    <ModelPopup open={popupOpen} onClose={handleClosePopup} imageUrl={selectedImageUrl} info={selectedInfo} model={selectedModel} video={selectedVideo} onAudioEnded={handleAudioEnded}/>
                     <PopUpHowToMove open={showHowToMove} handleClose={handleCloseHowToMove} />
                     <PopUpAboutTheExhibition open={popUpAboutTheExhibition} handleClose={handleClosePopUpAboutTheExhibition} />
                     <PopUpListModel open={popUpListModel} onClose={handleClosePopUpListModel} items={items} onItemClick={handleListItemClick} /> {/* List Popup */}
@@ -646,18 +684,17 @@ function Home(){
                     {/* Đếm thời gian tour */}
                     {tourActive && (
                         <div className="tour-countdown">
-                            {countdown > 0 ? (
-                                <div>
-                                    {/* <p>Tour will end in {Math.floor(countdown / 60)}:{(countdown % 60).toString().padStart(2, '0')} minutes</p> */}
-                                    <p>End tour</p>
+                            {!paused ? (
+                                <div className="pause-tour" onClick={pauseTour}>
+                                    Pause Tour
                                 </div>
                             ) : (
-                                <div>
-                                    <p>Tour finished!</p>
+                                <div className="pause-tour" onClick={continueTour}>
+                                    Continue Tour
                                 </div>
                             )}
-                            <div className='endtour' onClick={endTour}>
-                                <FaPause />
+                            <div className="end-tour" onClick={endTour}>
+                                End Tour
                             </div>
                         </div>
                     )}
