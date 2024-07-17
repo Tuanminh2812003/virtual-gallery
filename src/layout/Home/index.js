@@ -204,6 +204,7 @@ function Home(){
     };
 
     const startTour = () => {
+        setPaused(false);
         if (countdownInterval) {
             clearInterval(countdownInterval);
             setCountdownInterval(null);
@@ -238,6 +239,7 @@ function Home(){
     };
 
     const endTour = () => {
+        setPaused(false);
         setTourActive(false);
         setTourIndex(0);
         setCountdown(0);
