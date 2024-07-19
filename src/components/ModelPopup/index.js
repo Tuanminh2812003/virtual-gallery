@@ -5,7 +5,7 @@ import { OrbitControls } from '@react-three/drei';
 import PictureFrame from '../../components/PictureFrame';
 import "./ModelPopUp.css";
 
-const ModelPopup = ({ open, onClose, imageUrl, info, model, video, onAudioEnded }) => {
+const ModelPopup = ({ open, onClose, imageUrl, info, model, video, onAudioEnded, tourActive }) => {
     const audioRef = useRef(null);
 
     useEffect(() => {
@@ -17,6 +17,13 @@ const ModelPopup = ({ open, onClose, imageUrl, info, model, video, onAudioEnded 
             };
         }
     }, [onAudioEnded]);
+
+    useEffect(() => {
+        const audioElement = audioRef.current;
+        if (audioElement && !tourActive) {
+            audioElement.pause(); // Dừng phát âm thanh khi không ở chế độ tour
+        }
+    }, [tourActive]);
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -45,8 +52,12 @@ const ModelPopup = ({ open, onClose, imageUrl, info, model, video, onAudioEnded 
                     <div>Không có thông tin để hiển thị</div>
                 )}
 
-                {video && (
+                {video && tourActive && (
                     <audio ref={audioRef} controls src={video} autoPlay></audio>
+                )}
+
+                {video && !tourActive && (
+                    <audio ref={audioRef} controls src={video}></audio>
                 )}
 
             </DialogContent>

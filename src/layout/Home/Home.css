@@ -216,6 +216,12 @@ html {
     display: flex;
     align-items: center;
     justify-content: space-around;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.tour-countdown.show {
+    opacity: 1;
 }
 
 .tour-countdown .end-tour{
