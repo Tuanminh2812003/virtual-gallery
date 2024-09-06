@@ -1,56 +1,41 @@
 // src/components/MinhTestMotion/MinhTestMotion.js
-import React, { useRef, useEffect } from 'react';
-import { useLoader, useFrame } from '@react-three/fiber';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { clone } from 'three/examples/jsm/utils/SkeletonUtils'; // Import clone
-import { AnimationMixer } from 'three'; // Import AnimationMixer
-import { Euler } from 'three';
+import React, { useRef, useEffect } from "react";
+import { useLoader, useFrame } from "@react-three/fiber";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { AnimationMixer } from "three";
 
-function MinhTestMotion({ position, rotation, scale, onClick }) {
-    const gltf = useLoader(GLTFLoader, '/assets/MinhTestMotion/Whale_anim_v4.glb');
-    const ref = useRef();
+function MinhTestMotion({ gltfPath, position, rotation, scale }) {
+    // Load GLTF model
+    const gltf = useLoader(GLTFLoader, gltfPath);
+    const modelRef = useRef();
     const mixer = useRef();
-    const clonedScene = useRef();
 
     useEffect(() => {
-        if (!clonedScene.current) {
-            clonedScene.current = clone(gltf.scene);
-            if (gltf.animations.length > 0) {
-                mixer.current = new AnimationMixer(clonedScene.current);
-                gltf.animations.forEach((clip) => {
-                    mixer.current.clipAction(clip).play();
-                });
-            }
+        // Initialize AnimationMixer and play all animations
+        if (gltf && gltf.animations && gltf.animations.length > 0) {
+            mixer.current = new AnimationMixer(gltf.scene);
+            gltf.animations.forEach((clip) => {
+                mixer.current.clipAction(clip).play();
+            });
         }
+    }, [gltf]);
 
-        if (ref.current && !ref.current.children.length) {
-            ref.current.add(clonedScene.current);
-            ref.current.rotation.set(
-                rotation[0] * (Math.PI / 180),
-                (rotation[1] + 90) * (Math.PI / 180),
-                rotation[2] * (Math.PI / 180)
-            );
-        }
-
-        return () => {
-            if (mixer.current) {
-                mixer.current.stopAllAction();
-            }
-        };
-    }, [gltf, rotation]);
-
+    // Update animation on each frame
     useFrame((state, delta) => {
-        mixer.current?.update(delta);
+        if (mixer.current) {
+            mixer.current.update(delta);
+        }
     });
 
-    const handleClick = () => {
-        if (onClick) {
-            onClick(position, rotation, clonedScene.current);
-        }
-    };
-
     return (
-        <group ref={ref} position={position} scale={scale} onClick={handleClick} />
+        <group
+            ref={modelRef}
+            position={position}
+            scale={scale}
+            rotation={rotation}
+        >
+            <primitive object={gltf.scene} />
+        </group>
     );
 }
 
