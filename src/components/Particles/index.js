@@ -4,7 +4,7 @@ import { TextureLoader } from "three";
 
 export default function Particles({ texturePath, position, scale, rotation }) {
     const particlesRef = useRef();
-    const particleCount = 1000;
+    const particleCount = 500;
     const particlePositions = new Float32Array(particleCount * 3);
 
     // Load the texture from the provided path

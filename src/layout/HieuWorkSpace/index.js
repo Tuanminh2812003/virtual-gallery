@@ -538,11 +538,16 @@ function Home() {
                             <Particles
                                 texturePath="/assets/-Pngtree-golden magic beam particles_5053167.png" 
                                 position={[0, 5, 0]} 
-                                scale={0.09} 
+                                scale={0.3} 
                                 rotation={[0, 0, 0]} 
                             />
                             <ambientLight intensity={2.2} />
-
+                            <MinhTestMotion
+                                path={"/Version_1/Phoenix-V1.glb"}
+                                rotation={[0, 0, 0]}
+                                position={[0, 5, 0]}
+                                scale={[50, 50, 50]}
+                            />
                             {/* Chiếu sáng các model cụ thể */}
                             <SpotLight
                                 position={[-10, 25, -5]}

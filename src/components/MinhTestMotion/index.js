@@ -4,9 +4,9 @@ import { useLoader, useFrame } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { AnimationMixer } from "three";
 
-function MinhTestMotion({ gltfPath, position, rotation, scale }) {
+function MinhTestMotion({ path, position, rotation, scale }) {
     // Load GLTF model
-    const gltf = useLoader(GLTFLoader, gltfPath);
+    const gltf = useLoader(GLTFLoader, path);
     const modelRef = useRef();
     const mixer = useRef();
 
