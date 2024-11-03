@@ -495,21 +495,45 @@ function Home(){
                                 clickable={false}
                             /> 
 
-                            <RectAreaLight position={[0,10,10]} color="red" intensity={10} lookAt={[0,5,0]}/>
+                            {/* <RectAreaLight position={[0,10,10]} color="red" intensity={10} lookAt={[0,5,0]}/>
                             <RectAreaLight position={[0,10,-10]} color="blue" intensity={10} lookAt={[0,5,0]}/>
-                            <RectAreaLight position={[-10,10,5]} color="pink" intensity={10} lookAt={[0,5,0]}/>
+                            <RectAreaLight position={[-10,10,5]} color="pink" intensity={10} lookAt={[0,5,0]}/> */}
 
                             <SpotLight
                                 position={[0, 8, 0]}
-                                intensity={5}
+                                intensity={10}
                                 angle={360}
                                 penumbra={1}
                                 distance={0}
                                 decay={1}
+                                color="pink"
+                                castShadow
+                            />
+                            <SpotLight
+                                position={[2, 8, 0]}
+                                intensity={10}
+                                angle={360}
+                                penumbra={1}
+                                distance={0}
+                                decay={1}
+                                color="yellow"
+                                castShadow
+                            />
+                            <directionalLight 
+                                position={[0, 10, 10]} 
+                                color="red" 
+                                intensity={5} 
+                                castShadow
+                                penumbra={1}
+                            />
+                            <directionalLight 
+                                position={[0, 10, -10]} 
+                                color="blue" 
+                                intensity={5} 
                                 castShadow
                             />
                             
-                            <ambientLight intensity={0.2} />
+                            <ambientLight intensity={1.5} />
 
                             {/* Chiếu sáng các model cụ thể */}
                             
