@@ -497,6 +497,7 @@ function Home(){
 
                             <RectAreaLight position={[0,10,10]} color="red" intensity={10} lookAt={[0,5,0]}/>
                             <RectAreaLight position={[0,10,-10]} color="blue" intensity={10} lookAt={[0,5,0]}/>
+                            <RectAreaLight position={[-10,10,5]} color="pink" intensity={10} lookAt={[0,5,0]}/>
                             
                             <ambientLight intensity={2.2} />
 
