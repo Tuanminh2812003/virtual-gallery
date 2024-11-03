@@ -15,6 +15,7 @@ import MinhTestPicture from '../../components/MinhTestPicture'; // model động
 import ResizeHandler from '../../action/ResizeElement2'; // responsive model
 import { SpotLight } from '@react-three/drei';
 import Minimap from '../../components/Minimap';
+import RectAreaLight from '../../components/RectAreaLight'
 
 import Particles from "./../../components/Particles/index";
 
@@ -493,6 +494,10 @@ function Home(){
                                 //phong to hon
                                 clickable={false}
                             /> 
+
+                            <RectAreaLight position={[0,10,10]} color="red" intensity={10} lookAt={[0,5,0]}/>
+                            <RectAreaLight position={[0,10,-10]} color="blue" intensity={10} lookAt={[0,5,0]}/>
+                            
                             <ambientLight intensity={2.2} />
 
                             <Particles
