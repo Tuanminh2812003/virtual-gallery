@@ -12,9 +12,9 @@ export default function Particles({ texturePath, position, scale, rotation }) {
 
     // Generate random positions for particles
     for (let i = 0; i < particleCount; i++) {
-        particlePositions[i * 3] = ((Math.random() - 0.5) * 10) ; // Scale X
-        particlePositions[i * 3 + 1] = ((Math.random() - 0.5) * 10) ; // Scale Y
-        particlePositions[i * 3 + 2] = ((Math.random() - 0.5) * 10)  // Scale Z
+        particlePositions[i * 3] = ((Math.random() - 0.5) * 70) ; // Scale X
+        particlePositions[i * 3 + 1] = ((Math.random() - 0.5) * 40) ; // Scale Y
+        particlePositions[i * 3 + 2] = ((Math.random() - 0.5) * 70)  // Scale Z
     }
 
     // Rotate particles on each frame for dynamic effect

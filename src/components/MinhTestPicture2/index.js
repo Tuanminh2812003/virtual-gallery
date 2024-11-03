@@ -6,7 +6,7 @@ import { clone } from 'three/examples/jsm/utils/SkeletonUtils'; // Import clone
 import { Euler } from 'three';
 
 function MinhTestPicture2({ position, rotation, scale, onClick }) {
-    const gltf = useLoader(GLTFLoader, '/assets/MinhTestPicture2/Tiger.glb');
+    const gltf = useLoader(GLTFLoader, '/assets/MinhTestPicture2/photoboothkv1-UV-SEND-Client.glb');
     const ref = useRef();
 
     useEffect(() => {

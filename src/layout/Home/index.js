@@ -36,7 +36,6 @@ import { PiListStarFill } from "react-icons/pi";
 import { BsNewspaper } from "react-icons/bs";
 import { MdSkipNext } from "react-icons/md";
 import { MdSkipPrevious } from "react-icons/md";
-import { FaPause } from "react-icons/fa";
 
 // Extend THREE with custom geometries
 extend({ PlaneGeometry: THREE.PlaneGeometry, BoxGeometry: THREE.BoxGeometry });
@@ -44,7 +43,7 @@ extend({ PlaneGeometry: THREE.PlaneGeometry, BoxGeometry: THREE.BoxGeometry });
 function Home(){
     // mảng items các bức tranh để làm tour
     const [items, setItems] = useState([
-        // Your items here...
+        // Thêm items trong action/ResizeElement2
     ]);
     // mảng items các bức tranh để làm tour
 
@@ -318,7 +317,7 @@ function Home(){
             }
             countdownTimeout.current = setTimeout(() => {
                 setShowCountdown(false);
-            }, 1000); // Thời gian ẩn countdown sau 2 giây không có hoạt động chuột
+            }, 1000); // Thời gian ẩn countdown sau 1 giây không có hoạt động chuột
         };
     
         window.addEventListener('mousemove', handleMouseMove);
