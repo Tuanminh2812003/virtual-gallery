@@ -10,6 +10,7 @@ import Features from './layout/HuyenWorkSpace/features'
 import Pricing from './layout/HuyenWorkSpace/pricing'
 import Contact from './layout/HuyenWorkSpace/contact'
 import HieuWorkSpace from './layout/HieuWorkSpace';
+import Minh2 from './layout/Minh2';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path='/contact' element={<Contact/>}/>
         <Route path='/hieu' element={<HieuWorkSpace/>}/>
         <Route path='/minh' element={<MinhWorkSpace/>}/>
+        <Route path='/minh2' element={<Minh2/>}/>
 
         <Route path='/home' element={<Home/>}/>
       </Routes>

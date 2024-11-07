@@ -20,6 +20,7 @@ const CameraClick = ({ targetPosition, targetRotation, clicked, setClicked, onMo
 
     useEffect(() => {
         if (clicked) {
+            console.log('CameraClick: clicked is true');
             startPos.current.copy(camera.position);
             startQuat.current.copy(camera.quaternion);
             endPos.current.set(...targetPosition);
@@ -34,6 +35,8 @@ const CameraClick = ({ targetPosition, targetRotation, clicked, setClicked, onMo
             console.log('Camera start rotation:', startQuat.current);
             console.log('Camera target position:', endPos.current);
             console.log('Camera target rotation:', endQuat.current);
+        } else{
+            console.log('CameraClick: clicked is false');
         }
     }, [clicked, camera.position, camera.quaternion, targetPosition, targetRotation]);
 
@@ -63,6 +66,7 @@ const CameraClick = ({ targetPosition, targetRotation, clicked, setClicked, onMo
                 console.log('Camera final rotation:', camera.rotation);
                 setYaw(camera.rotation.y);
                 setClicked(false);
+                console.log('setClicked(false) has been called');
                 updateCameraState(camera.position, camera.rotation);
                 if (onMoveComplete) onMoveComplete();
             }

@@ -1,20 +1,18 @@
-import React from 'react';
 import { usePlane } from '@react-three/cannon';
 
-const Ground = ({ position, rotation, color, opacity, args, mass = 0 }) => {
-    const [ref] = usePlane(() => ({
-        position,
-        rotation,
-        mass, // Mass for the ground, even though it's usually static
-        type: mass > 0 ? 'Dynamic' : 'Static', // Set type based on mass
-    }));
+const Ground = () => {
+  const [ref] = usePlane(() => ({
+    type: 'Static',
+    position: [0, 0, 0], // Đặt mặt đất tại y = 0
+    rotation: [-Math.PI / 2, 0, 0], // Xoay để mặt phẳng nằm ngang
+  }));
 
-    return (
-        <mesh ref={ref} castShadow receiveShadow>
-            <planeGeometry args={args} />
-            <meshStandardMaterial color={color} opacity={opacity} transparent />
-        </mesh>
-    );
+  return (
+    <mesh ref={ref} receiveShadow>
+      <planeGeometry args={[200, 200]} />
+      <meshStandardMaterial color="green" />
+    </mesh>
+  );
 };
 
 export default Ground;

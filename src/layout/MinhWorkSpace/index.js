@@ -1,15 +1,19 @@
 import React, { useState, lazy, Suspense, useEffect, useRef, useCallback } from 'react';
 import { Canvas, extend, useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { Physics } from '@react-three/cannon';
 
 // camera và move
 import { CameraProvider } from '../../helpers/CameraContext';
 import Movement from '../../action/Movement/index';
+import Movement2 from '../../action/Movement2/index';
+
 import CameraClick from '../../action/CameraClick';
 import { Vector3, Euler } from 'three';
 
 // môi trường và model
 import ModelLoader from '../../components/ModelLoader/index'; // model tĩnh
+
 import PictureFrame from '../../components/PictureFrame'; // hình ảnh
 import MinhTestPicture from '../../components/MinhTestPicture'; // model động
 import ResizeHandler from '../../action/ResizeElement2'; // responsive model
@@ -43,6 +47,158 @@ import { MdSkipPrevious } from "react-icons/md";
 extend({ PlaneGeometry: THREE.PlaneGeometry, BoxGeometry: THREE.BoxGeometry });
 
 function Home(){
+
+    const modelsConfig = [
+        {
+            path: "/assets/space1/Space.glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Bamboo (2.1, 7.5, 0.3).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Dress Place (4, 6.3, 0).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Emotional Wall (-2.16354, -9.367, 2.6).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Fan (1.1, 0, 0).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Picture Pillar (-6, 2.5, 0).glb",
+            position: [0, 0, -5],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Picture Pillar (-6, -2.5, 0).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Screen (-5.41623, 8.11999, 2.8).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Figure/Figure (3.7, -6.29943, 1.2).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Figure/Figure (5.1, -4.89943, 1.2).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Figure/Figure (6.5, -3.49943, 1.2).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Figure/Figure Pillar (3.7, -6.29943, 0).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Figure/Figure Pillar (5.1, -4.89943, 0).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Figure/Figure Pillar (6.5, -3.49943, 0).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Ma-no-canh/Ma-no-canh (0.09, -1.4, 0.3).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Ma-no-canh/Ma-no-canh (0.09, 1.5, 0.3).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Ma-no-canh/Ma-no-canh (1.5, 0.9, 0.3).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Ma-no-canh/Ma-no-canh (1.6, -0.9, 0.3).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Ma-no-canh/Ma-no-canh (4.2, 6.1, 0.3).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Ma-no-canh/Ma-no-canh (5.3, 5.1, 0.3).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space1/Ma-no-canh/Ma-no-canh (6.25, 4.1, 0.3).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        }
+        // Add more models as needed
+    ];
+
     // mảng items các bức tranh để làm tour
     const [items, setItems] = useState([
         // Your items here...
@@ -70,7 +226,7 @@ function Home(){
     const [selectedInfo, setSelectedInfo] = useState(null); 
     const [selectedVideo, setSelectedVideo] = useState(null);
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
-    const [cameraPosition, setCameraPosition] = useState(new Vector3(-12, 5, 0));
+    const [cameraPosition, setCameraPosition] = useState(new Vector3(0, 1.6, 0));
     const [cameraRotation, setCameraRotation] = useState(new Euler(0, -1 * Math.PI / 2, 0));
     const [showDetailsPrompt, setShowDetailsPrompt] = useState(false); // <-- Added state for details prompt
     const [promptTimeout, setPromptTimeout] = useState(null); // <-- Added state for prompt timeout
@@ -484,76 +640,63 @@ function Home(){
                     {/* Thông báo xoay màn hình */}
                     <Canvas shadows>
                         <Suspense fallback={null}>
+                                {/* Môi trường */}
 
-                            {/* Môi trường */}
-                            <ModelLoader 
-                                path={"/assets/Test Space.glb"} 
-                                rotation={[0, Math.PI / 2, 0]}
-                                position={[0, 3.8, 0]} 
-                                scale={[1, 1, 1]}
-                                //phong to hon
-                                clickable={false}
-                            /> 
+                                {/* Render các ModelLoader từ mảng config */}
+                                {modelsConfig.map((modelProps, index) => (
+                                    <ModelLoader key={index} {...modelProps} />
+                                ))}
+                                
 
-                            {/* <RectAreaLight position={[0,10,10]} color="red" intensity={10} lookAt={[0,5,0]}/>
-                            <RectAreaLight position={[0,10,-10]} color="blue" intensity={10} lookAt={[0,5,0]}/>
-                            <RectAreaLight position={[-10,10,5]} color="pink" intensity={10} lookAt={[0,5,0]}/> */}
+                                {/* <RectAreaLight position={[0,10,10]} color="red" intensity={10} lookAt={[0,5,0]}/>
+                                <RectAreaLight position={[0,10,-10]} color="blue" intensity={10} lookAt={[0,5,0]}/>
+                                <RectAreaLight position={[-10,10,5]} color="pink" intensity={10} lookAt={[0,5,0]}/> */}
 
-                            <SpotLight
-                                position={[0, 8, 0]}
-                                intensity={10}
-                                angle={360}
-                                penumbra={1}
-                                distance={0}
-                                decay={1}
-                                color="pink"
-                                castShadow
-                            />
-                            <SpotLight
-                                position={[2, 8, 0]}
-                                intensity={10}
-                                angle={360}
-                                penumbra={1}
-                                distance={0}
-                                decay={1}
-                                color="yellow"
-                                castShadow
-                            />
-                            <directionalLight 
-                                position={[0, 10, 10]} 
-                                color="red" 
-                                intensity={5} 
-                                castShadow
-                                penumbra={1}
-                            />
-                            <directionalLight 
-                                position={[0, 10, -10]} 
-                                color="blue" 
-                                intensity={5} 
-                                castShadow
-                            />
-                            
-                            <ambientLight intensity={1.5} />
+                                <SpotLight
+                                    position={[2, 8, 0]}
+                                    intensity={10}
+                                    angle={360}
+                                    penumbra={1}
+                                    distance={0}
+                                    decay={1}
+                                    color="yellow"
+                                    castShadow
+                                />
+                                <directionalLight 
+                                    position={[0, 10, 10]} 
+                                    color="red" 
+                                    intensity={5} 
+                                    castShadow
+                                    penumbra={1}
+                                />
+                                <directionalLight 
+                                    position={[0, 10, -10]} 
+                                    color="blue" 
+                                    intensity={5} 
+                                    castShadow
+                                />
+                                
+                                <ambientLight intensity={1.5} />
 
-                            {/* Chiếu sáng các model cụ thể */}
-                            
-                            {/* Môi trường */}
+                                {/* Chiếu sáng các model cụ thể */}
+                                
+                                {/* Môi trường */}
 
-                            {/* item */}
-                            
-                            {/* item */}
+                                {/* item */}
+                                
+                                {/* item */}
 
-                            {/* Hàm bổ trợ */}
-                            <CameraClick
-                                targetPosition={targetPosition}
-                                targetRotation={targetRotation}
-                                clicked={clicked}
-                                setClicked={setClicked}
-                                onMoveComplete={handleCameraMoveComplete}
-                                updateCameraState={updateCameraState}
-                            />
-                            {!clicked && <Movement cameraPosition={cameraPosition} cameraRotation={cameraRotation} clicked={clicked} freeExploration={freeExploration} />}
-                            {/* Hàm bổ trợ */}
+                                {/* Hàm bổ trợ */}
+                                <CameraClick
+                                    targetPosition={targetPosition}
+                                    targetRotation={targetRotation}
+                                    clicked={clicked}
+                                    setClicked={setClicked}
+                                    onMoveComplete={handleCameraMoveComplete}
+                                    updateCameraState={updateCameraState}
+                                />
+                                {!clicked && <Movement2 cameraPosition={cameraPosition} cameraRotation={cameraRotation} clicked={clicked} freeExploration={freeExploration} />}
+                                {/* Hàm bổ trợ */}
                         </Suspense>
                     </Canvas>
 
