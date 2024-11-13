@@ -15,6 +15,8 @@ import { Vector3, Euler } from 'three';
 // môi trường và model
 import ModelLoader from '../../components/ModelLoader/index'; // model tĩnh
 import ModelLoader2 from '../../components/ModelLoader2/index'; // model tĩnh
+import ModelLoaderWithVideo from '../../components/ModelLoaderWithVideo';
+import ModelInspector from '../../helpers/ModelInspector';
 
 import PictureFrame from '../../components/PictureFrame'; // hình ảnh
 import MinhTestPicture from '../../components/MinhTestPicture'; // model động
@@ -24,8 +26,6 @@ import Minimap from '../../components/Minimap';
 import RectAreaLight from '../../components/RectAreaLight'
 
 import Particles from "./../../components/Particles/index";
-
-import ModelLoaderWithVideo from '../../components/ModelLoaderWithVideo';
 
 // pop up
 import ModelPopup from '../../components/ModelPopup';
@@ -55,7 +55,7 @@ function Home2(){
     const modelsConfig = [
         // {
         //     path: "/assets/space2/All.glb",
-        //     position: [0, 0, 0],
+        //     position: [0, 0, 10],
         //     rotation: [0, 0, 0],
         //     scale: [1, 1, 1],
         //     clickable: false,
@@ -109,13 +109,13 @@ function Home2(){
             scale: [1, 1, 1],
             clickable: false,
         },
-        {
-            path: "/assets/space2/Screen (-3.3129, 8.87313, 2.6).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
+        // {
+        //     path: "/assets/space2/Screen (-3.3129, 8.87313, 2.6).glb",
+        //     position: [0, 0, 0],
+        //     rotation: [0, 0, 0],
+        //     scale: [1, 1, 1],
+        //     clickable: false,
+        // },
         {
             path: "/assets/space2/Figure/Figure (3.7, -6.29943, 1.2).glb",
             position: [0, 0, 0],
@@ -664,13 +664,15 @@ function Home2(){
                                     <ModelLoader2 key={index} {...modelProps} />
                                 ))}
 
-                                {/* <ModelLoaderWithVideo 
-                                path={'/assets/space2/Screen (-4.45647, 8.53096, 2.6).glb'}
-                                position={[8,0,8]}
-                                rotation={[0,0,0]}
-                                scale={[1,1,1]}
-                                videoUrl={'/assets/space1/video/video2.mp4'}/> */}
-                                
+                                {/* <ModelInspector path="/assets/space2/untitled.glb" /> */}
+
+                                <ModelLoaderWithVideo
+                                    path="/assets/space2/untitled.glb"
+                                    position={[0, 0, 0]}
+                                    rotation={[0, 0, 0]}
+                                    scale={[1, 1, 1]}
+                                    videoUrl="/assets/video/video1_1.mp4"
+                                />
 
                                 {/* <RectAreaLight position={[0,10,10]} color="red" intensity={10} lookAt={[0,5,0]}/>
                                 <RectAreaLight position={[0,10,-10]} color="blue" intensity={10} lookAt={[0,5,0]}/>

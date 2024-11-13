@@ -1,40 +1,58 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import * as THREE from 'three';
-import { Vector3, Euler } from 'three';
+import { VideoTexture, MathUtils, DoubleSide } from 'three';
 
 const ModelLoaderWithVideo = ({ path, position, rotation = [0, 0, 0], scale, videoUrl }) => {
     const model = useLoader(GLTFLoader, path);
-    const { scene } = useThree();
-    const [videoTexture, setVideoTexture] = useState(null);
+    const videoRef = useRef();
+    const [videoTexture, setVideoTexture] = useState(null); // Khởi tạo state để lưu trữ videoTexture
 
     useEffect(() => {
-        // Load video and create a texture from it
+        // Tạo phần tử video
         const video = document.createElement('video');
         video.src = videoUrl;
+        video.crossOrigin = 'anonymous';
         video.loop = true;
         video.muted = true;
         video.play();
 
-        const texture = new THREE.VideoTexture(video);
-        setVideoTexture(texture);
+        // Tạo VideoTexture từ phần tử video
+        const newVideoTexture = new VideoTexture(video);
+        newVideoTexture.center.set(0.5, 0.5);
+        newVideoTexture.rotation = MathUtils.degToRad(180);
 
-        model.scene.traverse((child) => {
-            if (child.isMesh) {
-                // Identify the TV screen and apply the video texture to it
-                if (child.name === "Cube.001") { // Replace with the actual name of the TV surface
-                    child.material = new THREE.MeshStandardMaterial({ map: texture });
-                }
-                child.castShadow = true;
-                child.receiveShadow = true;
-            }
-        });
+        setVideoTexture(newVideoTexture); // Lưu videoTexture vào state
+        videoRef.current = video;
+
+        // Bật âm thanh khi người dùng nhấp chuột
+        const enableAudio = () => {
+            video.muted = false;
+            video.play();
+            window.removeEventListener('click', enableAudio);
+        };
+        window.addEventListener('click', enableAudio);
 
         return () => {
-            video.pause(); // Stop the video when component unmounts
+            video.pause();
+            video.src = '';
+            videoRef.current = null;
+            window.removeEventListener('click', enableAudio);
         };
-    }, [model, videoUrl]);
+    }, [videoUrl]);
+
+    useEffect(() => {
+        if (videoTexture) {
+            // Tìm và gán VideoTexture cho lưới màn hình trong mô hình
+            model.scene.traverse((child) => {
+                if (child.isMesh && child.name === 'Cube007') { // Thay 'Cube007' thành tên của lưới bạn muốn gán texture
+                    child.material.map = videoTexture;
+                    child.material.side = DoubleSide;
+                    child.material.needsUpdate = true;
+                }
+            });
+        }
+    }, [model, videoTexture]); // Chạy khi videoTexture được tạo
 
     return (
         <group position={position} rotation={rotation} scale={scale}>
