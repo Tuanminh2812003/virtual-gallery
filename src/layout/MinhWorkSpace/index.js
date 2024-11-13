@@ -2,6 +2,7 @@ import React, { useState, lazy, Suspense, useEffect, useRef, useCallback } from 
 import { Canvas, extend, useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Physics } from '@react-three/cannon';
+import { EffectComposer, Bloom, SSAO, DepthOfField } from '@react-three/postprocessing';
 
 // camera và move
 import { CameraProvider } from '../../helpers/CameraContext';
@@ -13,6 +14,7 @@ import { Vector3, Euler } from 'three';
 
 // môi trường và model
 import ModelLoader from '../../components/ModelLoader/index'; // model tĩnh
+import ModelLoader2 from '../../components/ModelLoader2/index'; // model tĩnh
 
 import PictureFrame from '../../components/PictureFrame'; // hình ảnh
 import MinhTestPicture from '../../components/MinhTestPicture'; // model động
@@ -22,6 +24,8 @@ import Minimap from '../../components/Minimap';
 import RectAreaLight from '../../components/RectAreaLight'
 
 import Particles from "./../../components/Particles/index";
+
+import ModelLoaderWithVideo from '../../components/ModelLoaderWithVideo';
 
 // pop up
 import ModelPopup from '../../components/ModelPopup';
@@ -46,151 +50,158 @@ import { MdSkipPrevious } from "react-icons/md";
 // Extend THREE with custom geometries
 extend({ PlaneGeometry: THREE.PlaneGeometry, BoxGeometry: THREE.BoxGeometry });
 
-function Home(){
+function Home2(){
 
     const modelsConfig = [
+        // {
+        //     path: "/assets/space2/All.glb",
+        //     position: [0, 0, 0],
+        //     rotation: [0, 0, 0],
+        //     scale: [1, 1, 1],
+        //     clickable: false,
+        // },
         {
-            path: "/assets/space1/Space.glb",
+            path: "/assets/space2/Space.glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Bamboo (2.1, 7.5, 0.3).glb",
+            path: "/assets/space2/Bamboo (2.1, 7.5, 0.3).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Dress Place (4, 6.3, 0).glb",
+            path: "/assets/space2/DressPodiumn (4, 6.3, 0).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Emotional Wall (-2.16354, -9.367, 2.6).glb",
+            path: "/assets/space2/EmotionWall (-2.16354, -9.367, 2.6).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Fan (1.1, 0, 0).glb",
+            path: "/assets/space2/Fan (1.1, 0, 0).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Picture Pillar (-6, 2.5, 0).glb",
-            position: [0, 0, -5],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space1/Picture Pillar (-6, -2.5, 0).glb",
+            path: "/assets/space2/PicturePillar (-5.96023, 3.31272, 0).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Screen (-5.41623, 8.11999, 2.8).glb",
+            path: "/assets/space2/PicturePillar (-5.96023, -3.31272, 0).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Figure/Figure (3.7, -6.29943, 1.2).glb",
+            path: "/assets/space2/Screen (-3.3129, 8.87313, 2.6).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Figure/Figure (5.1, -4.89943, 1.2).glb",
+            path: "/assets/space2/Figure/Figure (3.7, -6.29943, 1.2).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Figure/Figure (6.5, -3.49943, 1.2).glb",
+            path: "/assets/space2/Figure/Figure (5.1, -4.89943, 1.2).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Figure/Figure Pillar (3.7, -6.29943, 0).glb",
+            path: "/assets/space2/Figure/Figure (6.5, -3.49943, 1.2).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Figure/Figure Pillar (5.1, -4.89943, 0).glb",
+            path: "/assets/space2/Figure/FigurePodium (3.7, -6.29943, 0).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Figure/Figure Pillar (6.5, -3.49943, 0).glb",
+            path: "/assets/space2/Figure/FigurePodium (5.1, -4.89943, 0).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Ma-no-canh/Ma-no-canh (0.09, -1.4, 0.3).glb",
+            path: "/assets/space2/Figure/FigurePodium (6.5, -3.49943, 0).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Ma-no-canh/Ma-no-canh (0.09, 1.5, 0.3).glb",
+            path: "/assets/space2/Manocanh/Manocanh (0.09, -1.4 , 0.3).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Ma-no-canh/Ma-no-canh (1.5, 0.9, 0.3).glb",
+            path: "/assets/space2/Manocanh/Manocanh (0.09, 1.5, 0.3).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Ma-no-canh/Ma-no-canh (1.6, -0.9, 0.3).glb",
+            path: "/assets/space2/Manocanh/Manocanh (1.5, 0.9, 0.3).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Ma-no-canh/Ma-no-canh (4.2, 6.1, 0.3).glb",
+            path: "/assets/space2/Manocanh/Manocanh (1.6, -0.9, 0.3).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Ma-no-canh/Ma-no-canh (5.3, 5.1, 0.3).glb",
+            path: "/assets/space2/Manocanh/Manocanh (4.2, 6.1, 0.3).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space1/Ma-no-canh/Ma-no-canh (6.25, 4.1, 0.3).glb",
+            path: "/assets/space2/Manocanh/Manocanh (5.3, 5.1, 0.3).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space2/Manocanh/Manocanh (6.25, 4.1, 0.3).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
@@ -638,22 +649,35 @@ function Home(){
                         </div>
                     )}
                     {/* Thông báo xoay màn hình */}
-                    <Canvas shadows>
+                    <Canvas 
+                    shadows
+                    gl={{
+                        toneMapping: THREE.ACESFilmicToneMapping,
+                        // colorSpace: THREE.LinearSRGBColorSpace, // Use this instead of `sRGBEncoding`
+                        antialias: true // Sửa lại cú pháp ở đây
+                    }}>
                         <Suspense fallback={null}>
                                 {/* Môi trường */}
 
                                 {/* Render các ModelLoader từ mảng config */}
                                 {modelsConfig.map((modelProps, index) => (
-                                    <ModelLoader key={index} {...modelProps} />
+                                    <ModelLoader2 key={index} {...modelProps} />
                                 ))}
+
+                                {/* <ModelLoaderWithVideo 
+                                path={'/assets/space2/Screen (-4.45647, 8.53096, 2.6).glb'}
+                                position={[8,0,8]}
+                                rotation={[0,0,0]}
+                                scale={[1,1,1]}
+                                videoUrl={'/assets/space1/video/video2.mp4'}/> */}
                                 
 
                                 {/* <RectAreaLight position={[0,10,10]} color="red" intensity={10} lookAt={[0,5,0]}/>
                                 <RectAreaLight position={[0,10,-10]} color="blue" intensity={10} lookAt={[0,5,0]}/>
                                 <RectAreaLight position={[-10,10,5]} color="pink" intensity={10} lookAt={[0,5,0]}/> */}
 
-                                <SpotLight
-                                    position={[2, 8, 0]}
+                                {/* <SpotLight
+                                    position={[0, 2, 0]}
                                     intensity={10}
                                     angle={360}
                                     penumbra={1}
@@ -674,9 +698,9 @@ function Home(){
                                     color="blue" 
                                     intensity={5} 
                                     castShadow
-                                />
+                                /> */}
                                 
-                                <ambientLight intensity={1.5} />
+                                <ambientLight intensity={2.5} />
 
                                 {/* Chiếu sáng các model cụ thể */}
                                 
@@ -697,6 +721,12 @@ function Home(){
                                 />
                                 {!clicked && <Movement2 cameraPosition={cameraPosition} cameraRotation={cameraRotation} clicked={clicked} freeExploration={freeExploration} />}
                                 {/* Hàm bổ trợ */}
+                                {/* <EffectComposer>
+                                    <SSAO samples={31} radius={20} intensity={15} luminanceInfluence={0.6} />
+                                    <DepthOfField focusDistance={0.015} focalLength={0.02} bokehScale={2} />
+                                </EffectComposer> */}
+                                {/* bloom, vignette, color correction, noise, film grain, Lens Distortion / Chromatic Aberration, Glitch, God Rays (Light Shafts), Hue/Saturation, Tone Mapping, Outline, Tilt Shift, Bloom Selective */}
+
                         </Suspense>
                     </Canvas>
 
@@ -841,4 +871,4 @@ function Home(){
     )
 }
 
-export default Home;
+export default Home2;
