@@ -61,147 +61,140 @@ function Home2(){
         //     clickable: false,
         // },
         {
-            path: "/assets/space2/Space.glb",
+            path: "/assets/space3/Space.glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/Bamboo (2.1, 7.5, 0.3).glb",
+            path: "/assets/space3/Bamboo (2.19652, 7.39112, 0.3).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/DressPodiumn (4, 6.3, 0).glb",
+            path: "/assets/space3/Zone2Podium (4, 6.3, 0).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/EmotionWall (-2.16354, -9.367, 2.6).glb",
+            path: "/assets/space3/EmotionWall (-0.308477, -9.60553, 3.05153).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/Fan (1.1, 0, 0).glb",
+            path: "/assets/space3/Zone1Podium (2.08046, 0, 0).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/PicturePillar (-5.96023, 3.31272, 0).glb",
+            path: "/assets/space3/L-Pillar (-3.93243, -3.30957, 0).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/PicturePillar (-5.96023, -3.31272, 0).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        // {
-        //     path: "/assets/space2/Screen (-3.3129, 8.87313, 2.6).glb",
-        //     position: [0, 0, 0],
-        //     rotation: [0, 0, 0],
-        //     scale: [1, 1, 1],
-        //     clickable: false,
-        // },
-        {
-            path: "/assets/space2/Figure/Figure (3.7, -6.29943, 1.2).glb",
+            path: "/assets/space3/R-Pillar (-3.93243, 3.30957, 0).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/Figure/Figure (5.1, -4.89943, 1.2).glb",
+            path: "/assets/space3/Statue/Statute1 (6.5, -3.49943, 1.2).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/Figure/Figure (6.5, -3.49943, 1.2).glb",
+            path: "/assets/space3/Statue/Statute2 (5.1, -4.89943, 1.2).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/Figure/FigurePodium (3.7, -6.29943, 0).glb",
+            path: "/assets/space3/Statue/Statute3 (3.7,  -6.29943, 1.2).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/Figure/FigurePodium (5.1, -4.89943, 0).glb",
+            path: "/assets/space3/Statue/StatutePodium1 (6.5, -3.49943, 0).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/Figure/FigurePodium (6.5, -3.49943, 0).glb",
+            path: "/assets/space3/Statue/StatutePodium2 (5.1, -4.89943, 0).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/Manocanh/Manocanh (0.09, -1.4 , 0.3).glb",
+            path: "/assets/space3/Statue/StatutePodium3 (3.7,  -6.29943, 0).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/Manocanh/Manocanh (0.09, 1.5, 0.3).glb",
+            path: "/assets/space3/Mannequin/Mannequin1 (1.01536 , -1.46519, 0.3).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/Manocanh/Manocanh (1.5, 0.9, 0.3).glb",
+            path: "/assets/space3/Mannequin/Mannequin2 (0.798619 , 1.48564, 0.3).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/Manocanh/Manocanh (1.6, -0.9, 0.3).glb",
+            path: "/assets/space3/Mannequin/Mannequin3 (2.43313 , 0.772722, 0.3).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/Manocanh/Manocanh (4.2, 6.1, 0.3).glb",
+            path: "/assets/space3/Mannequin/Mannequin4 (2.43313 , -0.79, 0.3).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/Manocanh/Manocanh (5.3, 5.1, 0.3).glb",
+            path: "/assets/space3/Mannequin/Mannequin5 (6.28399, 4.13144, 0.3).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space2/Manocanh/Manocanh (6.25, 4.1, 0.3).glb",
+            path: "/assets/space3/Mannequin/Mannequin6 (5.34067, 5.24213, 0.3).glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        {
+            path: "/assets/space3/Mannequin/Mannequin7 (4.12038, 6.22918, 0.3).glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
@@ -237,8 +230,8 @@ function Home2(){
     const [selectedInfo, setSelectedInfo] = useState(null); 
     const [selectedVideo, setSelectedVideo] = useState(null);
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
-    const [cameraPosition, setCameraPosition] = useState(new Vector3(0, 1.6, 0));
-    const [cameraRotation, setCameraRotation] = useState(new Euler(0, -1 * Math.PI / 2, 0));
+    const [cameraPosition, setCameraPosition] = useState(new Vector3(9, 1.6, 0));
+    const [cameraRotation, setCameraRotation] = useState(new Euler(0, 1 * Math.PI / 2, 0));
     const [showDetailsPrompt, setShowDetailsPrompt] = useState(false); // <-- Added state for details prompt
     const [promptTimeout, setPromptTimeout] = useState(null); // <-- Added state for prompt timeout
     const [showHowToMove, setShowHowToMove] = useState(true); // <-- Added state for how to move popup
@@ -501,6 +494,18 @@ function Home2(){
     //Tour
 
     // giao diện và respondsive
+    // Chặn cuộn trang trên thiết bị di động
+    useEffect(() => {
+        const disableScroll = (e) => {
+            e.preventDefault();
+        };
+
+        window.addEventListener('touchmove', disableScroll, { passive: false });
+
+        return () => {
+            window.removeEventListener('touchmove', disableScroll);
+        };
+    }, []);
     useEffect(() => {
         const handleFullscreenChange = () => {
             setIsFullscreen(!!document.fullscreenElement);
@@ -667,7 +672,7 @@ function Home2(){
                                 {/* <ModelInspector path="/assets/space2/untitled.glb" /> */}
 
                                 <ModelLoaderWithVideo
-                                    path="/assets/space2/untitled.glb"
+                                    path="/assets/space3/Screen.glb"
                                     position={[0, 0, 0]}
                                     rotation={[0, 0, 0]}
                                     scale={[1, 1, 1]}

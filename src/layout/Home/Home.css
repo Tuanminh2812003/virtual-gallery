@@ -5,6 +5,10 @@ html {
     -webkit-user-select: none; /* Ngăn chặn việc chọn văn bản trên WebKit (Chrome, Safari) */
     -ms-user-select: none; /* Ngăn chặn việc chọn văn bản trên Internet Explorer/Edge */
     -moz-user-select: none; /* Ngăn chặn việc chọn văn bản trên Firefox */
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden; /* Ẩn cuộn */
 }
 
 .main {
