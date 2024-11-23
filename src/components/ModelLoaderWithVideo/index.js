@@ -26,19 +26,19 @@ const ModelLoaderWithVideo = ({ path, position, rotation = [0, 0, 0], scale, vid
         videoRef.current = video;
 
         // Bật âm thanh khi người dùng nhấp chuột
-        const enableAudio = () => {
-            video.muted = false;
-            video.play();
-            window.removeEventListener('click', enableAudio);
-        };
-        window.addEventListener('click', enableAudio);
+        // const enableAudio = () => {
+        //     video.muted = false;
+        //     video.play();
+        //     window.removeEventListener('click', enableAudio);
+        // };
+        // window.addEventListener('click', enableAudio);
 
-        return () => {
-            video.pause();
-            video.src = '';
-            videoRef.current = null;
-            window.removeEventListener('click', enableAudio);
-        };
+        // return () => {
+        //     video.pause();
+        //     video.src = '';
+        //     videoRef.current = null;
+        //     window.removeEventListener('click', enableAudio);
+        // };
     }, [videoUrl]);
 
     useEffect(() => {

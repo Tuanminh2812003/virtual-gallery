@@ -13,7 +13,7 @@ html {
 
 .main {
     width: 100vw;
-    height: calc(var(--vh, 1vh) * 100); /* Chiều cao thực tế */
+    height: 100%;
     position: relative;
     overflow: hidden;
 }

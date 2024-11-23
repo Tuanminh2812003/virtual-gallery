@@ -494,20 +494,6 @@ function Home2(){
     //Tour
 
     // giao diện và respondsive
-    useEffect(() => {
-        const updateViewportHeight = () => {
-            const vh = window.innerHeight * 0.01; // Lấy 1% của chiều cao cửa sổ
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        };
-    
-        updateViewportHeight(); // Cập nhật ngay khi ứng dụng được tải
-    
-        window.addEventListener('resize', updateViewportHeight); // Lắng nghe sự thay đổi kích thước màn hình
-    
-        return () => {
-            window.removeEventListener('resize', updateViewportHeight);
-        };
-    }, []);
     // Chặn cuộn trang trên thiết bị di động
     useEffect(() => {
         const disableScroll = (e) => {
