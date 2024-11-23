@@ -8,11 +8,12 @@ html {
     margin: 0;
     padding: 0;
     height: 100vh;
+    overflow: hidden;
 }
 
 .main {
     width: 100vw;
-    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100); /* Chiều cao thực tế */
     position: relative;
     overflow: hidden;
 }
