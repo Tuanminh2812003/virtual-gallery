@@ -4,7 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Vector3, Euler } from 'three';
 import CameraClick from '../../action/CameraClick';
 
-const ModelLoader2 = ({ path, position, rotation = [0, 0, 0], scale, clickable = true, setYaw }) => {
+const ModelLoader2 = ({ path, position, rotation = [0, 0, 0], scale, clickable = false, setYaw }) => {
     const model = useLoader(GLTFLoader, path);
     const [clicked, setClicked] = useState(false);
     const [targetPosition, setTargetPosition] = useState([0, 0, 0]);

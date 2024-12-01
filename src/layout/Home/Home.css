@@ -20,6 +20,12 @@ html {
 /* html */
 
 /* dieukhien */
+.uploadModel{
+    position: absolute;
+    left: 0px;
+    top: 30px;
+}
+
 .main .controler {
     display: flex;
     flex-direction: column;

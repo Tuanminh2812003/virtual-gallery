@@ -676,7 +676,7 @@ function Home2(){
                                     position={[0, 0, 0]}
                                     rotation={[0, 0, 0]}
                                     scale={[1, 1, 1]}
-                                    videoUrl="/assets/video/video2.mp4"
+                                    videoUrl="/assets/video/video1.mp4"
                                 />
 
                                 {/* <RectAreaLight position={[0,10,10]} color="red" intensity={10} lookAt={[0,5,0]}/>

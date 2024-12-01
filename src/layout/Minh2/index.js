@@ -1,8 +1,7 @@
 import React, { useState, lazy, Suspense, useEffect, useRef, useCallback } from 'react';
 import { Canvas, extend, useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { Physics } from '@react-three/cannon';
-import { EffectComposer, Bloom, SSAO, DepthOfField } from '@react-three/postprocessing';
+import { OrbitControls } from '@react-three/drei';
 
 // camera và move
 import { CameraProvider } from '../../helpers/CameraContext';
@@ -18,13 +17,8 @@ import ModelLoader2 from '../../components/ModelLoader2/index'; // model tĩnh
 import ModelLoaderWithVideo from '../../components/ModelLoaderWithVideo';
 
 import PictureFrame from '../../components/PictureFrame'; // hình ảnh
-import MinhTestPicture from '../../components/MinhTestPicture'; // model động
 import ResizeHandler from '../../action/ResizeElement2'; // responsive model
-import { SpotLight } from '@react-three/drei';
 import Minimap from '../../components/Minimap';
-import RectAreaLight from '../../components/RectAreaLight'
-
-import Particles from "./../../components/Particles/index";
 
 // pop up
 import ModelPopup from '../../components/ModelPopup';
@@ -51,163 +45,59 @@ extend({ PlaneGeometry: THREE.PlaneGeometry, BoxGeometry: THREE.BoxGeometry });
 
 function Home2(){
 
-    const modelsConfig = [
+    //MẢNG ITEM
+    const [modelsConfig, setModelsConfig] = useState([
         // {
-        //     path: "/assets/space2/All.glb",
+        //     path: "/assets/space3/Space.glb",
         //     position: [0, 0, 0],
         //     rotation: [0, 0, 0],
         //     scale: [1, 1, 1],
         //     clickable: false,
-        // },
-        {
-            path: "/assets/space2/Space.glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/Bamboo (2.1, 7.5, 0.3).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/DressPodiumn (4, 6.3, 0).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/EmotionWall (-2.16354, -9.367, 2.6).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/Fan (1.1, 0, 0).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/PicturePillar (-5.96023, 3.31272, 0).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/PicturePillar (-5.96023, -3.31272, 0).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        // {
-        //     path: "/assets/space2/Screen (-3.3129, 8.87313, 2.6).glb",
-        //     position: [0, 0, 0],
-        //     rotation: [0, 0, 0],
-        //     scale: [1, 1, 1],
-        //     clickable: false,
-        // },
-        {
-            path: "/assets/space2/Figure/Figure (3.7, -6.29943, 1.2).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/Figure/Figure (5.1, -4.89943, 1.2).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/Figure/Figure (6.5, -3.49943, 1.2).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/Figure/FigurePodium (3.7, -6.29943, 0).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/Figure/FigurePodium (5.1, -4.89943, 0).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/Figure/FigurePodium (6.5, -3.49943, 0).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/Manocanh/Manocanh (0.09, -1.4 , 0.3).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/Manocanh/Manocanh (0.09, 1.5, 0.3).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/Manocanh/Manocanh (1.5, 0.9, 0.3).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/Manocanh/Manocanh (1.6, -0.9, 0.3).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/Manocanh/Manocanh (4.2, 6.1, 0.3).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/Manocanh/Manocanh (5.3, 5.1, 0.3).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space2/Manocanh/Manocanh (6.25, 4.1, 0.3).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
+        // }
+    ]);
+
+    const [newModel, setNewModel] = useState({
+        path: null,
+        position: [0, 0, 0],
+        rotation: [0, 0, 0],
+        scale: [1, 1, 1],
+        clickable: false,
+    });
+
+    // Thêm model mới vào mảng
+    const addModel = () => {
+        if (!newModel.path) {
+            alert("Vui lòng chọn tệp GLB!");
+            return;
         }
-        // Add more models as needed
-    ];
+
+        setModelsConfig([...modelsConfig, newModel]);
+        setNewModel({
+            path: null,
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        });
+    };
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file && file.name.endsWith(".glb")) {
+            const url = URL.createObjectURL(file);
+            setNewModel((prev) => ({ ...prev, path: url }));
+        } else {
+            alert("Chỉ chấp nhận tệp .glb!");
+        }
+    };
+
+    const handleInputChange = (field, index, value) => {
+        setNewModel((prev) => {
+            const updatedField = [...prev[field]];
+            updatedField[index] = parseFloat(value);
+            return { ...prev, [field]: updatedField };
+        });
+    };
+    //MẢNG ITEM
 
     // mảng items các bức tranh để làm tour
     const [items, setItems] = useState([
@@ -236,8 +126,8 @@ function Home2(){
     const [selectedInfo, setSelectedInfo] = useState(null); 
     const [selectedVideo, setSelectedVideo] = useState(null);
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
-    const [cameraPosition, setCameraPosition] = useState(new Vector3(0, 1.6, 0));
-    const [cameraRotation, setCameraRotation] = useState(new Euler(0, -1 * Math.PI / 2, 0));
+    const [cameraPosition, setCameraPosition] = useState(new Vector3(9, 1.6, 0));
+    const [cameraRotation, setCameraRotation] = useState(new Euler(0, 1 * Math.PI / 2, 0));
     const [showDetailsPrompt, setShowDetailsPrompt] = useState(false); // <-- Added state for details prompt
     const [promptTimeout, setPromptTimeout] = useState(null); // <-- Added state for prompt timeout
     const [showHowToMove, setShowHowToMove] = useState(true); // <-- Added state for how to move popup
@@ -276,7 +166,6 @@ function Home2(){
     // move
 
     // click và các chức năng liên quan
-    
     const handlePictureClick = useCallback((position, rotation, imageUrl, model, info, video) => {
         console.log("handlePictureClick called with position:", position);
         console.log("handlePictureClick called with rotation:", rotation);
@@ -501,6 +390,18 @@ function Home2(){
     //Tour
 
     // giao diện và respondsive
+    // Chặn cuộn trang trên thiết bị di động
+    useEffect(() => {
+        const disableScroll = (e) => {
+            e.preventDefault();
+        };
+
+        window.addEventListener('touchmove', disableScroll, { passive: false });
+
+        return () => {
+            window.removeEventListener('touchmove', disableScroll);
+        };
+    }, []);
     useEffect(() => {
         const handleFullscreenChange = () => {
             setIsFullscreen(!!document.fullscreenElement);
@@ -653,7 +554,7 @@ function Home2(){
                     shadows
                     gl={{
                         toneMapping: THREE.ACESFilmicToneMapping,
-                        colorSpace: THREE.LinearSRGBColorSpace, // Use this instead of `sRGBEncoding`
+                        // colorSpace: THREE.LinearSRGBColorSpace, // Use this instead of `sRGBEncoding`
                         antialias: true // Sửa lại cú pháp ở đây
                     }}>
                         <Suspense fallback={null}>
@@ -664,42 +565,6 @@ function Home2(){
                                     <ModelLoader2 key={index} {...modelProps} />
                                 ))}
 
-                                <ModelLoaderWithVideo
-                                    path="/assets/space2/untitled.glb"
-                                    position={[0, 0, 0]}
-                                    rotation={[0, 0, 0]}
-                                    scale={[1, 1, 1]}
-                                    videoUrl="/assets/video/video1_1.mp4"
-                                />
-
-                                {/* <RectAreaLight position={[0,10,10]} color="red" intensity={10} lookAt={[0,5,0]}/>
-                                <RectAreaLight position={[0,10,-10]} color="blue" intensity={10} lookAt={[0,5,0]}/>
-                                <RectAreaLight position={[-10,10,5]} color="pink" intensity={10} lookAt={[0,5,0]}/> */}
-
-                                {/* <SpotLight
-                                    position={[0, 2, 0]}
-                                    intensity={10}
-                                    angle={360}
-                                    penumbra={1}
-                                    distance={0}
-                                    decay={1}
-                                    color="yellow"
-                                    castShadow
-                                />
-                                <directionalLight 
-                                    position={[0, 10, 10]} 
-                                    color="red" 
-                                    intensity={5} 
-                                    castShadow
-                                    penumbra={1}
-                                />
-                                <directionalLight 
-                                    position={[0, 10, -10]} 
-                                    color="blue" 
-                                    intensity={5} 
-                                    castShadow
-                                /> */}
-                                
                                 <ambientLight intensity={2.5} />
 
                                 {/* Chiếu sáng các model cụ thể */}
@@ -719,16 +584,86 @@ function Home2(){
                                     onMoveComplete={handleCameraMoveComplete}
                                     updateCameraState={updateCameraState}
                                 />
-                                {!clicked && <Movement2 cameraPosition={cameraPosition} cameraRotation={cameraRotation} clicked={clicked} freeExploration={freeExploration} />}
                                 {/* Hàm bổ trợ */}
-                                <EffectComposer>
-                                    <SSAO samples={31} radius={20} intensity={15} luminanceInfluence={0.6} />
-                                    <DepthOfField focusDistance={0.015} focalLength={0.02} bokehScale={2} />
-                                </EffectComposer>
-                                {/* bloom, vignette, color correction, noise, film grain, Lens Distortion / Chromatic Aberration, Glitch, God Rays (Light Shafts), Hue/Saturation, Tone Mapping, Outline, Tilt Shift, Bloom Selective */}
+                                {/* {!clicked && <Movement2 cameraPosition={cameraPosition} cameraRotation={cameraRotation} clicked={clicked} freeExploration={freeExploration} />} */}
+
+                                <OrbitControls />
 
                         </Suspense>
                     </Canvas>
+
+                        <div className='uploadModel'>
+                            <h2>Thêm Model Mới</h2>
+                            <input
+                                type="file"
+                                accept=".glb"
+                                onChange={handleFileChange}
+                            />
+                            <div>
+                                <label>Tọa độ:</label>
+                                <input
+                                    type="number"
+                                    placeholder="X"
+                                    value={newModel.position[0]}
+                                    onChange={(e) => handleInputChange("position", 0, e.target.value)}
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Y"
+                                    value={newModel.position[1]}
+                                    onChange={(e) => handleInputChange("position", 1, e.target.value)}
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Z"
+                                    value={newModel.position[2]}
+                                    onChange={(e) => handleInputChange("position", 2, e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label>Góc xoay:</label>
+                                <input
+                                    type="number"
+                                    placeholder="X"
+                                    value={newModel.rotation[0]}
+                                    onChange={(e) => handleInputChange("rotation", 0, e.target.value)}
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Y"
+                                    value={newModel.rotation[1]}
+                                    onChange={(e) => handleInputChange("rotation", 1, e.target.value)}
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Z"
+                                    value={newModel.rotation[2]}
+                                    onChange={(e) => handleInputChange("rotation", 2, e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label>Tỷ lệ:</label>
+                                <input
+                                    type="number"
+                                    placeholder="X"
+                                    value={newModel.scale[0]}
+                                    onChange={(e) => handleInputChange("scale", 0, e.target.value)}
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Y"
+                                    value={newModel.scale[1]}
+                                    onChange={(e) => handleInputChange("scale", 1, e.target.value)}
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Z"
+                                    value={newModel.scale[2]}
+                                    onChange={(e) => handleInputChange("scale", 2, e.target.value)}
+                                />
+                            </div>
+                            <button onClick={addModel}>Thêm Model</button>
+                        </div>
 
                     {/* Thanh sidebar */}
                     <div className='sidebarMain'>
