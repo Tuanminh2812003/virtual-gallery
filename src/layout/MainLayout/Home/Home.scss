@@ -1,0 +1,195 @@
+$Color-title: #2E2E2E;
+$Color-text: #515151;
+
+.Web__home{
+
+    &__sectionMain{
+        display: flex;
+        background-image: url(../../../../public/Web/Home-1.png);
+        width: 100%;
+        height: 95vh;
+        display: flex;
+        background-position: center;
+        background-size: cover;
+
+        .container-main{
+            align-items: center;
+            justify-content: center;
+        }
+
+        &__inner{
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+
+            &__title{
+                font-weight: 500;
+                text-align: center;
+                font-size: 48px;
+                width: 40%;
+                line-height: 125%;
+                margin-bottom: 24px;
+            }
+            &__button{
+                padding: 4px 16px;
+                background-color: $Color-title;
+                color: white;
+                display: flex;
+                border-radius: 100px;
+                align-items: center;
+                justify-content: space-between;
+
+
+                &__text{
+                    font-size: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                &__icon{
+                    margin-left: 4px;
+                    font-size: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+            }
+        }
+    }
+    &__section1{
+        display: flex;
+        width: 100%;
+        margin-top: 48px;
+
+        &__inner{
+            width: 100%;
+
+            &__title{
+                text-align: center;
+                font-size: 48px;
+                font-weight: 500;
+            }
+            &__content{
+
+                .row{
+                    justify-content: space-between;
+
+                    .col-6{
+                        width: 48%;
+                    }
+                }
+
+                &__left{
+
+                    &__image1{
+                        background-image: url("../../../../public/Web/Home-2.png");
+                        width: 100%;
+                        height: 100%;
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        background-size: cover;
+                    }
+                    &__image2{
+                        background-image: url("../../../../public/Web/Home-3.png");
+                        width: 100%;
+                        height: 100%;
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        background-size: cover;
+                    }
+                    &__image3{
+                        background-image: url("../../../../public/Web/Home-4.png");
+                        width: 100%;
+                        height: 100%;
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        background-size: cover;
+                    }
+                }
+
+                &__right{
+                    display: flex;
+                    flex-direction: column;
+
+                    &__disc{
+                        font-size: 19px;
+                        font-weight: 500;
+                        color: $Color-title;
+                        margin-bottom: 12px;
+                    }
+                    &__title{
+                        font-size: 32px;
+                        color: $Color-title;
+                        font-weight: 500;
+                        margin-bottom: 24px;
+                    }
+                    &__author{
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 4px;
+
+                        &__disc{
+                            font-size: 17px;
+                            margin-right: 24px;
+                        }
+                        &__title{
+                            font-size: 17px;
+                            color: $Color-title;
+                            font-weight: 500;
+                        }
+                    }
+                    &__text{
+                        font-size: 17px;
+                        margin-top: 20px;
+                    }
+                    &__button{
+                        padding: 4px 16px;
+                        background-color: $Color-title;
+                        color: white;
+                        display: flex;
+                        border-radius: 100px;
+                        align-items: center;
+                        justify-content: space-between;
+                        max-width: fit-content;
+                        margin-top: 49px;
+
+                        &__text{
+                            font-size: 16px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+                        &__icon{
+                            margin-left: 4px;
+                            font-size: 20px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+                    }
+                }
+
+                .r2{
+                    flex-direction: row-reverse;
+                }
+            }
+        }
+    }
+}
+
+.uploadModel{
+    position: absolute;
+    top: 0;
+    left: 20px;
+    font-size: 12px;
+
+    button{
+        background-color: #2E2E2E;
+        color: white;
+        border-radius: 16px;
+        padding: 4px;
+        margin-bottom: 24px;
+    }
+}

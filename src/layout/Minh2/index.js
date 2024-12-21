@@ -108,6 +108,7 @@ function Home2(){
     // KHAI BÁO
     // move
     const [yaw, setYaw] = useState(0);
+    const [controlMode, setControlMode] = useState("user"); // "user" hoặc "overview"
     // move
 
     //audio
@@ -585,10 +586,19 @@ function Home2(){
                                     updateCameraState={updateCameraState}
                                 />
                                 {/* Hàm bổ trợ */}
-                                {/* {!clicked && <Movement2 cameraPosition={cameraPosition} cameraRotation={cameraRotation} clicked={clicked} freeExploration={freeExploration} />} */}
+                                {/* Chuyển đổi bộ điều khiển dựa trên controlMode */}
+                                {controlMode === "user" && (
+                                    <Movement2
+                                        cameraPosition={cameraPosition}
+                                        cameraRotation={cameraRotation}
+                                        clicked={clicked}
+                                        freeExploration={freeExploration}
+                                    />
+                                )}
 
-                                <OrbitControls />
-
+                                {controlMode === "overview" && (
+                                    <OrbitControls enableZoom={true} enableRotate={true} />
+                                )}
                         </Suspense>
                     </Canvas>
 
@@ -663,6 +673,29 @@ function Home2(){
                                 />
                             </div>
                             <button onClick={addModel}>Thêm Model</button>
+                                <div className="control-mode-buttons">
+                                <button
+                                    onClick={() => setControlMode("user")}
+                                    style={{
+                                        marginRight: "10px",
+                                        padding: "10px",
+                                        backgroundColor: controlMode === "user" ? "#4caf50" : "#f0f0f0",
+                                        color: controlMode === "user" ? "white" : "black",
+                                    }}
+                                >
+                                    View người dùng
+                                </button>
+                                <button
+                                    onClick={() => setControlMode("overview")}
+                                    style={{
+                                        padding: "10px",
+                                        backgroundColor: controlMode === "overview" ? "#4caf50" : "#f0f0f0",
+                                        color: controlMode === "overview" ? "white" : "black",
+                                    }}
+                                >
+                                    View toàn bộ
+                                </button>
+                            </div>
                         </div>
 
                     {/* Thanh sidebar */}
