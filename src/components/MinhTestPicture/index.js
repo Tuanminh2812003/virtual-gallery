@@ -4,7 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils';
 
 function MinhTestPicture({ position, rotation, scale, onClick }) {
-    const gltf = useLoader(GLTFLoader, '/assets/MinhTestPicture2/Tiger.glb');
+    const gltf = useLoader(GLTFLoader, '/NTST/Game Station.glb');
     const ref = useRef();
 
     useEffect(() => {

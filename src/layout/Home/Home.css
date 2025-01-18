@@ -7,6 +7,7 @@ html {
     -moz-user-select: none; /* Ngăn chặn việc chọn văn bản trên Firefox */
     margin: 0;
     padding: 0;
+    font-size: 18px !important;
 }
 
 .main {
@@ -384,3 +385,34 @@ html {
     display: inline-block; 
 }
 /* rotate */
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-content {
+    position: relative;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.close-popup {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+}

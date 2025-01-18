@@ -6,30 +6,30 @@ import CameraContext from '../../helpers/CameraContext';
 // Các khu vực bị giới hạn
 
 const restrictedAreaCenter = new THREE.Vector3(0, 0, 0); // Tọa độ trung tâm của vòng tròn
-const restrictedAreaRadius = 9.6; // Bán kính của khu vực giới hạn
+const restrictedAreaRadius = 25; // Bán kính của khu vực giới hạn
 
 const restrictedAreas = [
     //tranh
-    { x: -3.93243, z: -3.30957, radius: 2.5 },
-    { x: -3.93243, z: 3.30957, radius: 2.5 },
+    // { x: -3.93243, z: -3.30957, radius: 2.5 },
+    // { x: -3.93243, z: 3.30957, radius: 2.5 },
 
-    //tuong
-    { x: 3.7, z: 6.29943, radius: 1.8 }, 
-    { x: 5.1, z: 4.89943, radius: 1.8 }, 
-    { x: 6.5, z: 3.49943, radius: 1.8 }, 
+    // //tuong
+    // { x: 3.7, z: 6.29943, radius: 1.8 }, 
+    // { x: 5.1, z: 4.89943, radius: 1.8 }, 
+    // { x: 6.5, z: 3.49943, radius: 1.8 }, 
 
-    //manocanh
-    { x: 1.01536, z: 1.46519, radius: 1.8 }, 
-    { x: 0.798619, z: -1.48564, radius: 1.8 }, 
-    { x: 2.43313, z: -0.772722, radius: 1.8 }, 
-    { x: 2.43313, z: 0.79, radius: 1.8 },
-    { x: 6.28399, z: -4.13144, radius: 1.8 }, 
-    { x: 5.34067, z: -5.24213, radius: 1.8 }, 
-    { x: 4.12038, z: -6.22918, radius: 1.8 },
+    // //manocanh
+    // { x: 1.01536, z: 1.46519, radius: 1.8 }, 
+    // { x: 0.798619, z: -1.48564, radius: 1.8 }, 
+    // { x: 2.43313, z: -0.772722, radius: 1.8 }, 
+    // { x: 2.43313, z: 0.79, radius: 1.8 },
+    // { x: 6.28399, z: -4.13144, radius: 1.8 }, 
+    // { x: 5.34067, z: -5.24213, radius: 1.8 }, 
+    // { x: 4.12038, z: -6.22918, radius: 1.8 },
 
-    { x: 2.19652, z: -7.39112, radius: 1.8 },
+    // { x: 2.19652, z: -7.39112, radius: 1.8 },
 
-    { x: -0.308477, z: 9.60553, radius: 2.2 },
+    // { x: -0.308477, z: 9.60553, radius: 2.2 },
   
     // Thêm các khu vực cấm khác tại đây
 ];

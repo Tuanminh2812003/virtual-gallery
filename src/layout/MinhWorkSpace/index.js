@@ -17,9 +17,9 @@ import ModelLoader from '../../components/ModelLoader/index'; // model tĩnh
 import ModelLoader2 from '../../components/ModelLoader2/index'; // model tĩnh
 import ModelLoaderWithVideo from '../../components/ModelLoaderWithVideo';
 import ModelInspector from '../../helpers/ModelInspector';
+import ModelAnimated2 from '../../components/ModelAnimated2';
 
 import PictureFrame from '../../components/PictureFrame'; // hình ảnh
-import MinhTestPicture from '../../components/MinhTestPicture'; // model động
 import ResizeHandler from '../../action/ResizeElement2'; // responsive model
 import { SpotLight } from '@react-three/drei';
 import Minimap from '../../components/Minimap';
@@ -32,6 +32,7 @@ import ModelPopup from '../../components/ModelPopup';
 import PopUpHowToMove from '../../components/PopUpHowToMove';
 import PopUpAboutTheExhibition from '../../components/PopUpAboutTheExhibition';
 import PopUpListModel from '../../components/PopUpListModel';
+import PopUpUpdate from "../../components/PopUpUpdate"
 
 // icon
 import { MdOutlineZoomOutMap } from "react-icons/md";
@@ -47,6 +48,8 @@ import { BsNewspaper } from "react-icons/bs";
 import { MdSkipNext } from "react-icons/md";
 import { MdSkipPrevious } from "react-icons/md";
 
+import PuzzleGame from "../GamePuzzle"
+
 // Extend THREE with custom geometries
 extend({ PlaneGeometry: THREE.PlaneGeometry, BoxGeometry: THREE.BoxGeometry });
 
@@ -61,145 +64,49 @@ function Home2(){
         //     clickable: false,
         // },
         {
-            path: "/assets/space3/Space.glb",
+            path: "/NTST/Virtual Gallery.glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
         {
-            path: "/assets/space3/Bamboo (2.19652, 7.39112, 0.3).glb",
+            path: "/NTST/Manequin.glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
+        // {
+        //     path: "/NTST/Statue 1.glb",
+        //     position: [0, 0, 0],
+        //     rotation: [0, 0, 0],
+        //     scale: [1, 1, 1],
+        //     clickable: true,
+        //     onClick: () => setShowPuzzleGame(true), // Mở pop-up trò chơi khi click
+        // },
+        // {
+        //     path: "/NTST/Statue 2.glb",
+        //     position: [0, 0, 0],
+        //     rotation: [0, 0, 0],
+        //     scale: [1, 1, 1],
+        //     clickable: false,
+        // },
+        // {
+        //     path: "/NTST/Statue 3.glb",
+        //     position: [0, 0, 0],
+        //     rotation: [0, 0, 0],
+        //     scale: [1, 1, 1],
+        //     clickable: false,
+        // },
         {
-            path: "/assets/space3/Zone2Podium (4, 6.3, 0).glb",
+            path: "/NTST/TV Bound.glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
         },
-        {
-            path: "/assets/space3/EmotionWall (-0.308477, -9.60553, 3.05153).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space3/Zone1Podium (2.08046, 0, 0).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space3/L-Pillar (-3.93243, -3.30957, 0).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space3/R-Pillar (-3.93243, 3.30957, 0).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space3/Statue/Statute1 (6.5, -3.49943, 1.2).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space3/Statue/Statute2 (5.1, -4.89943, 1.2).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space3/Statue/Statute3 (3.7,  -6.29943, 1.2).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space3/Statue/StatutePodium1 (6.5, -3.49943, 0).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space3/Statue/StatutePodium2 (5.1, -4.89943, 0).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space3/Statue/StatutePodium3 (3.7,  -6.29943, 0).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space3/Mannequin/Mannequin1 (1.01536 , -1.46519, 0.3).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space3/Mannequin/Mannequin2 (0.798619 , 1.48564, 0.3).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space3/Mannequin/Mannequin3 (2.43313 , 0.772722, 0.3).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space3/Mannequin/Mannequin4 (2.43313 , -0.79, 0.3).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space3/Mannequin/Mannequin5 (6.28399, 4.13144, 0.3).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space3/Mannequin/Mannequin6 (5.34067, 5.24213, 0.3).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
-        {
-            path: "/assets/space3/Mannequin/Mannequin7 (4.12038, 6.22918, 0.3).glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        }
+        
         // Add more models as needed
     ];
 
@@ -213,6 +120,26 @@ function Home2(){
     // move
     const [yaw, setYaw] = useState(0);
     // move
+
+    const [showPuzzleGame1, setShowPuzzleGame1] = useState(false);
+    const [showPuzzleGame2, setShowPuzzleGame2] = useState(false);
+    const [showPuzzleGame3, setShowPuzzleGame3] = useState(false);
+    const [currentModelPath1, setCurrentModelPath1] = useState("/NTST/Question 1.glb");
+    const [currentModelPath2, setCurrentModelPath2] = useState("/NTST/Question 2.glb");
+    const [currentModelPath3, setCurrentModelPath3] = useState("/NTST/Question 3.glb");
+
+    const handlePuzzle1Complete = () => {
+        setShowPuzzleGame1(false);
+        setCurrentModelPath1("/NTST/Statue 1.glb"); // Thay đổi model thành Statue 1.glb sau chiến thắng
+    };
+    const handlePuzzle2Complete = () => {
+        setShowPuzzleGame2(false);
+        setCurrentModelPath2("/NTST/Statue 2.glb"); // Thay đổi model thành Statue 1.glb sau chiến thắng
+    };
+    const handlePuzzle3Complete = () => {
+        setShowPuzzleGame3(false);
+        setCurrentModelPath3("/NTST/Statue 3.glb"); // Thay đổi model thành Statue 1.glb sau chiến thắng
+    };
 
     //audio
     const [introAudio, setIntroAudio] = useState(null); 
@@ -230,8 +157,8 @@ function Home2(){
     const [selectedInfo, setSelectedInfo] = useState(null); 
     const [selectedVideo, setSelectedVideo] = useState(null);
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
-    const [cameraPosition, setCameraPosition] = useState(new Vector3(9, 1.6, 0));
-    const [cameraRotation, setCameraRotation] = useState(new Euler(0, 1 * Math.PI / 2, 0));
+    const [cameraPosition, setCameraPosition] = useState(new Vector3(0, 1.6, 12));
+    const [cameraRotation, setCameraRotation] = useState(new Euler(0, 2 * Math.PI, 0));
     const [showDetailsPrompt, setShowDetailsPrompt] = useState(false); // <-- Added state for details prompt
     const [promptTimeout, setPromptTimeout] = useState(null); // <-- Added state for prompt timeout
     const [showHowToMove, setShowHowToMove] = useState(true); // <-- Added state for how to move popup
@@ -248,6 +175,7 @@ function Home2(){
     const [instructionsOpen, setInstructionsOpen] = useState(true);
     const [popUpAboutTheExhibition, setPopUpAboutTheExhibition] = useState(false);
     const [popUpListModel, setPopUpListModel] = useState(false);
+    const [popUpUpdate, setPopUpUpdate] = useState(false);
     // pop up
 
     //tour
@@ -554,6 +482,12 @@ function Home2(){
     const handleOpenInstructions = () => {
         setShowHowToMove(true);
     };
+    const handleOpenPopUpUpdate = () => {
+        setPopUpUpdate(true);
+    };
+    const handleClosePopUpUpdate = () => {
+        setPopUpUpdate(false);
+    };
 
     const handleClosePopUpAboutTheExhibition = () => {
         setPopUpAboutTheExhibition(false);
@@ -577,6 +511,8 @@ function Home2(){
             startFreeExploration();
         } else if (mode === 'tour') {
             startTour();
+        } else if (mode === 'update') {
+            setPopUpUpdate(true);
         }
     };
     // pop up
@@ -594,14 +530,14 @@ function Home2(){
         window.addEventListener("orientationchange", handleOrientationChange);
     
         // kiểm tra hướng khi trang được tải
-         handleOrientationChange();
+        handleOrientationChange();
     
         return () => {
             window.removeEventListener("orientationchange", handleOrientationChange);
         };
     }, []);
     
-     const closeLandscapePrompt = () => {
+    const closeLandscapePrompt = () => {
         setLandscapePromptVisible(false);
     };
 
@@ -672,11 +608,47 @@ function Home2(){
                                 {/* <ModelInspector path="/assets/space2/untitled.glb" /> */}
 
                                 <ModelLoaderWithVideo
-                                    path="/assets/space3/Screen.glb"
+                                    path="/NTST/TV Screen.glb"
                                     position={[0, 0, 0]}
                                     rotation={[0, 0, 0]}
                                     scale={[1, 1, 1]}
-                                    videoUrl="/assets/video/video1.mp4"
+                                    videoUrl="/NTST/VR Gallery.mp4"
+                                    mesh ="TV_Screen001"
+                                />
+                                <ModelLoaderWithVideo
+                                    path="/NTST/game screen.glb"
+                                    position={[0, 0, 0]}
+                                    rotation={[0, 0, 0]}
+                                    scale={[1, 1, 1]}
+                                    videoUrl="/NTST/VR Gallery.mp4"
+                                    mesh ="Game_Station_Screen_PROCESSED001"
+                                />
+                                <ModelAnimated2
+                                    path="/NTST/Game Station.glb" // Đường dẫn đến file GLB/GLTF
+                                    position={[0, 0, 0]}
+                                    rotation={[0, 0, 0]}
+                                    scale={[1, 1, 1]}
+                                />
+                                <ModelAnimated2
+                                    path={currentModelPath1} // Sử dụng trạng thái currentModelPath
+                                    position={[0, 0, 0]}
+                                    rotation={[0, 0, 0]}
+                                    scale={[1, 1, 1]}
+                                    onClick={() => setShowPuzzleGame1(true)}
+                                />
+                                <ModelAnimated2
+                                    path={currentModelPath2} // Sử dụng trạng thái currentModelPath
+                                    position={[0, 0, 0]}
+                                    rotation={[0, 0, 0]}
+                                    scale={[1, 1, 1]}
+                                    onClick={() => setShowPuzzleGame2(true)}
+                                />
+                                <ModelAnimated2
+                                    path={currentModelPath3} // Sử dụng trạng thái currentModelPath
+                                    position={[0, 0, 0]}
+                                    rotation={[0, 0, 0]}
+                                    scale={[1, 1, 1]}
+                                    onClick={() => setShowPuzzleGame3(true)}
                                 />
 
                                 {/* <RectAreaLight position={[0,10,10]} color="red" intensity={10} lookAt={[0,5,0]}/>
@@ -739,10 +711,16 @@ function Home2(){
 
                     {/* Thanh sidebar */}
                     <div className='sidebarMain'>
-                        <div className={`fullscreen_button ${navToggle ? 'fullscreen_button-change' : ""}`} onClick={handlePreviousItem}>
+                        {/* <div className={`fullscreen_button ${navToggle ? 'fullscreen_button-change' : ""}`} onClick={handlePreviousItem}>
                             <MdSkipPrevious />
                         </div>
                         <div className={`fullscreen_button ${navToggle ? 'fullscreen_button-change' : ""}`} onClick={handleNextItem}>
+                            <MdSkipNext />
+                        </div> */}
+                        <div className={`fullscreen_button ${navToggle ? 'fullscreen_button-change' : ""}`} onClick={handleOpenPopUpUpdate}>
+                            <MdSkipPrevious />
+                        </div>
+                        <div className={`fullscreen_button ${navToggle ? 'fullscreen_button-change' : ""}`} onClick={handleOpenPopUpUpdate}>
                             <MdSkipNext />
                         </div>
                         {!isFullscreen ? (
@@ -759,7 +737,7 @@ function Home2(){
                     {navToggle ? (
                         <div className='sidebarDisc'>
                             <div className='sidebarDisc__button' onClick={handleFullscreenToggle}>
-                                <div className='sidebarDisc__button__text'>Enter fullscreen</div>
+                                <div className='sidebarDisc__button__text'>Chế độ toàn màn hình</div>
                                 {!isFullscreen ? (
                                     <button className={`fullscreen_button`}><MdOutlineZoomOutMap /></button>
                                 ) : (
@@ -767,19 +745,23 @@ function Home2(){
                                 )}
                             </div>
                             <div className='sidebarDisc__button' onClick={handleOpenInstructions}>
-                                <div className='sidebarDisc__button__text'>How to move</div>
+                                <div className='sidebarDisc__button__text'>Hướng dẫn di chuyển</div>
                                 <div className='sidebarDisc__button__btn'><RiDragMoveFill /></div>
                             </div>
-                            <div className='sidebarDisc__button' onClick={startTour}>
-                                <div className='sidebarDisc__button__text'>Start tour</div>
+                            <div className='sidebarDisc__button' onClick={handleOpenPopUpUpdate}>
+                                <div className='sidebarDisc__button__text'>Bắt đầu tham quan</div>
                                 <div className='sidebarDisc__button__btn'><SiAwesomelists /></div>
                             </div>
+                            {/* <div className='sidebarDisc__button' onClick={startTour}>
+                                <div className='sidebarDisc__button__text'>Start tour</div>
+                                <div className='sidebarDisc__button__btn'><SiAwesomelists /></div>
+                            </div> */}
                             <div className='sidebarDisc__button' onClick={handleOpenPopUpListModel}>
-                                <div className='sidebarDisc__button__text'>List model</div>
+                                <div className='sidebarDisc__button__text'>Danh sách mẫu vật</div>
                                 <div className='sidebarDisc__button__btn'><PiListStarFill /></div>
                             </div>
                             <div className='sidebarDisc__button' onClick={handleOpenPopUpAboutTheExhibition}>
-                                <div className='sidebarDisc__button__text'>About the Exhibition</div>
+                                <div className='sidebarDisc__button__text'>Về triển lãm</div>
                                 <div className='sidebarDisc__button__btn'><BsNewspaper /></div>
                             </div>
                         </div>
@@ -848,6 +830,7 @@ function Home2(){
                     />
                     <PopUpHowToMove open={showHowToMove} handleClose={handleCloseHowToMove} />
                     <PopUpAboutTheExhibition open={popUpAboutTheExhibition} handleClose={handleClosePopUpAboutTheExhibition} />
+                    <PopUpUpdate open={popUpUpdate} onClose={handleClosePopUpUpdate} />
                     <PopUpListModel open={popUpListModel} onClose={handleClosePopUpListModel} items={items} onItemClick={handleListItemClick} /> {/* List Popup */}
                     {/* Pop up */}
 
@@ -869,6 +852,46 @@ function Home2(){
                         </div>
                     )}
                     {/* Đếm thời gian tour */}
+
+                    {showPuzzleGame1 && (
+                        <div className="popup-overlay">
+                            <div className="popup-content">
+                                <button
+                                    className="close-popup"
+                                    onClick={() => setShowPuzzleGame1(false)}
+                                >
+                                    ✕
+                                </button>
+                                <PuzzleGame onComplete={handlePuzzle1Complete} />
+                            </div>
+                        </div>
+                    )}
+                    {showPuzzleGame2 && (
+                        <div className="popup-overlay">
+                            <div className="popup-content">
+                                <button
+                                    className="close-popup"
+                                    onClick={() => setShowPuzzleGame2(false)}
+                                >
+                                    ✕
+                                </button>
+                                <PuzzleGame onComplete={handlePuzzle2Complete} />
+                            </div>
+                        </div>
+                    )}
+                    {showPuzzleGame3 && (
+                        <div className="popup-overlay">
+                            <div className="popup-content">
+                                <button
+                                    className="close-popup"
+                                    onClick={() => setShowPuzzleGame3(false)}
+                                >
+                                    ✕
+                                </button>
+                                <PuzzleGame onComplete={handlePuzzle3Complete} />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </CameraProvider>
             {/* Respondsive */}

@@ -4,7 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { Vector3, Euler } from 'three';
 import CameraClick from '../../action/CameraClick';
 
-const ModelLoader2 = ({ path, position, rotation = [0, 0, 0], scale, clickable = false, setYaw }) => {
+const ModelLoader2 = ({ path, position, rotation = [0, 0, 0], scale, clickable = false, onClick }) => {
     const model = useLoader(GLTFLoader, path);
     const [clicked, setClicked] = useState(false);
     const [targetPosition, setTargetPosition] = useState([0, 0, 0]);
@@ -46,8 +46,8 @@ const ModelLoader2 = ({ path, position, rotation = [0, 0, 0], scale, clickable =
     };
 
     const handleClick = () => {
-        if (clickable) {
-            handlePictureClick(position, rotation);
+        if (clickable && onClick) {
+            onClick(); // Gọi hàm xử lý khi click
         }
     };
 
@@ -59,12 +59,12 @@ const ModelLoader2 = ({ path, position, rotation = [0, 0, 0], scale, clickable =
             onClick={handleClick}
         >
             <primitive object={model.scene} />
-            <CameraClick
+            {/* <CameraClick
                 targetPosition={targetPosition}
                 targetRotation={targetRotation}
                 clicked={clicked}
                 setClicked={setClicked}
-            />
+            /> */}
         </group>
     );
 };

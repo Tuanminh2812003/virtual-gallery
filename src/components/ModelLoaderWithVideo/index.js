@@ -3,10 +3,19 @@ import { useLoader, useThree } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { VideoTexture, MathUtils, DoubleSide } from 'three';
 
-const ModelLoaderWithVideo = ({ path, position, rotation = [0, 0, 0], scale, videoUrl }) => {
+const ModelLoaderWithVideo = ({ path, position, rotation = [0, 0, 0], scale, videoUrl, mesh }) => {
     const model = useLoader(GLTFLoader, path);
     const videoRef = useRef();
     const [videoTexture, setVideoTexture] = useState(null); // Khởi tạo state để lưu trữ videoTexture
+
+    useEffect(() => {
+        console.log('Các Mesh trong mô hình:');
+        model.scene.traverse((child) => {
+            if (child.isMesh) {
+                console.log(`Mesh Name: ${child.name}`);
+            }
+        });
+    }, [model]);
 
     useEffect(() => {
         // Tạo phần tử video
@@ -45,7 +54,7 @@ const ModelLoaderWithVideo = ({ path, position, rotation = [0, 0, 0], scale, vid
         if (videoTexture) {
             // Tìm và gán VideoTexture cho lưới màn hình trong mô hình
             model.scene.traverse((child) => {
-                if (child.isMesh && child.name === 'Cube007') { // Thay 'Cube007' thành tên của lưới bạn muốn gán texture
+                if (child.isMesh && child.name === mesh) { // Thay 'Cube007' thành tên của lưới bạn muốn gán texture
                     child.material.map = videoTexture;
                     child.material.side = DoubleSide;
                     child.material.needsUpdate = true;

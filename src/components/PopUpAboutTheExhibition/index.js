@@ -14,7 +14,7 @@ const PopUpAboutTheExhibition = ({ open, handleClose }) => {
                     width: {
                         xs: '90%', // 90% width on extra small screens
                         sm: '50%', // 80% width on small screens
-                        md: 400,  // 400px width on medium screens and up
+                        md: '50%',  // 400px width on medium screens and up
                     },
                     maxHeight: '80%',
                     overflow: 'auto',
@@ -28,23 +28,16 @@ const PopUpAboutTheExhibition = ({ open, handleClose }) => {
                     color: '#191919'
                 }}
             >
-                <img src='/assets/Picture/art_1.jpg' />
-                <h2 style={{ marginBottom: '16px' }}>AZZOLINO GALLERY</h2>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste doloremque dolore quia omnis maxime corporis deserunt neque voluptatum.</p>
-                <Button 
-                    variant="contained" 
+                <h2 style={{ marginBottom: '16px' }}>Nghệ thuật sáng tạo</h2>
+                <div>
+                    Nghệ sĩ: Đại học quốc gia hà nội.
+                </div>
+                {/* <Button 
                     onClick={handleClose} 
-                    sx={{ 
-                        mt: 2, 
-                        bgcolor: '#1976d2', 
-                        '&:hover': { 
-                            bgcolor: '#115293' 
-                        } ,
-                        fontSize: "14px"
-                    }}
+                    className='button3'
                 >
-                    Got it!
-                </Button>
+                    Đóng
+                </Button> */}
             </Box>
         </Modal>
     );

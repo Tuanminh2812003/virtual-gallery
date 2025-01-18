@@ -19,72 +19,29 @@ const PopUpHowToMove = ({ open, handleClose }) => {
                     },
                     maxHeight: '90%',
                     overflow: 'auto',
-                    bgcolor: 'white',
                     borderRadius: '10px',
-                    boxShadow: 24,
                     p: 4,
                     textAlign: 'center',
                     opacity: 0,
                     animation: 'slideDown 0.5s forwards, fadeIn 0.5s forwards',
-                    color: '#191919'
+                    color: 'white'
                 }}
             >
-                <h2 style={{ marginBottom: '16px' }}>How to move?</h2>
-                <div className='popUpMove__content'>
-                    <div className='popUpMove__content__content__inner'>
-                        <div className='popUpMove__content__content__inner__text'>
-                            <b>Click and drag</b> to rotate the camera
-                        </div>
-                        <img src='/assets/HowToMove/how1.png' className='popUpMove__content__content__inner__img'/>
-                    </div>
-                    <div className='popUpMove__content__content__inner'>
-                        <div className='popUpMove__content__content__inner__text'>
-                            Use your <b>"UP" and "W" keys</b> to move foward, <b>"DOWN" and "S" keys</b> to move back, <b>"LEFT" and "A"</b> to move left, <b>"RIGHT" and "D"</b> to move right
-                        </div>
-                        <img src='/assets/HowToMove/how2.png' className='popUpMove__content__content__inner__img'/>
-                    </div>
-                    <div className='popUpMove__content__content__inner'>
-                        <div className='popUpMove__content__content__inner__text'>
-                            <b>Click on artworks</b> to see details of the artworks
-                        </div>
-                        <img src='/assets/HowToMove/how3.png' className='popUpMove__content__content__inner__img'/>
-                    </div>
-                    <div className='popUpMove__content__content__inner'>
-                        <div className='popUpMove__content__content__inner__text'>
-                            Click on the <b>menu icon</b> to acces the guided tour, catalog, exhibition infomation and more
-                        </div>
-                        <img src='/assets/HowToMove/how4.png' className='popUpMove__content__content__inner__img'/>
-                    </div>
+                <h2 style={{ marginBottom: '40px' }}>Hướng dẫn sử dụng</h2>
+                <div className='popUpMove__content' style={{ marginBottom: '40px' }}>
+                    <img src='/NTST/HDSD.png' className='popUpMove__content__content__inner__img'/>
                 </div>
                 <Button 
-                    variant="contained" 
-                    onClick={() => handleClose('free')} 
-                    sx={{ 
-                        m: 2, 
-                        bgcolor: '#1976d2', 
-                        '&:hover': { 
-                            bgcolor: '#115293' 
-                        } ,
-                        fontSize: "14px"
-                    }}
-                    className='move_button'
+                    onClick={() => handleClose('update')} 
+                    className='button1'
                 >
-                    Free Exploration
+                    GUIDE TOUR
                 </Button>
                 <Button 
-                    variant="contained" 
-                    onClick={() => handleClose('tour')} 
-                    sx={{ 
-                        m: 2, 
-                        bgcolor: '#1976d2', 
-                        '&:hover': { 
-                            bgcolor: '#115293' 
-                        } ,
-                        fontSize: "14px"
-                    }}
-                    className='move_button'
+                    onClick={() => handleClose('free')} 
+                    className='button2'
                 >
-                    Guided Tour
+                    BẮT ĐẦU TRẢI NGHIỆM
                 </Button>
             </Box>
         </Modal>
