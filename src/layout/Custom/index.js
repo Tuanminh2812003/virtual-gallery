@@ -1,6 +1,8 @@
 import React, { useState, lazy, Suspense, useEffect, useRef, useCallback } from 'react';
 import { Canvas, extend, useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { Physics } from '@react-three/cannon';
+import { EffectComposer, Bloom, SSAO, DepthOfField } from '@react-three/postprocessing';
 import { OrbitControls } from '@react-three/drei';
 
 // camera và move
@@ -15,16 +17,23 @@ import { Vector3, Euler } from 'three';
 import ModelLoader from '../../components/ModelLoader/index'; // model tĩnh
 import ModelLoader2 from '../../components/ModelLoader2/index'; // model tĩnh
 import ModelLoaderWithVideo from '../../components/ModelLoaderWithVideo';
+import ModelInspector from '../../helpers/ModelInspector';
+import ModelAnimated2 from '../../components/ModelAnimated2';
 
 import PictureFrame from '../../components/PictureFrame'; // hình ảnh
 import ResizeHandler from '../../action/ResizeElement2'; // responsive model
+import { SpotLight } from '@react-three/drei';
 import Minimap from '../../components/Minimap';
+import RectAreaLight from '../../components/RectAreaLight'
+
+import Particles from "./../../components/Particles/index";
 
 // pop up
 import ModelPopup from '../../components/ModelPopup';
 import PopUpHowToMove from '../../components/PopUpHowToMove';
 import PopUpAboutTheExhibition from '../../components/PopUpAboutTheExhibition';
 import PopUpListModel from '../../components/PopUpListModel';
+import PopUpUpdate from "../../components/PopUpUpdate"
 
 // icon
 import { MdOutlineZoomOutMap } from "react-icons/md";
@@ -40,64 +49,60 @@ import { BsNewspaper } from "react-icons/bs";
 import { MdSkipNext } from "react-icons/md";
 import { MdSkipPrevious } from "react-icons/md";
 
+import PuzzleGame from "../GamePuzzle"
+
 // Extend THREE with custom geometries
 extend({ PlaneGeometry: THREE.PlaneGeometry, BoxGeometry: THREE.BoxGeometry });
 
-function Home2(){
+function Custom(){
 
-    //MẢNG ITEM
-    const [modelsConfig, setModelsConfig] = useState([
+    const modelsConfig = [
         // {
-        //     path: "/assets/space3/Space.glb",
-        //     position: [0, 0, 0],
+        //     path: "/assets/space2/All.glb",
+        //     position: [0, 0, 10],
         //     rotation: [0, 0, 0],
         //     scale: [1, 1, 1],
         //     clickable: false,
-        // }
-    ]);
-
-    const [newModel, setNewModel] = useState({
-        path: null,
-        position: [0, 0, 0],
-        rotation: [0, 0, 0],
-        scale: [1, 1, 1],
-        clickable: false,
-    });
-
-    // Thêm model mới vào mảng
-    const addModel = () => {
-        if (!newModel.path) {
-            alert("Vui lòng chọn tệp GLB!");
-            return;
-        }
-
-        setModelsConfig([...modelsConfig, newModel]);
-        setNewModel({
-            path: null,
+        // },
+        {
+            path: "/NTST/Virtual Gallery.glb",
             position: [0, 0, 0],
             rotation: [0, 0, 0],
             scale: [1, 1, 1],
             clickable: false,
-        });
-    };
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file && file.name.endsWith(".glb")) {
-            const url = URL.createObjectURL(file);
-            setNewModel((prev) => ({ ...prev, path: url }));
-        } else {
-            alert("Chỉ chấp nhận tệp .glb!");
-        }
-    };
-
-    const handleInputChange = (field, index, value) => {
-        setNewModel((prev) => {
-            const updatedField = [...prev[field]];
-            updatedField[index] = parseFloat(value);
-            return { ...prev, [field]: updatedField };
-        });
-    };
-    //MẢNG ITEM
+        },
+        // {
+        //     path: "/NTST/Statue 1.glb",
+        //     position: [0, 0, 0],
+        //     rotation: [0, 0, 0],
+        //     scale: [1, 1, 1],
+        //     clickable: true,
+        //     onClick: () => setShowPuzzleGame(true), // Mở pop-up trò chơi khi click
+        // },
+        // {
+        //     path: "/NTST/Statue 2.glb",
+        //     position: [0, 0, 0],
+        //     rotation: [0, 0, 0],
+        //     scale: [1, 1, 1],
+        //     clickable: false,
+        // },
+        // {
+        //     path: "/NTST/Statue 3.glb",
+        //     position: [0, 0, 0],
+        //     rotation: [0, 0, 0],
+        //     scale: [1, 1, 1],
+        //     clickable: false,
+        // },
+        {
+            path: "/NTST/TV Bound.glb",
+            position: [0, 0, 0],
+            rotation: [0, 0, 0],
+            scale: [1, 1, 1],
+            clickable: false,
+        },
+        
+        // Add more models as needed
+    ];
 
     // mảng items các bức tranh để làm tour
     const [items, setItems] = useState([
@@ -105,11 +110,33 @@ function Home2(){
     ]);
     // mảng items các bức tranh để làm tour
 
+    const [uploadedModelPath, setUploadedModelPath] = useState("/NTST/Manequin.glb");
+
     // KHAI BÁO
     // move
-    const [yaw, setYaw] = useState(0);
     const [controlMode, setControlMode] = useState("user"); // "user" hoặc "overview"
+    const [yaw, setYaw] = useState(0);
     // move
+
+    const [showPuzzleGame1, setShowPuzzleGame1] = useState(false);
+    const [showPuzzleGame2, setShowPuzzleGame2] = useState(false);
+    const [showPuzzleGame3, setShowPuzzleGame3] = useState(false);
+    const [currentModelPath1, setCurrentModelPath1] = useState("/NTST/Question 1.glb");
+    const [currentModelPath2, setCurrentModelPath2] = useState("/NTST/Question 2.glb");
+    const [currentModelPath3, setCurrentModelPath3] = useState("/NTST/Question 3.glb");
+
+    const handlePuzzle1Complete = () => {
+        setShowPuzzleGame1(false);
+        setCurrentModelPath1("/NTST/Statue 1.glb"); // Thay đổi model thành Statue 1.glb sau chiến thắng
+    };
+    const handlePuzzle2Complete = () => {
+        setShowPuzzleGame2(false);
+        setCurrentModelPath2("/NTST/Statue 2.glb"); // Thay đổi model thành Statue 1.glb sau chiến thắng
+    };
+    const handlePuzzle3Complete = () => {
+        setShowPuzzleGame3(false);
+        setCurrentModelPath3("/NTST/Statue 3.glb"); // Thay đổi model thành Statue 1.glb sau chiến thắng
+    };
 
     //audio
     const [introAudio, setIntroAudio] = useState(null); 
@@ -127,8 +154,8 @@ function Home2(){
     const [selectedInfo, setSelectedInfo] = useState(null); 
     const [selectedVideo, setSelectedVideo] = useState(null);
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
-    const [cameraPosition, setCameraPosition] = useState(new Vector3(9, 1.6, 0));
-    const [cameraRotation, setCameraRotation] = useState(new Euler(0, 1 * Math.PI / 2, 0));
+    const [cameraPosition, setCameraPosition] = useState(new Vector3(0, 1.6, 12));
+    const [cameraRotation, setCameraRotation] = useState(new Euler(0, 2 * Math.PI, 0));
     const [showDetailsPrompt, setShowDetailsPrompt] = useState(false); // <-- Added state for details prompt
     const [promptTimeout, setPromptTimeout] = useState(null); // <-- Added state for prompt timeout
     const [showHowToMove, setShowHowToMove] = useState(true); // <-- Added state for how to move popup
@@ -145,6 +172,7 @@ function Home2(){
     const [instructionsOpen, setInstructionsOpen] = useState(true);
     const [popUpAboutTheExhibition, setPopUpAboutTheExhibition] = useState(false);
     const [popUpListModel, setPopUpListModel] = useState(false);
+    const [popUpUpdate, setPopUpUpdate] = useState(false);
     // pop up
 
     //tour
@@ -165,6 +193,14 @@ function Home2(){
         document.dispatchEvent(new CustomEvent('control', { detail: { action, state } }));
     };
     // move
+
+    const handleFileUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const objectURL = URL.createObjectURL(file);
+            setUploadedModelPath(objectURL); // Cập nhật đường dẫn model mới
+        }
+    };
 
     // click và các chức năng liên quan
     const handlePictureClick = useCallback((position, rotation, imageUrl, model, info, video) => {
@@ -451,6 +487,12 @@ function Home2(){
     const handleOpenInstructions = () => {
         setShowHowToMove(true);
     };
+    const handleOpenPopUpUpdate = () => {
+        setPopUpUpdate(true);
+    };
+    const handleClosePopUpUpdate = () => {
+        setPopUpUpdate(false);
+    };
 
     const handleClosePopUpAboutTheExhibition = () => {
         setPopUpAboutTheExhibition(false);
@@ -474,6 +516,8 @@ function Home2(){
             startFreeExploration();
         } else if (mode === 'tour') {
             startTour();
+        } else if (mode === 'update') {
+            setPopUpUpdate(true);
         }
     };
     // pop up
@@ -491,14 +535,14 @@ function Home2(){
         window.addEventListener("orientationchange", handleOrientationChange);
     
         // kiểm tra hướng khi trang được tải
-         handleOrientationChange();
+        handleOrientationChange();
     
         return () => {
             window.removeEventListener("orientationchange", handleOrientationChange);
         };
     }, []);
     
-     const closeLandscapePrompt = () => {
+    const closeLandscapePrompt = () => {
         setLandscapePromptVisible(false);
     };
 
@@ -566,6 +610,89 @@ function Home2(){
                                     <ModelLoader2 key={index} {...modelProps} />
                                 ))}
 
+                                {/* <ModelInspector path="/assets/space2/untitled.glb" /> */}
+
+                                <ModelLoaderWithVideo
+                                    path="/NTST/TV Screen.glb"
+                                    position={[0, 0, 0]}
+                                    rotation={[0, 0, 0]}
+                                    scale={[1, 1, 1]}
+                                    videoUrl="/NTST/VR Gallery.mp4"
+                                    mesh ="TV_Screen001"
+                                />
+                                <ModelLoaderWithVideo
+                                    path="/NTST/game screen.glb"
+                                    position={[0, 0, 0]}
+                                    rotation={[0, 0, 0]}
+                                    scale={[1, 1, 1]}
+                                    videoUrl="/NTST/video/finger click green screen videos Animation.mp4"
+                                    mesh ="Game_Station_Screen_PROCESSED001"
+                                />
+                                <ModelAnimated2
+                                    path="/NTST/Game Station.glb" // Đường dẫn đến file GLB/GLTF
+                                    position={[0, 0, 0]}
+                                    rotation={[0, 0, 0]}
+                                    scale={[1, 1, 1]}
+                                />
+                                <ModelAnimated2
+                                    path={currentModelPath1} // Sử dụng trạng thái currentModelPath
+                                    position={[0, 0, 0]}
+                                    rotation={[0, 0, 0]}
+                                    scale={[1, 1, 1]}
+                                    onClick={() => setShowPuzzleGame1(true)}
+                                />
+                                <ModelAnimated2
+                                    path={currentModelPath2} // Sử dụng trạng thái currentModelPath
+                                    position={[0, 0, 0]}
+                                    rotation={[0, 0, 0]}
+                                    scale={[1, 1, 1]}
+                                    onClick={() => setShowPuzzleGame2(true)}
+                                />
+                                <ModelAnimated2
+                                    path={currentModelPath3} // Sử dụng trạng thái currentModelPath
+                                    position={[0, 0, 0]}
+                                    rotation={[0, 0, 0]}
+                                    scale={[1, 1, 1]}
+                                    onClick={() => setShowPuzzleGame3(true)}
+                                />
+
+                                <ModelLoader2
+                                    path={uploadedModelPath} // Đường dẫn được cập nhật từ trạng thái
+                                    position={[0, 0, 0]}
+                                    rotation={[0, 0, 0]}
+                                    scale={[1, 1, 1]}
+                                    clickable={true}
+                                    onClick={() => document.getElementById("file-input").click()} // Mở chọn file khi nhấn vào model
+                                />
+
+                                {/* <RectAreaLight position={[0,10,10]} color="red" intensity={10} lookAt={[0,5,0]}/>
+                                <RectAreaLight position={[0,10,-10]} color="blue" intensity={10} lookAt={[0,5,0]}/>
+                                <RectAreaLight position={[-10,10,5]} color="pink" intensity={10} lookAt={[0,5,0]}/> */}
+
+                                {/* <SpotLight
+                                    position={[0, 2, 0]}
+                                    intensity={10}
+                                    angle={360}
+                                    penumbra={1}
+                                    distance={0}
+                                    decay={1}
+                                    color="yellow"
+                                    castShadow
+                                />
+                                <directionalLight 
+                                    position={[0, 10, 10]} 
+                                    color="red" 
+                                    intensity={5} 
+                                    castShadow
+                                    penumbra={1}
+                                />
+                                <directionalLight 
+                                    position={[0, 10, -10]} 
+                                    color="blue" 
+                                    intensity={5} 
+                                    castShadow
+                                /> */}
+                                
                                 <ambientLight intensity={2.5} />
 
                                 {/* Chiếu sáng các model cụ thể */}
@@ -585,7 +712,6 @@ function Home2(){
                                     onMoveComplete={handleCameraMoveComplete}
                                     updateCameraState={updateCameraState}
                                 />
-                                {/* Hàm bổ trợ */}
                                 {/* Chuyển đổi bộ điều khiển dựa trên controlMode */}
                                 {controlMode === "user" && (
                                     <Movement2
@@ -599,81 +725,17 @@ function Home2(){
                                 {controlMode === "overview" && (
                                     <OrbitControls enableZoom={true} enableRotate={true} />
                                 )}
+                                {/* Hàm bổ trợ */}
+                                {/* <EffectComposer>
+                                    <SSAO samples={31} radius={20} intensity={15} luminanceInfluence={0.6} />
+                                    <DepthOfField focusDistance={0.015} focalLength={0.02} bokehScale={2} />
+                                </EffectComposer> */}
+                                {/* bloom, vignette, color correction, noise, film grain, Lens Distortion / Chromatic Aberration, Glitch, God Rays (Light Shafts), Hue/Saturation, Tone Mapping, Outline, Tilt Shift, Bloom Selective */}
+
                         </Suspense>
                     </Canvas>
 
-                        <div className='uploadModel'>
-                            <h2>Thêm Model Mới</h2>
-                            <input
-                                type="file"
-                                accept=".glb"
-                                onChange={handleFileChange}
-                            />
-                            <div>
-                                <label>Tọa độ:</label>
-                                <input
-                                    type="number"
-                                    placeholder="X"
-                                    value={newModel.position[0]}
-                                    onChange={(e) => handleInputChange("position", 0, e.target.value)}
-                                />
-                                <input
-                                    type="number"
-                                    placeholder="Y"
-                                    value={newModel.position[1]}
-                                    onChange={(e) => handleInputChange("position", 1, e.target.value)}
-                                />
-                                <input
-                                    type="number"
-                                    placeholder="Z"
-                                    value={newModel.position[2]}
-                                    onChange={(e) => handleInputChange("position", 2, e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label>Góc xoay:</label>
-                                <input
-                                    type="number"
-                                    placeholder="X"
-                                    value={newModel.rotation[0]}
-                                    onChange={(e) => handleInputChange("rotation", 0, e.target.value)}
-                                />
-                                <input
-                                    type="number"
-                                    placeholder="Y"
-                                    value={newModel.rotation[1]}
-                                    onChange={(e) => handleInputChange("rotation", 1, e.target.value)}
-                                />
-                                <input
-                                    type="number"
-                                    placeholder="Z"
-                                    value={newModel.rotation[2]}
-                                    onChange={(e) => handleInputChange("rotation", 2, e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label>Tỷ lệ:</label>
-                                <input
-                                    type="number"
-                                    placeholder="X"
-                                    value={newModel.scale[0]}
-                                    onChange={(e) => handleInputChange("scale", 0, e.target.value)}
-                                />
-                                <input
-                                    type="number"
-                                    placeholder="Y"
-                                    value={newModel.scale[1]}
-                                    onChange={(e) => handleInputChange("scale", 1, e.target.value)}
-                                />
-                                <input
-                                    type="number"
-                                    placeholder="Z"
-                                    value={newModel.scale[2]}
-                                    onChange={(e) => handleInputChange("scale", 2, e.target.value)}
-                                />
-                            </div>
-                            <button onClick={addModel}>Thêm Model</button>
-                            <div className="control-mode-buttons">
+                    <div className="control-mode-buttons">
                                 <button
                                     onClick={() => setControlMode("user")}
                                     style={{
@@ -696,14 +758,19 @@ function Home2(){
                                     View toàn bộ
                                 </button>
                             </div>
-                        </div>
 
                     {/* Thanh sidebar */}
                     <div className='sidebarMain'>
-                        <div className={`fullscreen_button ${navToggle ? 'fullscreen_button-change' : ""}`} onClick={handlePreviousItem}>
+                        {/* <div className={`fullscreen_button ${navToggle ? 'fullscreen_button-change' : ""}`} onClick={handlePreviousItem}>
                             <MdSkipPrevious />
                         </div>
                         <div className={`fullscreen_button ${navToggle ? 'fullscreen_button-change' : ""}`} onClick={handleNextItem}>
+                            <MdSkipNext />
+                        </div> */}
+                        <div className={`fullscreen_button ${navToggle ? 'fullscreen_button-change' : ""}`} onClick={handleOpenPopUpUpdate}>
+                            <MdSkipPrevious />
+                        </div>
+                        <div className={`fullscreen_button ${navToggle ? 'fullscreen_button-change' : ""}`} onClick={handleOpenPopUpUpdate}>
                             <MdSkipNext />
                         </div>
                         {!isFullscreen ? (
@@ -720,7 +787,7 @@ function Home2(){
                     {navToggle ? (
                         <div className='sidebarDisc'>
                             <div className='sidebarDisc__button' onClick={handleFullscreenToggle}>
-                                <div className='sidebarDisc__button__text'>Enter fullscreen</div>
+                                <div className='sidebarDisc__button__text'>Chế độ toàn màn hình</div>
                                 {!isFullscreen ? (
                                     <button className={`fullscreen_button`}><MdOutlineZoomOutMap /></button>
                                 ) : (
@@ -728,19 +795,23 @@ function Home2(){
                                 )}
                             </div>
                             <div className='sidebarDisc__button' onClick={handleOpenInstructions}>
-                                <div className='sidebarDisc__button__text'>How to move</div>
+                                <div className='sidebarDisc__button__text'>Hướng dẫn di chuyển</div>
                                 <div className='sidebarDisc__button__btn'><RiDragMoveFill /></div>
                             </div>
-                            <div className='sidebarDisc__button' onClick={startTour}>
-                                <div className='sidebarDisc__button__text'>Start tour</div>
+                            <div className='sidebarDisc__button' onClick={handleOpenPopUpUpdate}>
+                                <div className='sidebarDisc__button__text'>Bắt đầu tham quan</div>
                                 <div className='sidebarDisc__button__btn'><SiAwesomelists /></div>
                             </div>
+                            {/* <div className='sidebarDisc__button' onClick={startTour}>
+                                <div className='sidebarDisc__button__text'>Start tour</div>
+                                <div className='sidebarDisc__button__btn'><SiAwesomelists /></div>
+                            </div> */}
                             <div className='sidebarDisc__button' onClick={handleOpenPopUpListModel}>
-                                <div className='sidebarDisc__button__text'>List model</div>
+                                <div className='sidebarDisc__button__text'>Danh sách mẫu vật</div>
                                 <div className='sidebarDisc__button__btn'><PiListStarFill /></div>
                             </div>
                             <div className='sidebarDisc__button' onClick={handleOpenPopUpAboutTheExhibition}>
-                                <div className='sidebarDisc__button__text'>About the Exhibition</div>
+                                <div className='sidebarDisc__button__text'>Về triển lãm</div>
                                 <div className='sidebarDisc__button__btn'><BsNewspaper /></div>
                             </div>
                         </div>
@@ -809,6 +880,7 @@ function Home2(){
                     />
                     <PopUpHowToMove open={showHowToMove} handleClose={handleCloseHowToMove} />
                     <PopUpAboutTheExhibition open={popUpAboutTheExhibition} handleClose={handleClosePopUpAboutTheExhibition} />
+                    <PopUpUpdate open={popUpUpdate} onClose={handleClosePopUpUpdate} />
                     <PopUpListModel open={popUpListModel} onClose={handleClosePopUpListModel} items={items} onItemClick={handleListItemClick} /> {/* List Popup */}
                     {/* Pop up */}
 
@@ -830,7 +902,55 @@ function Home2(){
                         </div>
                     )}
                     {/* Đếm thời gian tour */}
+
+                    {showPuzzleGame1 && (
+                        <div className="popup-overlay">
+                            <div className="popup-content">
+                                <button
+                                    className="close-popup"
+                                    onClick={() => setShowPuzzleGame1(false)}
+                                >
+                                    ✕
+                                </button>
+                                <PuzzleGame onComplete={handlePuzzle1Complete} />
+                            </div>
+                        </div>
+                    )}
+                    {showPuzzleGame2 && (
+                        <div className="popup-overlay">
+                            <div className="popup-content">
+                                <button
+                                    className="close-popup"
+                                    onClick={() => setShowPuzzleGame2(false)}
+                                >
+                                    ✕
+                                </button>
+                                <PuzzleGame onComplete={handlePuzzle2Complete} />
+                            </div>
+                        </div>
+                    )}
+                    {showPuzzleGame3 && (
+                        <div className="popup-overlay">
+                            <div className="popup-content">
+                                <button
+                                    className="close-popup"
+                                    onClick={() => setShowPuzzleGame3(false)}
+                                >
+                                    ✕
+                                </button>
+                                <PuzzleGame onComplete={handlePuzzle3Complete} />
+                            </div>
+                        </div>
+                    )}
                 </div>
+                {/* Input file hidden */}
+                <input
+                        id="file-input"
+                        type="file"
+                        accept=".glb"
+                        style={{ display: "none" }}
+                        onChange={handleFileUpload}
+                    />
             </CameraProvider>
             {/* Respondsive */}
             <ResizeHandler updateItemsForScreenSize={updateItemsForScreenSize} />
@@ -839,4 +959,4 @@ function Home2(){
     )
 }
 
-export default Home2;
+export default Custom;

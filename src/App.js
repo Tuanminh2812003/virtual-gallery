@@ -11,6 +11,7 @@ import Contact from './layout/HuyenWorkSpace/contact'
 import Minh2 from './layout/Minh2';
 import GamePuzzle from './layout/GamePuzzle';
 import Home from './layout/Home';
+import Custom from './layout/Custom';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path='/minh2' element={<Minh2/>}/>
         <Route path='/gamepuzzle' element={<GamePuzzle/>}/>
         <Route path='/home' element={<Home/>}/>
+        <Route path='/custom' element={<Custom/>}/>
       </Routes>
     </>
   );
