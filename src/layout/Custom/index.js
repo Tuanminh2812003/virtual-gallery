@@ -19,6 +19,7 @@ import ModelLoader2 from '../../components/ModelLoader2/index'; // model tĩnh
 import ModelLoaderWithVideo from '../../components/ModelLoaderWithVideo';
 import ModelInspector from '../../helpers/ModelInspector';
 import ModelAnimated2 from '../../components/ModelAnimated2';
+import ManequinLoader from '../../components/ManequinLoader';
 
 import PictureFrame from '../../components/PictureFrame'; // hình ảnh
 import ResizeHandler from '../../action/ResizeElement2'; // responsive model
@@ -93,13 +94,6 @@ function Custom(){
         //     scale: [1, 1, 1],
         //     clickable: false,
         // },
-        {
-            path: "/NTST/TV Bound.glb",
-            position: [0, 0, 0],
-            rotation: [0, 0, 0],
-            scale: [1, 1, 1],
-            clickable: false,
-        },
         
         // Add more models as needed
     ];
@@ -111,6 +105,10 @@ function Custom(){
     // mảng items các bức tranh để làm tour
 
     const [uploadedModelPath, setUploadedModelPath] = useState("/NTST/Manequin.glb");
+    const [modelPath, setModelPath] = useState("/NTST/Manequin.glb"); // Đường dẫn model mặc định
+    const [modelPosition, setModelPosition] = useState([3.04, 2.15, 3.69]); // Position mặc định
+    const [modelRotation, setModelRotation] = useState([0, 0, 0]); // Rotation mặc định
+    const inputRef = useRef();
 
     // KHAI BÁO
     // move
@@ -193,6 +191,21 @@ function Custom(){
         document.dispatchEvent(new CustomEvent('control', { detail: { action, state } }));
     };
     // move
+
+    const handleModelClick = () => {
+        if (inputRef.current) {
+          inputRef.current.click(); // Kích hoạt input khi nhấn vào model
+        }
+    };
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+        const objectURL = URL.createObjectURL(file);
+        setModelPath(objectURL); // Cập nhật đường dẫn model
+        setModelPosition([3.2, 6, 6.2]);
+        setModelRotation([0, 0, 0]);
+        }
+    };
 
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
@@ -656,14 +669,21 @@ function Custom(){
                                     onClick={() => setShowPuzzleGame3(true)}
                                 />
 
-                                <ModelLoader2
+                                {/* <ModelLoader2
                                     path={uploadedModelPath} // Đường dẫn được cập nhật từ trạng thái
                                     position={[0, 0, 0]}
                                     rotation={[0, 0, 0]}
                                     scale={[1, 1, 1]}
                                     clickable={true}
                                     onClick={() => document.getElementById("file-input").click()} // Mở chọn file khi nhấn vào model
-                                />
+                                /> */}
+
+                                <ManequinLoader
+                                        modelPath={modelPath}
+                                        position={modelPosition} // Truyền position từ state
+                                        rotation={modelRotation} // Truyền rotation từ state
+                                        onModelClick={handleModelClick}
+                                        />
 
                                 {/* <RectAreaLight position={[0,10,10]} color="red" intensity={10} lookAt={[0,5,0]}/>
                                 <RectAreaLight position={[0,10,-10]} color="blue" intensity={10} lookAt={[0,5,0]}/>
@@ -944,13 +964,20 @@ function Custom(){
                     )}
                 </div>
                 {/* Input file hidden */}
-                <input
+                {/* <input
                         id="file-input"
                         type="file"
                         accept=".glb"
                         style={{ display: "none" }}
                         onChange={handleFileUpload}
-                    />
+                    /> */}
+                <input
+                    ref={inputRef}
+                    type="file"
+                    accept=".glb"
+                    style={{ display: "none" }}
+                    onChange={handleFileChange}
+                />
             </CameraProvider>
             {/* Respondsive */}
             <ResizeHandler updateItemsForScreenSize={updateItemsForScreenSize} />
